@@ -78,7 +78,7 @@
                 <h1 class="m-0 text-uppercase text-center py-4" style="color: var(--primary);">
                     <i class="fa fa-clinic-medical me-2"></i>Medinova
                 </h1>
-                <a href="#" class="active"><i class="fas fa-chart-line me-2"></i>Dashboard</a>
+                <a href="" class="active"><i class="fas fa-chart-line me-2"></i>Dashboard</a>
                 <a href="add_city.php"><i class="fas fa-city me-2"></i>Add City</a>
                 <a href="view_cities.php"><i class="fas fa-eye me-2"></i>View Cities</a>
                 <a href="add_doctor.php"><i class="fas fa-user-md me-2"></i>Add Doctor</a>
