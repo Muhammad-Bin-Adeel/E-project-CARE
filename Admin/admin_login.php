@@ -28,79 +28,74 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- Custom Admin Login Styling -->
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        .admin-login-container {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #e0f2ff, #f0faff);
-            background-size: cover;
-            position: relative;
-        }
+    .admin-login-container {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #dff6ff, #e9faff);
+        position: relative;
+    }
 
-        .admin-login-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #dbefff, #f4faff);
-            backdrop-filter: blur(6px);
-            z-index: 0;
-        }
+    .admin-login-box {
+        position: relative;
+        background-color: #ffffff;
+        padding: 50px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+        z-index: 1;
+    }
 
+    .admin-login-box h2 {
+        color: #0dcaf0;
+        font-weight: 700;
+        margin-bottom: 30px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+        background-color: #f0faff;
+        border: 1px solid #d3eefd;
+        color: #333;
+    }
+
+    .form-control::placeholder {
+        color: #7ca6c9;
+    }
+
+    .btn-primary {
+        background-color: #0dcaf0;
+        border: none;
+        border-radius: 10px;
+        padding: 14px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #fff;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0bb5d6;
+    }
+
+    @media (max-width: 576px) {
         .admin-login-box {
-            position: relative;
-            z-index: 1;
-            background-color: #fff;
-            padding: 50px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
+            padding: 35px 25px;
         }
-
-        .admin-login-box h2 {
-            color: #0072ff;
-            font-weight: 700;
-            margin-bottom: 30px;
-        }
-
-        .form-control {
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-        }
-
-        .btn-primary {
-            background-color: #0072ff;
-            border-color: #0072ff;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .btn-primary:hover {
-            background-color: #005fcc;
-            border-color: #005fcc;
-        }
-
-        @media (max-width: 576px) {
-            .admin-login-box {
-                padding: 35px 25px;
-            }
-        }
+    }
     </style>
 </head>
 <body>
