@@ -78,64 +78,21 @@
                 <h1 class="m-0 text-uppercase text-center py-4" style="color: var(--primary);">
                     <i class="fa fa-clinic-medical me-2"></i>Medinova
                 </h1>
+
                 <a href="dashboard.php" class="active"><i class="fas fa-chart-line me-2"></i>Dashboard</a>
                 <a href="add_city.php"><i class="fas fa-city me-2"></i>Add City</a>
                 <a href="view_cities.php"><i class="fas fa-eye me-2"></i>View Cities</a>
                 <a href="add_doctor.php"><i class="fas fa-user-md me-2"></i>Add Doctor</a>
                 <a href="view_doctors.php"><i class="fas fa-users me-2"></i>View Doctors</a>
+                <a href="view_appointments.php"><i class="fas fa-calendar-check me-2"></i>View Appointments</a>
                 <a href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
             </div>
         </nav>
-
-        <!-- Main -->
-        <main class="col-md-10 ms-sm-auto px-md-4">
+         <!-- Main -->
+         <main class="col-md-10 ms-sm-auto px-md-4">
             <div class="topbar">
                 <div class="dashboard-title">Admin Dashboard</div>
                 <div>
                     <img src="img/user.png" width="40" class="rounded-circle" alt="Admin">
                 </div>
             </div>
-
-            <div class="row mt-4">
-                <div class="col-md-3">
-                    <div class="card p-4">
-                        <h4>Total Cities</h4>
-                        <p class="mb-0 fs-5">12</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4">
-                        <h4>Total Doctors</h4>
-                        <p class="mb-0 fs-5">45</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4">
-                        <h4>Appointments</h4>
-                        <p class="mb-0 fs-5">109</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4">
-                        <h4>Messages</h4>
-                        <p class="mb-0 fs-5">8</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Placeholder Chart Section -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="card p-4">
-                        <h4>Statistics Overview</h4>
-                        <div class="text-muted">Chart placeholder or analytics data here...</div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
