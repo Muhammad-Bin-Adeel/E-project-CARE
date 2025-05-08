@@ -67,6 +67,19 @@
             padding: 20px 0;
             text-align: center;
         }
+    .doctor-card {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .doctor-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  
     </style>
 </head>
 <body>
@@ -96,3 +109,34 @@
                     <img src="img/user.png" width="40" class="rounded-circle" alt="Admin">
                 </div>
             </div>
+            
+<div class="container mt-4">
+  <h2 class="mb-4">All Registered Doctors</h2>
+
+  <div class="row">
+
+    <!-- Doctor Card Start -->
+    <div class="col-md-4">
+      <div class="doctor-card bg-light text-center">
+        <img src="\img\about.jpg" alt="Doctor Photo" class="doctor-img mb-3">
+        <h5>Muhammad Bin Adeel</h5>
+        <p><strong>Specialization:</strong> fdg</p>
+        <p><strong>Hospital:</strong> kkk</p>
+        <p><strong>City:</strong> Nazimabad</p>
+        <p><strong>Timing:</strong> sth</p>
+        <p><strong>Days:</strong> areg</p>
+        <p><strong>Experience:</strong> agr</p>
+        <p><strong>Phone:</strong> 03331114816</p>
+        <p><strong>Description:</strong> awertfEWF</p>
+        <span class="badge badge-success">Approved</span>
+      </div>
+    </div>
+    <!-- Doctor Card End -->
+
+    <!-- Add more doctor cards in similar format -->
+
+  </div>
+</div>
+
+</body>
+</html>
