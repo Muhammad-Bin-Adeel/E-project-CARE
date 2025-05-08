@@ -7,7 +7,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
+          
+          .container-box {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 30px;
+    }
+    .btn-custom {
+      background-color: #007bff;
+      color: white;
+    }
+  
+:root {
             --primary: #13C5DD;
             --secondary: #354F8E;
             --light: #EFF5F9;
@@ -84,7 +97,7 @@
                 <a href="view_cities.php"><i class="fas fa-eye me-2"></i>View Cities</a>
                 <a href="add_doctor.php"><i class="fas fa-user-md me-2"></i>Add Doctor</a>
                 <a href="view_doctors.php"><i class="fas fa-users me-2"></i>View Doctors</a>
-                <a href="view_appointments.php" class="active"><i class="fas fa-calendar-check me-2"></i>View Appointments</a>
+                <a href="view_appointments.php" class="active"><i class="fas fa-calendar-check me-2"></i>Appointments</a>
                 <a href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
             </div>
         </nav>
@@ -96,3 +109,76 @@
                     <img src="img/user.png" width="40" class="rounded-circle" alt="Admin">
                 </div>
             </div>
+  
+</head>
+<body style="background-color:#eef4f8;">
+
+<div class="container">
+  <div class="container-box">
+    <h4 class="mb-4">Add New Appointment</h4>
+    <form>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <input type="text" class="form-control" placeholder="Patient Name">
+        </div>
+        <div class="form-group col-md-4">
+          <input type="text" class="form-control" placeholder="Doctor Name">
+        </div>
+        <div class="form-group col-md-4">
+          <input type="text" class="form-control" placeholder="City">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <input type="text" class="form-control" placeholder="Appointment Date (e.g., 2025-05-09)">
+        </div>
+        <div class="form-group col-md-4">
+          <input type="text" class="form-control" placeholder="Time (e.g., 10:30 AM)">
+        </div>
+        <div class="form-group col-md-4">
+          <input type="text" class="form-control" placeholder="Contact Number">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-custom">+ Add Appointment</button>
+    </form>
+  </div>
+
+  <div class="container-box mt-5">
+    <h4 class="mb-4">All Appointments</h4>
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th>#ID</th>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>City</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Contact</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Example Appointment Row -->
+        <tr>
+          <td>1</td>
+          <td>Ali Raza</td>
+          <td>Dr. Adeel</td>
+          <td>Nazimabad</td>
+          <td>2025-05-10</td>
+          <td>11:00 AM</td>
+          <td>03123456789</td>
+          <td><span class="badge badge-success">Confirmed</span></td>
+          <td><button class="btn btn-danger btn-sm">Delete</button></td>
+        </tr>
+        <!-- Add more rows dynamically here -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

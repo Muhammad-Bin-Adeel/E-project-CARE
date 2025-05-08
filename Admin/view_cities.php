@@ -67,6 +67,22 @@
             padding: 20px 0;
             text-align: center;
         }
+        .city-card {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      background-color: #f8f9fa;
+      margin-bottom: 20px;
+    }
+    .city-img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
     </style>
 </head>
 <body>
@@ -96,3 +112,24 @@
                     <img src="img/user.png" width="40" class="rounded-circle" alt="Admin">
                 </div>
             </div>
+            <div class="container mt-4">
+  <h2 class="mb-4">All Added Cities</h2>
+
+  <div class="row">
+
+    <!-- City Card Start -->
+    <div class="col-md-3">
+      <div class="city-card">
+        <img src="https://via.placeholder.com/100" alt="City Image" class="city-img">
+        <h5 class="mt-2">KARACHI</h5>
+      </div>
+    </div>
+    <!-- City Card End -->
+
+    <!-- Add more cities in similar format -->
+
+  </div>
+</div>
+
+</body>
+</html>
