@@ -1,3 +1,31 @@
+<?php
+session_start();
+include("db.php");
+
+
+// Create doctors table if not exists
+$table = "CREATE TABLE IF NOT EXISTS city (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city-name VARCHAR(100),
+
+    timing VARCHAR(100),
+    experience VARCHAR(100),
+    description TEXT,
+    status ENUM('pending', 'approved') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+$conn->query($table);
+
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: login.php");
+    exit;
+}
+// CREATE TABLE cities (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     name VARCHAR(100) NOT NULL
+// );
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +35,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        
         :root {
             --primary: #13C5DD;
             --secondary: #354F8E;
@@ -96,3 +125,4 @@
                     <img src="img/user.png" width="40" class="rounded-circle" alt="Admin">
                 </div>
             </div>
+            
