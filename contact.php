@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<style>
+     /* Position submenus properly */
+     .dropdown-submenu {
+      position: relative;
+    }
+    .dropdown-submenu .dropdown-menu {
+      top: 0;
+      left: 100%;
+      margin-top: -1px;
+    }
+</style>
+
 <head>
     <meta charset="utf-8">
-    <title>MEDINOVA - Hospital Website Template</title>
+    <title>care - Hospital Website Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -72,7 +84,7 @@
         <div class="container">
             <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
                 <a href="index.php" class="navbar-brand">
-                    <h1 class="m-0 text-uppercase text-primary"><i class="fa fa-clinic-medical me-2"></i>Medinova</h1>
+                    <h1 class="m-0 text-uppercase text-primary"><i class="fa fa-clinic-medical me-2"></i>care</h1>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
@@ -81,20 +93,37 @@
                     <div class="navbar-nav ms-auto py-0">
                         <a href="index.php" class="nav-item nav-link">Home</a>
                         <a href="about.php" class="nav-item nav-link">About</a>
-                        <a href="service.php" class="nav-item nav-link">Service</a>
-                        <a href="#" class="nav-item nav-link">Pricing</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                   
+
+                       <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Service</a>
+                            <!-- <a class="dropdown-item dropdown-toggle" href="#">Find doctor by speciality</a> -->
                             <div class="dropdown-menu m-0">
-                                <a href="blog.php" class="dropdown-item">Blog Grid</a>
-                                <a href="#" class="dropdown-item">Blog Detail</a>
-                                <a href="#" class="dropdown-item">The Team</a>
-                                <a href="#" class="dropdown-item">Testimonial</a>
-                                <a href="appointment.php" class="dropdown-item">Appointment</a>
-                                <a href="search.php" class="dropdown-item">Search</a>
+
+                                 <li class="dropdown-submenu">
+                             <a class="dropdown-item dropdown-toggle" href="#">Dermatologist</a>
+                             <ul class="dropdown-menu">
+                             <a class="dropdown-item dropdown-toggle" href="#">Dermatologist in lahore </a>
+                             </ul>
+                             </li>
+
+                                  <li class="dropdown-submenu">
+                             <a class="dropdown-item dropdown-toggle" href="#">Gynecologistt</a>
+                             <ul class="dropdown-menu">
+                             <li><a class="dropdown-item" href="#">Gynecologist in karachi </a></li>
+                             </ul>
+                             </li>
+
+                                <li class="dropdown-submenu">
+                             <a class="dropdown-item dropdown-toggle" href="#">Urologist</a>
+                             <ul class="dropdown-menu">
+                             <li><a class="dropdown-item" href="#">Urologistin Islamabad </a></li>
+                             </ul>
+                             </li>
+
                             </div>
                         </div>
-                        <a href="contact.php" class="nav-item nav-link active">Contact</a>
+                        <a href="contact.php" class="nav-item nav-link">Contact</a>
                     </div>
                 </div>
             </nav>
@@ -211,12 +240,6 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Newsletter</h4>
-                    <form action="">
-                        <div class="input-group">
-                            <input type="text" class="form-control p-3 border-0" placeholder="Your Email Address">
-                            <button class="btn btn-primary">Sign Up</button>
-                        </div>
-                    </form>
                     <h6 class="text-primary text-uppercase mt-4 mb-3">Follow Us</h6>
                     <div class="d-flex">
                         <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-2" href="#"><i class="fab fa-twitter"></i></a>
@@ -259,6 +282,18 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script>
+  document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      let nextEl = this.nextElementSibling;
+      if (nextEl && nextEl.classList.contains('dropdown-menu')) {
+        nextEl.classList.toggle('show');
+      }
+    });
+  });
+</script>
 </body>
 
 </html>
