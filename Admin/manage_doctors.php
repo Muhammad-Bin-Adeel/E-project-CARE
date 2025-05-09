@@ -1,3 +1,35 @@
+<?php
+session_start();
+include("db.php");
+// Add doctor form handler
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_doctor'])) {
+    $name = $conn->real_escape_string($_POST['name']);
+    $hospital_name = $conn->real_escape_string($_POST['hospital_name']);
+    $phone = $conn->real_escape_string($_POST['phone']);
+    $specialization = $conn->real_escape_string($_POST['specialization']);
+    $city = $conn->real_escape_string($_POST['city']);
+    $days = $conn->real_escape_string($_POST['days']);
+    $timing = $conn->real_escape_string($_POST['timing']);
+    $experience = $conn->real_escape_string($_POST['experience']);
+    $description = $conn->real_escape_string($_POST['description']);
+
+    $conn->query("INSERT INTO doctors (name, hospital_name, phone, specialization, city, days, timing, experience, description)
+                  VALUES ('$name', '$hospital_name', '$phone', '$specialization', '$city', '$days', '$timing', '$experience', '$description')");
+}
+
+// Approve or delete
+if (isset($_GET['approve'])) {
+    $id = intval($_GET['approve']);
+    $conn->query("UPDATE doctors SET status='approved' WHERE id=$id");
+}
+if (isset($_GET['delete'])) {
+    $id = intval($_GET['delete']);
+    $conn->query("DELETE FROM doctors WHERE id=$id");
+}
+
+// Fetch all doctors
+$result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -362,7 +394,71 @@
         </div>
         
         <!-- Content Area - Empty now -->
-        <div class="content-wrapper">
+        <div class="container mt-5">
+        <h2 class="mb-4">Modify Doctors</h2>
+    </div>
+         <table>
+        <tbody>
+        <div class="table-container">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Name</th>
+                                <th>Hospital</th>
+                                <th>Specialization</th>
+                                <th>Phone</th>
+                                <th>City</th>
+                                <th>Days</th>
+                                <th>Timing</th>
+                                <th>Experience</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th style="width: 180px;">Actions</th>
+                            </tr>
+                        </thead>
+                       
+                  
+                </div>
+                <tbody>
+
+                            <?php if ($result->num_rows > 0): ?>
+                                <?php while ($row = $result->fetch_assoc()): ?>
+                                    <tr>
+                                        <td><?= $row['id'] ?></td>
+                                        <td><?= htmlspecialchars($row['name']) ?></td>
+                                        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
+                                        <td><?= htmlspecialchars($row['specialization']) ?></td>
+                                        <td><?= htmlspecialchars($row['phone']) ?></td>
+                                        <td><?= htmlspecialchars($row['city']) ?></td>
+                                        <td><?= htmlspecialchars($row['days']) ?></td>
+                                        <td><?= htmlspecialchars($row['timing']) ?></td>
+                                        <td><?= htmlspecialchars($row['experience']) ?></td>
+                                        <td><?= htmlspecialchars($row['description']) ?></td>
+                                        <td>
+                                            <span class="badge <?= $row['status'] === 'approved' ? 'badge-approved' : 'badge-pending' ?>">
+                                                <?= ucfirst($row['status']) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?php if ($row['status'] !== 'approved'): ?>
+                                                <a href="?approve=<?= $row['id'] ?>" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check"></i> Approve
+                                                </a>
+                                            <?php endif; ?>
+                                            <a href="?delete=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?')">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="12" class="text-center text-muted">No doctor records found.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                        </table>
             <!-- Content will be added here as needed -->
         </div>
     </div>

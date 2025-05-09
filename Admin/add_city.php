@@ -1,3 +1,31 @@
+<?php
+session_start();
+include("db.php");
+
+// Create city table if it doesn't exist
+$table = "CREATE TABLE IF NOT EXISTS city (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city_name VARCHAR(100) NOT NULL,
+    province VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+$conn->query($table);
+
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Add city form handler
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
+    $city_name = $conn->real_escape_string($_POST['city_name']);
+    $province = $conn->real_escape_string($_POST['province']);
+
+    $conn->query("INSERT INTO city (city_name, province) VALUES ('$city_name', '$province')");
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -361,8 +389,21 @@
             </div>
         </div>
         
-        <!-- Content Area - Empty now -->
-        <div class="content-wrapper">
+        <!-- Content Area - Empty now --> <div class="main-content">
+                <!-- Add city Form -->
+                <form method="POST" action="">
+    <div class="mb-3">
+        <label for="city_name" class="form-label">City Name</label>
+        <input type="text" class="form-control" id="city_name" name="city_name" required>
+    </div>
+    <div class="mb-3">
+        <label for="province" class="form-label">Province (optional)</label>
+        <input type="text" class="form-control" id="province" name="province">
+    </div>
+    <button type="submit" name="add_city" class="btn btn-primary">Add City</button>
+</form>
+            <!-- Content will be added here as needed -->
+        </div>
             <!-- Content will be added here as needed -->
         </div>
     </div>

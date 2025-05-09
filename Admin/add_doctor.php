@@ -639,7 +639,12 @@
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 
+=======
+ <!-- Doctor Table -->
+ 
+>>>>>>> 8e3076a73638e4464e7fa2529e8034171c96bbfe
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Toggle sidebar on mobile
