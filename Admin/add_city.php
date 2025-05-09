@@ -2,11 +2,12 @@
 session_start();
 include("db.php");
 
-// Create doctors table if not exists
+// Create city table if it doesn't exist
 $table = "CREATE TABLE IF NOT EXISTS city (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    city varchar(100)  NOT NULL 
+    city_name VARCHAR(100) NOT NULL,
+    province VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 $conn->query($table);
 
@@ -15,15 +16,16 @@ if (!isset($_SESSION['admin'])) {
     header("Location: login.php");
     exit;
 }
+
 // Add city form handler
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
-    $name = $conn->real_escape_string($_POST['name']);
-    $city = $conn->real_escape_string($_POST['city']);
-    $conn->query("INSERT INTO city (name, city)
-                  VALUES ('$name','$city')");
-}
+    $city_name = $conn->real_escape_string($_POST['city_name']);
+    $province = $conn->real_escape_string($_POST['province']);
 
+    $conn->query("INSERT INTO city (city_name, province) VALUES ('$city_name', '$province')");
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -388,26 +390,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
         </div>
         
         <!-- Content Area - Empty now --> <div class="main-content">
-                <!-- Add Doctor Form -->
-                <div class="card mb-4 p-4 shadow-sm rounded">
-                    <h5 class="mb-3 text-secondary">Add New city</h5>
-                    <form method="POST" action="">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <input type="text" name="name" class="form-control" placeholder="city Name" required>
-                            </div>
-                            
-                            <div class="col-md-4">
-                                <input type="text" name="city" class="form-control" placeholder="City" required>
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" name="add_doctor" class="btn btn-primary w-100">
-                                    <i class="fas fa-plus-circle"></i> Add city
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                <!-- Add city Form -->
+                <form method="POST" action="">
+    <div class="mb-3">
+        <label for="city_name" class="form-label">City Name</label>
+        <input type="text" class="form-control" id="city_name" name="city_name" required>
+    </div>
+    <div class="mb-3">
+        <label for="province" class="form-label">Province (optional)</label>
+        <input type="text" class="form-control" id="province" name="province">
+    </div>
+    <button type="submit" name="add_city" class="btn btn-primary">Add City</button>
+</form>
             <!-- Content will be added here as needed -->
         </div>
             <!-- Content will be added here as needed -->
