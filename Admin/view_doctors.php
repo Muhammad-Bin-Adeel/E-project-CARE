@@ -1,3 +1,18 @@
+<?php
+session_start();
+include("db.php");
+
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Fetch only approved doctors
+$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -362,7 +377,48 @@
         </div>
         
         <!-- Content Area - Empty now -->
-        <div class="content-wrapper">
+        <div class="container mt-5">
+    <h2 class="mb-4">Approved Doctors</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#ID</th>
+                <th>Name</th>
+                <th>Hospital</th>
+                <th>Specialization</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Days</th>
+                <th>Timing</th>
+                <th>Experience</th>
+                <th>Description</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <?php if ($result->num_rows > 0): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
+    <tr style="background-color: #e7f9f0;">
+        <td><?= $row['id'] ?></td>
+        <td><?= htmlspecialchars($row['name']) ?></td>
+        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
+        <td><?= htmlspecialchars($row['specialization']) ?></td>
+        <td><?= htmlspecialchars($row['phone']) ?></td>
+        <td><?= htmlspecialchars($row['city']) ?></td>
+        <td><?= htmlspecialchars($row['days']) ?></td>
+        <td><?= htmlspecialchars($row['timing']) ?></td>
+        <td><?= htmlspecialchars($row['experience']) ?></td>
+        <td><?= htmlspecialchars($row['description']) ?></td>
+    </tr>
+<?php endwhile; ?>
+
+            <?php else: ?>
+                <tr>
+                    <td colspan="10" class="text-center text-muted">No approved doctors found.</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
             <!-- Content will be added here as needed -->
         </div>
     </div>
