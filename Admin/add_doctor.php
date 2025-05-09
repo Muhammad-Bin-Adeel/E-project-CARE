@@ -464,64 +464,7 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
     </div>
 </div>
  <!-- Doctor Table -->
- <div class="table-container">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th>Name</th>
-                                <th>Hospital</th>
-                                <th>Specialization</th>
-                                <th>Phone</th>
-                                <th>City</th>
-                                <th>Days</th>
-                                <th>Timing</th>
-                                <th>Experience</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th style="width: 180px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($result->num_rows > 0): ?>
-                                <?php while ($row = $result->fetch_assoc()): ?>
-                                    <tr>
-                                        <td><?= $row['id'] ?></td>
-                                        <td><?= htmlspecialchars($row['name']) ?></td>
-                                        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
-                                        <td><?= htmlspecialchars($row['specialization']) ?></td>
-                                        <td><?= htmlspecialchars($row['phone']) ?></td>
-                                        <td><?= htmlspecialchars($row['city']) ?></td>
-                                        <td><?= htmlspecialchars($row['days']) ?></td>
-                                        <td><?= htmlspecialchars($row['timing']) ?></td>
-                                        <td><?= htmlspecialchars($row['experience']) ?></td>
-                                        <td><?= htmlspecialchars($row['description']) ?></td>
-                                        <td>
-                                            <span class="badge <?= $row['status'] === 'approved' ? 'badge-approved' : 'badge-pending' ?>">
-                                                <?= ucfirst($row['status']) ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <?php if ($row['status'] !== 'approved'): ?>
-                                                <a href="?approve=<?= $row['id'] ?>" class="btn btn-sm btn-success">
-                                                    <i class="fas fa-check"></i> Approve
-                                                </a>
-                                            <?php endif; ?>
-                                            <a href="?delete=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?')">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="12" class="text-center text-muted">No doctor records found.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-
+ 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Toggle sidebar on mobile
