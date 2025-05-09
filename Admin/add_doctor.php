@@ -1,65 +1,112 @@
-<?php
-session_start();
-include("db.php");
+ <?php
+            session_start();
+            include("db.php");
 
-// Create doctors table if not exists
-$table = "CREATE TABLE IF NOT EXISTS doctors (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    hospital_name VARCHAR(150),
-    phone VARCHAR(20),
-    specialization VARCHAR(100),
-    city VARCHAR(100),
-    days VARCHAR(100),
-    timing VARCHAR(100),
-    experience VARCHAR(100),
-    description TEXT,
-    status ENUM('pending', 'approved') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
-$conn->query($table);
+            // Table create karo agar nahi bani
+            $conn->query("CREATE TABLE IF NOT EXISTS doctors (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100),
+                hospital_name VARCHAR(150),
+                phone VARCHAR(20),
+                specialization VARCHAR(100),
+                city VARCHAR(100),
+                days VARCHAR(100),
+                timing VARCHAR(100),
+                experience VARCHAR(100),
+                description TEXT,
+                image VARCHAR(255),
+                status ENUM('pending','approved') DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )");
 
-// Redirect if not logged in
-if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
-    exit;
-}
+            // Agar login nahi hua to redirect
+            if (!isset($_SESSION['admin'])) {
+                header("Location: login.php");
+                exit;
+            }
 
-// Add doctor form handler
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_doctor'])) {
-    $name = $conn->real_escape_string($_POST['name']);
-    $hospital_name = $conn->real_escape_string($_POST['hospital_name']);
-    $phone = $conn->real_escape_string($_POST['phone']);
-    $specialization = $conn->real_escape_string($_POST['specialization']);
-    $city = $conn->real_escape_string($_POST['city']);
-    $days = $conn->real_escape_string($_POST['days']);
-    $timing = $conn->real_escape_string($_POST['timing']);
-    $experience = $conn->real_escape_string($_POST['experience']);
-    $description = $conn->real_escape_string($_POST['description']);
+            // Add ya update doctor
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $id = $_POST['id'] ?? '';
+                $name = $conn->real_escape_string($_POST['name']);
+                $hospital = $conn->real_escape_string($_POST['hospital_name']);
+                $phone = $conn->real_escape_string($_POST['phone']);
+                $spec = $conn->real_escape_string($_POST['specialization']);
+                $city = $conn->real_escape_string($_POST['city']);
+                $days = $conn->real_escape_string($_POST['days']);
+                $timing = $conn->real_escape_string($_POST['timing']);
+                $exp = $conn->real_escape_string($_POST['experience']);
+                $desc = $conn->real_escape_string($_POST['description']);
 
-    $conn->query("INSERT INTO doctors (name, hospital_name, phone, specialization, city, days, timing, experience, description)
-                  VALUES ('$name', '$hospital_name', '$phone', '$specialization', '$city', '$days', '$timing', '$experience', '$description')");
-}
+                $imagePath = '';
+                if (!empty($_FILES['image']['name'])) {
+                    $targetDir = "uploads/";
+                    if (!file_exists($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $imagePath = $targetDir . basename($_FILES['image']['name']);
+                    move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+                }
 
-// Approve or delete
-if (isset($_GET['approve'])) {
-    $id = intval($_GET['approve']);
-    $conn->query("UPDATE doctors SET status='approved' WHERE id=$id");
-}
-if (isset($_GET['delete'])) {
-    $id = intval($_GET['delete']);
-    $conn->query("DELETE FROM doctors WHERE id=$id");
-}
+                if ($id) {
+                    // Update
+                    $query = "UPDATE doctors SET name='$name', hospital_name='$hospital', phone='$phone',
+                              specialization='$spec', city='$city', days='$days', timing='$timing',
+                              experience='$exp', description='$desc'";
+                    if ($imagePath) $query .= ", image='$imagePath'";
+                    $query .= " WHERE id=$id";
+                    $conn->query($query);
+                    $_SESSION['message'] = "Doctor updated successfully!";
+                } else {
+                    // Insert
+                    $conn->query("INSERT INTO doctors (name, hospital_name, phone, specialization, city, days, timing, experience, description, image)
+                                  VALUES ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath')");
+                    $_SESSION['message'] = "Doctor added successfully!";
+                }
+                header("Location: manage_doctors.php");
+                exit;
+            }
 
-// Fetch all doctors
-$result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
-?>
+            // Approve
+            if (isset($_GET['approve'])) {
+                $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
+                $_SESSION['message'] = "Doctor approved successfully!";
+                header("Location: manage_doctors.php");
+                exit;
+            }
+
+            // Delete
+            if (isset($_GET['delete'])) {
+                $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
+                $_SESSION['message'] = "Doctor deleted successfully!";
+                header("Location: manage_doctors.php");
+                exit;
+            }
+
+            // Edit
+            $edit = null;
+            if (isset($_GET['edit'])) {
+                $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
+                if ($res->num_rows) $edit = $res->fetch_assoc();
+            }
+
+            // Fetch
+            $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
+            ?>
+
+            <?php if (isset($_SESSION['message'])): ?>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <?= $_SESSION['message'] ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php unset($_SESSION['message']); ?>
+            <?php endif; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Medinova</title>
+    <title>Doctor Management - Medinova</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -226,6 +273,32 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
             padding: 20px;
         }
         
+        /* Doctor Management Styles */
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .doctor-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .status-pending {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .status-approved {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
         /* Dropdown Animation */
         .collapse:not(.show) {
             display: none;
@@ -275,7 +348,7 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
             <!-- Dashboard Section -->
             <div class="sidebar-section">
                 <div class="section-title">Dashboard</div>
-                <a href="dashboard.php" class="nav-link active">
+                <a href="dashboard.php" class="nav-link">
                     <i class="fas fa-chart-pie"></i>
                     <span>Overview</span>
                 </a>
@@ -308,7 +381,7 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                     <span>Doctors</span>
                     <i class="fas fa-angle-down ms-auto" id="doctorsCollapseIcon"></i>
                 </div>
-                <div class="collapse" id="doctorsCollapse">
+                <div class="collapse show" id="doctorsCollapse">
                     <a href="add_doctor.php" class="nav-link ps-4">
                         <i class="fas fa-plus-circle"></i>
                         <span>Add Doctor</span>
@@ -317,7 +390,7 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                         <i class="fas fa-list"></i>
                         <span>View Doctors</span>
                     </a>
-                    <a href="manage_doctors.php" class="nav-link ps-4">
+                    <a href="manage_doctors.php" class="nav-link ps-4 active">
                         <i class="fas fa-edit"></i>
                         <span>Modify Doctors</span>
                     </a>
@@ -389,7 +462,7 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
             <button class="btn btn-sm btn-outline-light d-lg-none" id="sidebarToggle">
                 <i class="fas fa-bars"></i>
             </button>
-            <h4 class="page-title">Admin Dashboard</h4>
+            <h4 class="page-title">Doctor Management</h4>
             
             <div class="d-flex align-items-center">
                 <div class="search-bar">
@@ -417,110 +490,155 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
             </div>
         </div>
         
-        <!-- Content Area - Empty now -->
-        <div class="main-content">
-                <!-- Add Doctor Form -->
-                <div class="card mb-4 p-4 shadow-sm rounded">
-                    <h5 class="mb-3 text-secondary">Add New Doctor</h5>
-                    <form method="POST" action="">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <input type="text" name="name" class="form-control" placeholder="Doctor's Name" required>
+        <!-- Content Area -->
+        <div class="content-wrapper">
+           
+
+            <div class="row">
+                <!-- Add/Edit Form -->
+                <div class="col-md-5">
+                    <div class="form-container">
+                        <h4><i class="fas fa-user-md me-2"></i> <?= isset($edit) ? 'Edit Doctor' : 'Add New Doctor' ?></h4>
+                        <form method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="id" value="<?= $edit['id'] ?? '' ?>">
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="name" class="form-control" required 
+                                       value="<?= htmlspecialchars($edit['name'] ?? '') ?>">
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" name="hospital_name" class="form-control" placeholder="Hospital Name" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Hospital/Clinic Name</label>
+                                <input type="text" name="hospital_name" class="form-control" 
+                                       value="<?= htmlspecialchars($edit['hospital_name'] ?? '') ?>">
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" name="phone" class="form-control" placeholder="Phone" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" 
+                                       value="<?= htmlspecialchars($edit['phone'] ?? '') ?>">
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" name="specialization" class="form-control" placeholder="Specialization" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Specialization</label>
+                                <input type="text" name="specialization" class="form-control" required 
+                                       value="<?= htmlspecialchars($edit['specialization'] ?? '') ?>">
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" name="city" class="form-control" placeholder="City" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">City</label>
+                                <input type="text" name="city" class="form-control" required 
+                                       value="<?= htmlspecialchars($edit['city'] ?? '') ?>">
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" name="days" class="form-control" placeholder="Available Days (e.g., Mon-Fri)" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Available Days</label>
+                                <input type="text" name="days" class="form-control" 
+                                       value="<?= htmlspecialchars($edit['days'] ?? '') ?>" 
+                                       placeholder="e.g., Monday-Friday">
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" name="timing" class="form-control" placeholder="Timing (e.g., 10AM - 2PM)" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Timing</label>
+                                <input type="text" name="timing" class="form-control" 
+                                       value="<?= htmlspecialchars($edit['timing'] ?? '') ?>" 
+                                       placeholder="e.g., 9:00 AM - 5:00 PM">
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" name="experience" class="form-control" placeholder="Experience (e.g., 5 Years)" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Experience</label>
+                                <input type="text" name="experience" class="form-control" 
+                                       value="<?= htmlspecialchars($edit['experience'] ?? '') ?>" 
+                                       placeholder="e.g., 10 years">
                             </div>
-                            <div class="col-md-12">
-                                <textarea name="description" class="form-control" rows="3" placeholder="Brief Description" required></textarea>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" class="form-control" rows="3"><?= htmlspecialchars($edit['description'] ?? '') ?></textarea>
                             </div>
-                            <div class="col-md-4">
-                                <button type="submit" name="add_doctor" class="btn btn-primary w-100">
-                                    <i class="fas fa-plus-circle"></i> Add Doctor
-                                </button>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Doctor Image</label>
+                                <input type="file" name="image" class="form-control">
+                                <?php if (isset($edit) && !empty($edit['image'])): ?>
+                                    <img src="<?= $edit['image'] ?>" class="doctor-image mt-2">
+                                <?php endif; ?>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> <?= isset($edit) ? 'Update' : 'Save' ?>
+                            </button>
+                            
+                            <?php if (isset($edit)): ?>
+                                <a href="manage_doctors.php" class="btn btn-secondary">Cancel</a>
+                            <?php endif; ?>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Doctors List -->
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0"><i class="fas fa-list me-2"></i> Doctors List</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Image</th>
+                                            <th>Name</th>
+                                            <th>Specialization</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php while ($doctor = $doctors->fetch_assoc()): ?>
+                                            <tr>
+                                                <td><?= $doctor['id'] ?></td>
+                                                <td>
+                                                    <?php if (!empty($doctor['image'])): ?>
+                                                        <img src="<?= $doctor['image'] ?>" class="doctor-image">
+                                                    <?php else: ?>
+                                                        <i class="fas fa-user-md fa-2x text-muted"></i>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?= htmlspecialchars($doctor['name']) ?></td>
+                                                <td><?= htmlspecialchars($doctor['specialization']) ?></td>
+                                                <td>
+                                                    <span class="status-<?= $doctor['status'] ?>">
+                                                        <?= ucfirst($doctor['status']) ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <?php if ($doctor['status'] == 'pending'): ?>
+                                                        <a href="?approve=<?= $doctor['id'] ?>" class="btn btn-sm btn-success" title="Approve">
+                                                            <i class="fas fa-check"></i>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <a href="?edit=<?= $doctor['id'] ?>" class="btn btn-sm btn-info" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="?delete=<?= $doctor['id'] ?>" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this doctor?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            <!-- Content will be added here as needed -->
+            </div>
         </div>
     </div>
 </div>
- <!-- Doctor Table -->
- <div class="table-container">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th>Name</th>
-                                <th>Hospital</th>
-                                <th>Specialization</th>
-                                <th>Phone</th>
-                                <th>City</th>
-                                <th>Days</th>
-                                <th>Timing</th>
-                                <th>Experience</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th style="width: 180px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($result->num_rows > 0): ?>
-                                <?php while ($row = $result->fetch_assoc()): ?>
-                                    <tr>
-                                        <td><?= $row['id'] ?></td>
-                                        <td><?= htmlspecialchars($row['name']) ?></td>
-                                        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
-                                        <td><?= htmlspecialchars($row['specialization']) ?></td>
-                                        <td><?= htmlspecialchars($row['phone']) ?></td>
-                                        <td><?= htmlspecialchars($row['city']) ?></td>
-                                        <td><?= htmlspecialchars($row['days']) ?></td>
-                                        <td><?= htmlspecialchars($row['timing']) ?></td>
-                                        <td><?= htmlspecialchars($row['experience']) ?></td>
-                                        <td><?= htmlspecialchars($row['description']) ?></td>
-                                        <td>
-                                            <span class="badge <?= $row['status'] === 'approved' ? 'badge-approved' : 'badge-pending' ?>">
-                                                <?= ucfirst($row['status']) ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <?php if ($row['status'] !== 'approved'): ?>
-                                                <a href="?approve=<?= $row['id'] ?>" class="btn btn-sm btn-success">
-                                                    <i class="fas fa-check"></i> Approve
-                                                </a>
-                                            <?php endif; ?>
-                                            <a href="?delete=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?')">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="12" class="text-center text-muted">No doctor records found.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
