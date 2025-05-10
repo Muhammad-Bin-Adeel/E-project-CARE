@@ -1,3 +1,17 @@
+<?php
+session_start();
+include("db.php");
+
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: login.php");
+    exit;
+} 
+
+// Fetch only approved doctors
+$result = $conn->query("SELECT * FROM city ORDER BY id DESC");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -362,7 +376,34 @@
         </div>
         
         <!-- Content Area - Empty now -->
-        <div class="content-wrapper">
+        <h2 style="text-align: center;">City List</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>City Name</th>
+            <th>province</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if ($result && $result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['id']); ?></td>
+                    <td><?php echo htmlspecialchars($row['city_name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['province']); ?></td>
+                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="3">No cities found.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
             <!-- Content will be added here as needed -->
         </div>
     </div>

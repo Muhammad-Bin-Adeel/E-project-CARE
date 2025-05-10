@@ -382,7 +382,9 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
     <table class="table table-bordered">
         <thead>
             <tr>
+               
                 <th>#ID</th>
+                <th>Image</th>
                 <th>Name</th>
                 <th>Hospital</th>
                 <th>Specialization</th>
@@ -400,6 +402,13 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                 <?php while ($row = $result->fetch_assoc()): ?>
     <tr style="background-color: #e7f9f0;">
         <td><?= $row['id'] ?></td>
+        <td>
+             <?php if (!empty($doctor['image'])): ?>
+         <img src="<?= $doctor['image'] ?>" class="doctor-image">
+         <?php else: ?>
+          <i class="fas fa-user-md fa-2x text-muted"></i>
+           <?php endif; ?>
+                                                </td>
         <td><?= htmlspecialchars($row['name']) ?></td>
         <td><?= htmlspecialchars($row['hospital_name']) ?></td>
         <td><?= htmlspecialchars($row['specialization']) ?></td>
