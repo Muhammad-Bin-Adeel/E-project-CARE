@@ -273,31 +273,10 @@
             padding: 20px;
         }
         
-        /* Doctor Management Styles */
-        .form-container {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
+       
         
-        .doctor-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
         
-        .status-pending {
-            color: #ffc107;
-            font-weight: bold;
-        }
         
-        .status-approved {
-            color: #28a745;
-            font-weight: bold;
-        }
         
         /* Dropdown Animation */
         .collapse:not(.show) {
@@ -578,64 +557,8 @@
                     </div>
                 </div>
                 
-                <!-- Doctors List -->
-                <div class="col-md-7">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0"><i class="fas fa-list me-2"></i> Doctors List</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
-                                            <th>Specialization</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php while ($doctor = $doctors->fetch_assoc()): ?>
-                                            <tr>
-                                                <td><?= $doctor['id'] ?></td>
-                                                <td>
-                                                    <?php if (!empty($doctor['image'])): ?>
-                                                        <img src="<?= $doctor['image'] ?>" class="doctor-image">
-                                                    <?php else: ?>
-                                                        <i class="fas fa-user-md fa-2x text-muted"></i>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><?= htmlspecialchars($doctor['name']) ?></td>
-                                                <td><?= htmlspecialchars($doctor['specialization']) ?></td>
-                                                <td>
-                                                    <span class="status-<?= $doctor['status'] ?>">
-                                                        <?= ucfirst($doctor['status']) ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <?php if ($doctor['status'] == 'pending'): ?>
-                                                        <a href="?approve=<?= $doctor['id'] ?>" class="btn btn-sm btn-success" title="Approve">
-                                                            <i class="fas fa-check"></i>
-                                                        </a>
-                                                    <?php endif; ?>
-                                                    <a href="?edit=<?= $doctor['id'] ?>" class="btn btn-sm btn-info" title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <a href="?delete=<?= $doctor['id'] ?>" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this doctor?')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        <?php endwhile; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               
+                
             </div>
         </div>
     </div>

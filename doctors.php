@@ -2,11 +2,7 @@
 session_start();
 include("db.php");
 
-// Redirect if not logged in
-if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
-    exit;
-}
+
 
 // Fetch only approved doctors
 $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
@@ -96,7 +92,7 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                         <a href="index.php" class="nav-item nav-link active">Home</a>
                         <a href="about.php" class="nav-item nav-link">About</a>
                         <a href="service.php" class="nav-item nav-link">Service</a>
-                        <a href="#" class="nav-item nav-link">Pricing</a>
+                        <a href="doctors.php" class="nav-item nav-link">Doctor</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu m-0">
@@ -157,7 +153,24 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         </tbody>
     </table>
 
-      <!-- Footer Start -->
+      
+      <!-- Back to Top -->
+      <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="lib/easing/easing.min.js"></script>
+<script src="lib/waypoints/waypoints.min.js"></script>
+<script src="lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="lib/tempusdominus/js/moment.min.js"></script>
+<script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+<script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<!-- Template Javascript -->
+<script src="js/main.js"></script>
+<!-- Footer Start -->
       <div class="container-fluid bg-dark text-light mt-5 py-5">
         <div class="container py-5">
             <div class="row g-5">
@@ -222,22 +235,6 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         </div>
     </div>
     <!-- Footer End -->
-      <!-- Back to Top -->
-      <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="lib/easing/easing.min.js"></script>
-<script src="lib/waypoints/waypoints.min.js"></script>
-<script src="lib/owlcarousel/owl.carousel.min.js"></script>
-<script src="lib/tempusdominus/js/moment.min.js"></script>
-<script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-<script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-
-<!-- Template Javascript -->
-<script src="js/main.js"></script>
 </body>
 
 </html>
