@@ -1,106 +1,118 @@
- <?php
-            session_start();
-            include("db.php");
+<?php
+session_start();
+include("db.php");
 
-            // Table create karo agar nahi bani
-            $conn->query("CREATE TABLE IF NOT EXISTS doctors (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100),
-                hospital_name VARCHAR(150),
-                phone VARCHAR(20),
-                specialization VARCHAR(100),
-                city VARCHAR(100),
-                days VARCHAR(100),
-                timing VARCHAR(100),
-                experience VARCHAR(100),
-                description TEXT,
-                image VARCHAR(255),
-                status ENUM('pending','approved') DEFAULT 'pending',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )");
+// Add new columns if not already added
+$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS location VARCHAR(255)");
+$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS address TEXT");
+$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS degree VARCHAR(255)");
 
-            // Agar login nahi hua to redirect
-            if (!isset($_SESSION['admin'])) {
-                header("Location: login.php");
-                exit;
-            }
+// Create table if not exists (with address and degree)
+$conn->query("CREATE TABLE IF NOT EXISTS doctors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    hospital_name VARCHAR(150),
+    phone VARCHAR(20),
+    specialization VARCHAR(100),
+    city VARCHAR(100),
+    days VARCHAR(100),
+    timing VARCHAR(100),
+    experience VARCHAR(100),
+    description TEXT,
+    image VARCHAR(255),
+    location VARCHAR(255),
+    address TEXT,
+    degree VARCHAR(255),
+    status ENUM('pending','approved') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
 
-            // Add ya update doctor
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $id = $_POST['id'] ?? '';
-                $name = $conn->real_escape_string($_POST['name']);
-                $hospital = $conn->real_escape_string($_POST['hospital_name']);
-                $phone = $conn->real_escape_string($_POST['phone']);
-                $spec = $conn->real_escape_string($_POST['specialization']);
-                $city = $conn->real_escape_string($_POST['city']);
-                $days = $conn->real_escape_string($_POST['days']);
-                $timing = $conn->real_escape_string($_POST['timing']);
-                $exp = $conn->real_escape_string($_POST['experience']);
-                $desc = $conn->real_escape_string($_POST['description']);
+if (!isset($_SESSION['admin'])) {
+    header("Location: login.php");
+    exit;
+}
 
-                $imagePath = '';
-                if (!empty($_FILES['image']['name'])) {
-                    $targetDir = "uploads/";
-                    if (!file_exists($targetDir)) {
-                        mkdir($targetDir, 0777, true);
-                    }
-                    $imagePath = $targetDir . basename($_FILES['image']['name']);
-                    move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
-                }
+// Add or update doctor
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_POST['id'] ?? '';
+    $name = $conn->real_escape_string($_POST['name']);
+    $hospital = $conn->real_escape_string($_POST['hospital_name']);
+    $phone = $conn->real_escape_string($_POST['phone']);
+    $spec = $conn->real_escape_string($_POST['specialization']);
+    $city = $conn->real_escape_string($_POST['city']);
+    $days = $conn->real_escape_string($_POST['days']);
+    $timing = $conn->real_escape_string($_POST['timing']);
+    $exp = $conn->real_escape_string($_POST['experience']);
+    $desc = $conn->real_escape_string($_POST['description']);
+    $location = $conn->real_escape_string($_POST['location']);
+    $address = $conn->real_escape_string($_POST['address']);
+    $degree = $_POST['degree'] === 'Other'
+    ? $conn->real_escape_string($_POST['other_degree'])
+    : $conn->real_escape_string($_POST['degree']);
 
-                if ($id) {
-                    // Update
-                    $query = "UPDATE doctors SET name='$name', hospital_name='$hospital', phone='$phone',
-                              specialization='$spec', city='$city', days='$days', timing='$timing',
-                              experience='$exp', description='$desc'";
-                    if ($imagePath) $query .= ", image='$imagePath'";
-                    $query .= " WHERE id=$id";
-                    $conn->query($query);
-                    $_SESSION['message'] = "Doctor updated successfully!";
-                } else {
-                    // Insert
-                    $conn->query("INSERT INTO doctors (name, hospital_name, phone, specialization, city, days, timing, experience, description, image)
-                                  VALUES ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath')");
-                    $_SESSION['message'] = "Doctor added successfully!";
-                }
-                header("Location: manage_doctors.php");
-                exit;
-            }
+    $imagePath = '';
+    if (!empty($_FILES['image']['name'])) {
+        $targetDir = "uploads/";
+        if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
+        $imagePath = $targetDir . basename($_FILES['image']['name']);
+        move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+    }
 
-            // Approve
-            if (isset($_GET['approve'])) {
-                $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
-                $_SESSION['message'] = "Doctor approved successfully!";
-                header("Location: manage_doctors.php");
-                exit;
-            }
+    if ($id) {
+        $query = "UPDATE doctors SET 
+                    name='$name', hospital_name='$hospital', phone='$phone',
+                    specialization='$spec', city='$city', days='$days',
+                    timing='$timing', experience='$exp', description='$desc',
+                    location='$location', address='$address', degree='$degree'";
+        if ($imagePath) $query .= ", image='$imagePath'";
+        $query .= " WHERE id=$id";
+        $conn->query($query);
+        $_SESSION['message'] = "Doctor updated successfully!";
+    } else {
+        $conn->query("INSERT INTO doctors 
+            (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree) 
+            VALUES 
+            ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree')");
+        $_SESSION['message'] = "Doctor added successfully!";
+    }
+    header("Location: manage_doctors.php");
+    exit;
+}
 
-            // Delete
-            if (isset($_GET['delete'])) {
-                $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
-                $_SESSION['message'] = "Doctor deleted successfully!";
-                header("Location: manage_doctors.php");
-                exit;
-            }
+// Approve
+if (isset($_GET['approve'])) {
+    $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
+    $_SESSION['message'] = "Doctor approved successfully!";
+    header("Location: manage_doctors.php");
+    exit;
+}
 
-            // Edit
-            $edit = null;
-            if (isset($_GET['edit'])) {
-                $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
-                if ($res->num_rows) $edit = $res->fetch_assoc();
-            }
+// Delete
+if (isset($_GET['delete'])) {
+    $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
+    $_SESSION['message'] = "Doctor deleted successfully!";
+    header("Location: manage_doctors.php");
+    exit;
+}
 
-            // Fetch
-            $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
-            ?>
+// Edit
+$edit = null;
+if (isset($_GET['edit'])) {
+    $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
+    if ($res->num_rows) $edit = $res->fetch_assoc();
+}
 
-            <?php if (isset($_SESSION['message'])): ?>
-                <div class="alert alert-success alert-dismissible fade show">
-                    <?= $_SESSION['message'] ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <?php unset($_SESSION['message']); ?>
-            <?php endif; ?>
+// Fetch all
+$doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
+?>
+
+<!-- Messages -->
+<?php if (isset($_SESSION['message'])): ?>
+<div class="alert alert-success">
+    <?= $_SESSION['message'] ?>
+    <?php unset($_SESSION['message']); ?>
+</div>
+<?php endif; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -218,7 +230,7 @@
         }
         
         /* Search Bar */
-        .search-bar {
+         .search-bar {
             position: relative;
             width: 220px;
             margin: 0 15px;
@@ -269,11 +281,91 @@
         }
         
         /* Content Area */
-        .content-wrapper {
-            padding: 20px;
-        }
-        
        
+        .card {
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background-color: var(--light);
+  font-family: "Segoe UI", sans-serif;
+  color: var(--dark);
+  
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.form-control {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.form-actions {
+  text-align: right;
+}
+
+.form-actions button {
+  background-color: var(--primary);
+  border: none;
+  padding: 10px 25px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-actions button:hover {
+  background-color: var(--secondary);
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .form-actions {
+    text-align: center;
+  }
+}
+    
+/* Alert Box */
+.alert {
+    padding: 20px;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.alert button {
+    background: none;
+    color: white;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
         
         
         
@@ -471,96 +563,114 @@
         
         <!-- Content Area -->
         <div class="content-wrapper">
-           
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow p-4">
+        <h4 class="mb-4 text-primary">
+          <i class="fas fa-user-md me-2"></i> <?= isset($edit) ? 'Edit Doctor' : 'Add New Doctor' ?>
+        </h4>
 
-            <div class="row">
-                <!-- Add/Edit Form -->
-                <div class="col-md-5">
-                    <div class="form-container">
-                        <h4><i class="fas fa-user-md me-2"></i> <?= isset($edit) ? 'Edit Doctor' : 'Add New Doctor' ?></h4>
-                        <form method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="id" value="<?= $edit['id'] ?? '' ?>">
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" name="name" class="form-control" required 
-                                       value="<?= htmlspecialchars($edit['name'] ?? '') ?>">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Hospital/Clinic Name</label>
-                                <input type="text" name="hospital_name" class="form-control" 
-                                       value="<?= htmlspecialchars($edit['hospital_name'] ?? '') ?>">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Phone Number</label>
-                                <input type="tel" name="phone" class="form-control" 
-                                       value="<?= htmlspecialchars($edit['phone'] ?? '') ?>">
-                            </div>
-                      
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Specialization</label>
-                                <input type="text" name="specialization" class="form-control" required 
-                                       value="<?= htmlspecialchars($edit['specialization'] ?? '') ?>">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">City</label>
-                                <input type="text" name="city" class="form-control" required 
-                                       value="<?= htmlspecialchars($edit['city'] ?? '') ?>">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Available Days</label>
-                                <input type="text" name="days" class="form-control" 
-                                       value="<?= htmlspecialchars($edit['days'] ?? '') ?>" 
-                                       placeholder="e.g., Monday-Friday">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Timing</label>
-                                <input type="text" name="timing" class="form-control" 
-                                       value="<?= htmlspecialchars($edit['timing'] ?? '') ?>" 
-                                       placeholder="e.g., 9:00 AM - 5:00 PM">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Experience</label>
-                                <input type="text" name="experience" class="form-control" 
-                                       value="<?= htmlspecialchars($edit['experience'] ?? '') ?>" 
-                                       placeholder="e.g., 10 years">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Description</label>
-                                <textarea name="description" class="form-control" rows="3"><?= htmlspecialchars($edit['description'] ?? '') ?></textarea>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Doctor Image</label>
-                                <input type="file" name="image" class="form-control">
-                                <?php if (isset($edit) && !empty($edit['image'])): ?>
-                                    <img src="<?= $edit['image'] ?>" class="doctor-image mt-2">
-                                <?php endif; ?>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i> <?= isset($edit) ? 'Update' : 'Save' ?>
-                            </button>
-                            
-                            <?php if (isset($edit)): ?>
-                                <a href="manage_doctors.php" class="btn btn-secondary">Cancel</a>
-                            <?php endif; ?>
-                        </form>
-                    </div>
-                </div>
-                
-               
-                
+        <form method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="id" value="<?= $edit['id'] ?? '' ?>">
+
+          <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Name:</label>
+      <input type="text" name="name" class="form-control" value="<?= $edit['name'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Hospital Name:</label>
+      <input type="text" name="hospital_name" class="form-control" value="<?= $edit['hospital_name'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone:</label>
+      <input type="text" name="phone" class="form-control" value="<?= $edit['phone'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Specialization:</label>
+      <input type="text" name="specialization" class="form-control" value="<?= $edit['specialization'] ?? '' ?>" required>
+    </div>
+
+        <div class="form-group">
+    <label for="degree">Degree</label>
+    <select name="degree" id="degree" class="form-control" required onchange="toggleOtherDegree(this)">
+        <option value="">-- Select Degree --</option>
+        <option value="MBBS" <?= isset($edit['degree']) && $edit['degree'] == 'MBBS' ? 'selected' : '' ?>>MBBS</option>
+        <option value="MD" <?= isset($edit['degree']) && $edit['degree'] == 'MD' ? 'selected' : '' ?>>MD (Doctor of Medicine)</option>
+        <option value="MS" <?= isset($edit['degree']) && $edit['degree'] == 'MS' ? 'selected' : '' ?>>MS (Master of Surgery)</option>
+        <option value="BDS" <?= isset($edit['degree']) && $edit['degree'] == 'BDS' ? 'selected' : '' ?>>BDS (Dental)</option>
+        <option value="MDS" <?= isset($edit['degree']) && $edit['degree'] == 'MDS' ? 'selected' : '' ?>>MDS (Dental Surgery)</option>
+        <option value="BHMS" <?= isset($edit['degree']) && $edit['degree'] == 'BHMS' ? 'selected' : '' ?>>BHMS (Homeopathy)</option>
+        <option value="BAMS" <?= isset($edit['degree']) && $edit['degree'] == 'BAMS' ? 'selected' : '' ?>>BAMS (Ayurveda)</option>
+        <option value="DNB" <?= isset($edit['degree']) && $edit['degree'] == 'DNB' ? 'selected' : '' ?>>DNB</option>
+        <option value="PhD" <?= isset($edit['degree']) && $edit['degree'] == 'PhD' ? 'selected' : '' ?>>PhD</option>
+        <option value="Other" <?= isset($edit['degree']) && !in_array($edit['degree'], ['MBBS','MD','MS','BDS','MDS','BHMS','BAMS','DNB','PhD']) ? 'selected' : '' ?>>Other</option>
+    </select>
+</div>
+
+<div class="form-group" id="other-degree-group" style="display: none;">
+    <label for="other_degree">Please specify</label>
+    <input type="text" name="other_degree" id="other_degree" class="form-control"
+           value="<?= (!in_array($edit['degree'] ?? '', ['MBBS','MD','MS','BDS','MDS','BHMS','BAMS','DNB','PhD']) && isset($edit['degree'])) ? $edit['degree'] : '' ?>">
+</div>
+    
+    <div class="form-group">
+      <label class="form-label">City:</label>
+      <input type="text" name="city" class="form-control" value="<?= $edit['city'] ?? '' ?>" required>
+    </div>
+    
+
+    <div class="form-group">
+      <label class="form-label">Days:</label>
+      <input type="text" name="days" class="form-control" value="<?= $edit['days'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Timing:</label>
+      <input type="text" name="timing" class="form-control" value="<?= $edit['timing'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Experience:</label>
+      <input type="text" name="experience" class="form-control" value="<?= $edit['experience'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group full-width">
+      <label class="form-label">Description:</label>
+      <textarea name="description" class="form-control"><?= $edit['description'] ?? '' ?></textarea>
+    </div>
+
+    <div class="form-group">
+    <label for="address">Full Address</label>
+    <textarea name="address" id="address" class="form-control"><?= $edit['address'] ?? '' ?></textarea>
+</div>
+
+    <div class="form-group full-width">
+      <label class="form-label">Image:</label>
+      <input type="file" name="image" class="form-control">
+    </div>
+    <div class="form-group full-width">
+              <label class="form-label">Location (Google Maps)</label>
+              <input type="text" name="location" class="form-control" value="<?= $edit['location'] ?? '' ?>" required>
             </div>
-        </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Image</label>
+              <input type="file" name="image" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-actions text-end mt-4">
+            <button type="submit" class="btn btn-primary px-4">Save Doctor</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -675,6 +785,30 @@
             document.querySelector('a[href="dashboard.php"]').classList.add('active');
         }
     });
+    function initAutocomplete() {
+        const input = document.getElementById('location-input');
+        new google.maps.places.Autocomplete(input);
+    }
+    google.maps.event.addDomListener(window, 'load', initAutocomplete);
+    
+</script>
+<script>
+function toggleOtherDegree(select) {
+    const otherField = document.getElementById('other-degree-group');
+    if (select.value === 'Other') {
+        otherField.style.display = 'block';
+        document.getElementById('other_degree').setAttribute('required', 'required');
+    } else {
+        otherField.style.display = 'none';
+        document.getElementById('other_degree').removeAttribute('required');
+    }
+}
+
+// Initialize on page load in case "Other" is already selected
+window.onload = function () {
+    const degreeSelect = document.getElementById('degree');
+    toggleOtherDegree(degreeSelect);
+};
 </script>
 </body>
 </html>
