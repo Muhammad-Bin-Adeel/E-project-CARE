@@ -1,34 +1,30 @@
 <?php
 session_start();
 include("db.php");
-// Add doctor form handler
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_doctor'])) {
-    $name = $conn->real_escape_string($_POST['name']);
-    $hospital_name = $conn->real_escape_string($_POST['hospital_name']);
-    $phone = $conn->real_escape_string($_POST['phone']);
-    $specialization = $conn->real_escape_string($_POST['specialization']);
-    $city = $conn->real_escape_string($_POST['city']);
-    $days = $conn->real_escape_string($_POST['days']);
-    $timing = $conn->real_escape_string($_POST['timing']);
-    $experience = $conn->real_escape_string($_POST['experience']);
-    $description = $conn->real_escape_string($_POST['description']);
 
-    $conn->query("INSERT INTO doctors (name, hospital_name, phone, specialization, city, days, timing, experience, description)
-                  VALUES ('$name', '$hospital_name', '$phone', '$specialization', '$city', '$days', '$timing', '$experience', '$description')");
+if (!isset($_SESSION['admin'])) {
+    header("Location: login.php");
+    exit;
 }
 
-// Approve or delete
+// Approve
 if (isset($_GET['approve'])) {
-    $id = intval($_GET['approve']);
-    $conn->query("UPDATE doctors SET status='approved' WHERE id=$id");
+    $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
+    $_SESSION['message'] = "Doctor approved successfully!";
+    header("Location: manage_doctors.php");
+    exit;
 }
+
+// Delete
 if (isset($_GET['delete'])) {
-    $id = intval($_GET['delete']);
-    $conn->query("DELETE FROM doctors WHERE id=$id");
+    $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
+    $_SESSION['message'] = "Doctor deleted successfully!";
+    header("Location: manage_doctors.php");
+    exit;
 }
 
 // Fetch all doctors
-$result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
+$doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -201,6 +197,92 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         .content-wrapper {
             padding: 20px;
         }
+
+        .table-wrapper {
+        background-color: var(--light);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1200px;
+    }
+
+    thead {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    th, td {
+        padding: 12px 10px;
+        text-align: center;
+        vertical-align: middle;
+        border: 1px solid #ddd;
+        font-size: 14px;
+    }
+
+    tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn {
+        padding: 5px 10px;
+        font-size: 13px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-approve {
+        background-color: var(--success);
+        color: white;
+    }
+
+    .btn-edit {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .btn-delete {
+        background-color: var(--danger);
+        color: white;
+    }
+
+    .badge {
+        padding: 5px 8px;
+        font-size: 12px;
+        border-radius: 4px;
+    }
+
+    .badge-pending {
+        background-color: var(--warning);
+        color: black;
+    }
+
+    .badge-approved {
+        background-color: var(--success);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        table {
+            min-width: unset;
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 8px 5px;
+        }
+
+        img {
+            width: 40px;
+            height: 40px;
+        }
+    }
         
         /* Dropdown Animation */
         .collapse:not(.show) {
@@ -394,72 +476,80 @@ $result = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         </div>
         
         <!-- Content Area - Empty now -->
-        <div class="container mt-5">
-        <h2 class="mb-4">Modify Doctors</h2>
-    </div>
-         <table>
-        <tbody>
-        <div class="table-container">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th>Name</th>
-                                <th>Hospital</th>
-                                <th>Specialization</th>
-                                <th>Phone</th>
-                                <th>City</th>
-                                <th>Days</th>
-                                <th>Timing</th>
-                                <th>Experience</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th style="width: 180px;">Actions</th>
-                            </tr>
-                        </thead>
-                       
-                  
-                </div>
-                <tbody>
+        <div class="content-wrapper">
+            <div class="container-fluid pt-4 px-4">
+    <?php if (isset($_SESSION['message'])): ?>
+        <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
+    <?php endif; ?>
 
-                            <?php if ($result->num_rows > 0): ?>
-                                <?php while ($row = $result->fetch_assoc()): ?>
-                                    <tr>
-                                        <td><?= $row['id'] ?></td>
-                                        <td><?= htmlspecialchars($row['name']) ?></td>
-                                        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
-                                        <td><?= htmlspecialchars($row['specialization']) ?></td>
-                                        <td><?= htmlspecialchars($row['phone']) ?></td>
-                                        <td><?= htmlspecialchars($row['city']) ?></td>
-                                        <td><?= htmlspecialchars($row['days']) ?></td>
-                                        <td><?= htmlspecialchars($row['timing']) ?></td>
-                                        <td><?= htmlspecialchars($row['experience']) ?></td>
-                                        <td><?= htmlspecialchars($row['description']) ?></td>
-                                        <td>
-                                            <span class="badge <?= $row['status'] === 'approved' ? 'badge-approved' : 'badge-pending' ?>">
-                                                <?= ucfirst($row['status']) ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <?php if ($row['status'] !== 'approved'): ?>
-                                                <a href="?approve=<?= $row['id'] ?>" class="btn btn-sm btn-success">
-                                                    <i class="fas fa-check"></i> Approve
-                                                </a>
-                                            <?php endif; ?>
-                                            <a href="?delete=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?')">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="12" class="text-center text-muted">No doctor records found.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                        </table>
-            <!-- Content will be added here as needed -->
+    <div class="table-wrapper">
+    <h4 class="mb-3" style="color: var(--secondary);">Manage Doctors</h4>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Hospital</th>
+                    <th>Specialization</th>
+                    <th>Degree</th>
+                    <th>Phone</th>
+                    <th>City</th>
+                    <th>Location</th>
+                    <th>Address</th>
+                    <th>Days</th>
+                    <th>Timing</th>
+                    <th>Experience</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($doctors->num_rows > 0): ?>
+                    <?php while ($row = $doctors->fetch_assoc()): ?>
+                        <tr>
+                           <td><?= htmlspecialchars($row['id']) ?></td>
+                            <td><img src="<?= $row['image'] ?>" width="50" height="50" style="object-fit: cover; border-radius: 5px;"></td>
+                            <td><?= htmlspecialchars($row['name']) ?></td>
+                            <td><?= htmlspecialchars($row['hospital_name']) ?></td>
+                            <td><?= htmlspecialchars($row['specialization']) ?></td>
+                            <td><?= htmlspecialchars($row['degree']) ?></td>
+                            <td><?= htmlspecialchars($row['phone']) ?></td>
+                            <td><?= htmlspecialchars($row['city']) ?></td>
+                            <td><?= htmlspecialchars($row['location']) ?></td>
+                            <td><?= htmlspecialchars($row['address']) ?></td>
+                            <td><?= htmlspecialchars($row['days']) ?></td>
+                            <td><?= htmlspecialchars($row['timing']) ?></td>
+                            <td><?= htmlspecialchars($row['experience']) ?></td>
+                            <td><?= htmlspecialchars($row['description']) ?></td>
+                            <td>
+                                <?php if ($row['status'] === 'pending'): ?>
+                                    <span class="badge badge-pending">Pending</span>
+                                <?php else: ?>
+                                    <span class="badge badge-approved">Approved</span>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= date("d M Y", strtotime($row['created_at'])) ?></td>
+                            <td>
+                                <?php if ($row['status'] === 'pending'): ?>
+                                    <a href="?approve=<?= $row['id'] ?>" class="btn btn-approve mb-1">Approve</a><br>
+                                <?php endif; ?>
+                                <a href="add_doctor.php?edit=<?= $row['id'] ?>" class="btn btn-edit mb-1">Edit</a><br>
+                                <a href="?delete=<?= $row['id'] ?>" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this doctor?')">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr><td colspan="16">No doctors found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
         </div>
     </div>
 </div>

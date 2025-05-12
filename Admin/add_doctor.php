@@ -648,10 +648,7 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
     <textarea name="address" id="address" class="form-control"><?= $edit['address'] ?? '' ?></textarea>
 </div>
 
-    <div class="form-group full-width">
-      <label class="form-label">Image:</label>
-      <input type="file" name="image" class="form-control">
-    </div>
+   
     <div class="form-group full-width">
               <label class="form-label">Location (Google Maps)</label>
               <input type="text" name="location" class="form-control" value="<?= $edit['location'] ?? '' ?>" required>
