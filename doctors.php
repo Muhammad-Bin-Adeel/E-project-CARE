@@ -133,74 +133,62 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         </div>
     </div>
     <!-- Navbar End -->
-
-    <?php if ($result->num_rows > 0): ?>
-    <?php while ($row = $result->fetch_assoc()): ?>
-        <div class="card mb-3" style="max-width: 900px;">
-            <div class="row g-0">
-                <!-- Left Side Image -->
-                <div class="col-md-4 d-flex align-items-center justify-content-center">
-                    <img src="doctor-image.jpg" class="img-fluid rounded" alt="Doctor Image">
-                </div>
-
-                <!-- Right Side Data -->
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
-                        <p class="card-text"><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
-                        <p class="card-text"><strong>Specialization:</strong> <?= htmlspecialchars($row['specialization']) ?></p>
-                        <p class="card-text"><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
-                        <p class="card-text"><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
-                        <p class="card-text"><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
-                        <p class="card-text"><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
-                        <p class="card-text"><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
-                        <p class="card-text"><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endwhile; ?>
-<?php else: ?>
-    <div class="alert alert-warning text-center">No approved doctors found.</div>
-<?php endif; ?>
-
-
-
-       <!-- Team Start -->
     <div class="container-fluid py-5">
-        <div class="container">
+    <div class="container">
         <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
             <div class="text-center mx-auto mb-5" style="max-width: 500px;">
                 <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Our Doctors</h5>
                 <h1 class="display-4">Qualified Healthcare Professionals</h1>
             </div>
+
             <div class="owl-carousel team-carousel position-relative">
-                <div class="team-item">
-                    <div class="row g-0 bg-light rounded overflow-hidden">
-                        <div class="col-12 col-sm-5 h-100">
-                            <img class="img-fluid h-100" src="img/team-1.jpg" style="object-fit: cover;">
-                        </div>
-                        <div class="col-12 col-sm-7 h-100 d-flex flex-column">
-                            <div class="mt-auto p-4">
-                                <h3><?= htmlspecialchars($row['name']) ?></h3>
-                                <h6 class="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                <p class="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                            </div>
-                            <div class="d-flex mt-auto border-top p-4">
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i class="fab fa-linkedin-in"></i></a>
+                <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
+                    <div class="team-item">
+                        <div class="card shadow h-100">
+                            <div class="row g-0">
+                                <div class="col-sm-5">
+                                    <img src="<?= htmlspecialchars($row['image']) ?>" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
+                                </div>
+                                <div class="col-sm-7 d-flex flex-column">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
+                                        <h6 class="fw-normal fst-italic text-primary mb-3"><?= htmlspecialchars($row['specialization']) ?></h6>
+                                        <p class="mb-2"><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
+                                        <p class="mb-2"><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
+
+                                        <!-- Hidden More Details -->
+                                        <div class="collapse" id="doctorDetails<?= $counter ?>">
+                                            <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
+                                            <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
+                                            <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
+                                            <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
+                                            <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
+                                            <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
+                                            <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
+                                            <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
+                                        </div>
+
+                                        <!-- More Details Button -->
+                                        <button class="btn btn-sm btn-outline-primary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#doctorDetails<?= $counter ?>" aria-expanded="false" aria-controls="doctorDetails<?= $counter ?>" onclick="toggleButtonText(this)">
+                                            More Details
+                                        </button>
+                                    </div>
+                                    <div class="card-footer bg-white border-0 mt-auto d-flex justify-content-start">
+                                        <a class="btn btn-sm btn-primary rounded-circle me-2" href="#"><i class="fab fa-twitter"></i></a>
+                                        <a class="btn btn-sm btn-primary rounded-circle me-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                                        <a class="btn btn-sm btn-primary rounded-circle" href="#"><i class="fab fa-linkedin-in"></i></a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <?php endwhile; ?>
-                <?php else: ?>
-                <tr>
-                    <td colspan="10" class="text-center text-muted">No approved doctors found.</td>
-                </tr>
-            <?php endif; ?>
+                <?php $counter++; endwhile; ?>
+            </div>
+        <?php else: ?>
+            <p class="text-center text-muted">No approved doctors found.</p>
+        <?php endif; ?>
+    </div>
+</div>
                 <!-- <div class="team-item">
                     <div class="row g-0 bg-light rounded overflow-hidden">
                         <div class="col-12 col-sm-5 h-100">
@@ -324,6 +312,21 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         </div>
     </div>
     <!-- Footer End -->
+    <script>
+function toggleButtonText(button) {
+    const targetId = button.getAttribute('data-bs-target');
+    const collapseEl = document.querySelector(targetId);
+
+    setTimeout(() => {
+        if (collapseEl.classList.contains('show')) {
+            button.textContent = 'Less Details';
+        } else {
+            button.textContent = 'More Details';
+        }
+    }, 300); // delay for animation
+}
+</script>
+
 </body>
 
 </html>

@@ -536,7 +536,7 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                                         <td><?= date("d M Y", strtotime($row['created_at'])) ?></td>
                                         <td>
                                             <?php if ($row['status'] === 'pending'): ?>
-                                                <a href="view_doctors.php?approve=<?= $row['id'] ?>" class="btn btn-approve mb-1">Approve</a><br>
+                                                <a href="manage_doctors.php?approve=<?= $row['id'] ?>" class="btn btn-approve mb-1">Approve</a><br>
                                             <?php endif; ?>
                                             <a href="add_doctor.php?edit=<?= $row['id'] ?>" class="btn btn-edit mb-1">Edit</a><br>
                                             <a href="?delete=<?= $row['id'] ?>" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this doctor?')">Delete</a>

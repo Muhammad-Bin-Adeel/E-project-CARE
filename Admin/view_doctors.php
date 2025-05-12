@@ -11,12 +11,15 @@ if (!isset($_SESSION['admin'])) {
 // Fetch only approved doctors
 $sql = "SELECT * FROM doctors WHERE status = 'approved' ORDER BY created_at DESC";
 $doctors = $conn->query($sql);
+
+if (!$doctors) {
+    die("Query failed: " . $conn->error); // Will show any errors related to SQL query
+}
 ?>
 
 
 <!DOCTYPE html>
 <html lang="en">
-<>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Medinova</title>
@@ -294,6 +297,61 @@ $doctors = $conn->query($sql);
                 margin-right: 10px;
             }
         }
+        table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #007bff;
+    color: #fff;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #eef5ff;
+}
+
+img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+}
+
+h2 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+td small {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+td strong {
+    color: #333;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
     </style>
 </head>
 <body>
@@ -450,27 +508,11 @@ $doctors = $conn->query($sql);
             </div>
         </div>
         
-        <!-- Content Area - Empty now -->
+        <!-- Content Area -->
         <div class="container mt-5">
     <h2 class="mb-4">Approved Doctors</h2>
-    <table id="doctorTable" class="table table-bordered">
-        <thead>
-            <tr>
-                <th>S.No.</th>
-                <th>ID</th>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Hospital</th>
-                <th>Specialization</th>
-                <th>Degree</th>
-                <th>Phone</th>
-                <th>City</th>
-                <th>Location</th>
-                <th>Schedule</th>
-                <th>Experience</th>
-                <th>Created</th>
-            </tr>
-        </thead>
+    <div class="table-responsive">
+    <table class="table table-bordered table-striped">
         <tbody>
             <?php if ($doctors->num_rows > 0): ?>
                 <?php $sn = 1; ?>
@@ -504,6 +546,8 @@ $doctors = $conn->query($sql);
     </table>
 </div>
     </div>
+</div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
