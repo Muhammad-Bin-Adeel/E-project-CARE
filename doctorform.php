@@ -28,9 +28,88 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
 )");
 
 
+
+
+// Add or update doctor
+if ($_SERVER['REQUEST_METHOD'] == 'POST') 
+    $id = $_POST['id'] ?? '';
+    $name = $conn->real_escape_string($_POST['name']);
+    $hospital = $conn->real_escape_string($_POST['hospital_name']);
+    $phone = $conn->real_escape_string($_POST['phone']);
+    $spec = $conn->real_escape_string($_POST['specialization']);
+    $city = $conn->real_escape_string($_POST['city']);
+    $days = $conn->real_escape_string($_POST['days']);
+    $timing = $conn->real_escape_string($_POST['timing']);
+    $exp = $conn->real_escape_string($_POST['experience']);
+    $desc = $conn->real_escape_string($_POST['description']);
+    $location = $conn->real_escape_string($_POST['location']);
+    $address = $conn->real_escape_string($_POST['address']);
+    $degree = $_POST['degree'] === 'Other'
+    ? $conn->real_escape_string($_POST['other_degree'])
+    : $conn->real_escape_string($_POST['degree']);
+
+    $imagePath = '';
+    if (!empty($_FILES['image']['name'])) {
+        $targetDir = "uploads/";
+        if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
+        $imagePath = $targetDir . basename($_FILES['image']['name']);
+        move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+    }
+
+    if ($id) {
+        // Doctor update karne wala part same rehne do
+        $query = "UPDATE doctors SET 
+                    name='$name', hospital_name='$hospital', phone='$phone',
+                    specialization='$spec', city='$city', days='$days',
+                    timing='$timing', experience='$exp', description='$desc',
+                    location='$location', address='$address', degree='$degree'";
+        if ($imagePath) $query .= ", image='$imagePath'";
+        $query .= " WHERE id=$id";
+        $conn->query($query);
+        $_SESSION['message'] = "Doctor updated successfully!";
+        header("Location: manage_doctors.php");  // ✅ yeh update per hi jaayega
+        exit;
+    } else {
+        // Naya doctor add hone ke baad yeh line change karni hai:
+        $conn->query("INSERT INTO doctors 
+            (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree) 
+            VALUES 
+            ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree')");
+        $_SESSION['message'] = "Doctor added successfully!";
+    
+        // ✅ Ye line change karo:
+        header("Location: thanks.php");  // ✅ yehi jana chahiye
+        exit;
+    }
+    
+
+// Approve
+if (isset($_GET['approve'])) {
+    $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
+    $_SESSION['message'] = "Doctor approved successfully!";
+    header("Location: manage_doctors.php");
+    exit;
+}
+
+// Delete
+if (isset($_GET['delete'])) {
+    $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
+    $_SESSION['message'] = "Doctor deleted successfully!";
+    header("Location: manage_doctors.php");
+    exit;
+}
+
+// Edit
+$edit = null;
+if (isset($_GET['edit'])) {
+    $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
+    if ($res->num_rows) $edit = $res->fetch_assoc();
+}
+
 // Fetch all
 $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 ?>
+
 
 <!-- Messages -->
 <?php if (isset($_SESSION['message'])): ?>
@@ -39,6 +118,7 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
     <?php unset($_SESSION['message']); ?>
 </div>
 <?php endif; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -217,7 +297,7 @@ h4.text-primary i {
           <i class="fas fa-user-md me-2"></i> <?= isset($edit) ? 'Edit Doctor' : 'Add New Doctor' ?>
         </h4>
 
-        <form action="thanks.php" method="POST" enctype="multipart/form-data">
+        <form  method="POST" enctype="multipart/form-data">
           <input type="hidden" name="id" value="<?= $edit['id'] ?? '' ?>">
 
           <div class="form-grid">
@@ -308,7 +388,7 @@ h4.text-primary i {
           </div>
 
           <div class="form-actions text-end mt-4">
-            <button action="thanks.php" type="submit" class="btn btn-primary px-4">Save Doctor</button>
+            <button type="submit" class="btn btn-primary px-4">Save Doctor</button>
           </div>
         </form>
       </div>
@@ -394,3 +474,5 @@ h4.text-primary i {
         </div>
     </div>
     <!-- Footer End -->
+</body>
+</html>
