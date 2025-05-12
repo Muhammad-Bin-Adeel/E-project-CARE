@@ -27,10 +27,7 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
-if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
-    exit;
-}
+
 
 // Add or update doctor
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
