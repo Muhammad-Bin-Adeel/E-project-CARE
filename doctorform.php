@@ -2,12 +2,117 @@
 session_start();
 include("db.php");
 
+// Add new columns if not already added
+$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS location VARCHAR(255)");
+$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS address TEXT");
+$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS degree VARCHAR(255)");
 
+// Create table if not exists (with address and degree)
+$conn->query("CREATE TABLE IF NOT EXISTS doctors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    hospital_name VARCHAR(150),
+    phone VARCHAR(20),
+    specialization VARCHAR(100),
+    city VARCHAR(100),
+    days VARCHAR(100),
+    timing VARCHAR(100),
+    experience VARCHAR(100),
+    description TEXT,
+    image VARCHAR(255),
+    location VARCHAR(255),
+    address TEXT,
+    degree VARCHAR(255),
+    status ENUM('pending','approved') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
 
-// Fetch only approved doctors
-$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
+if (!isset($_SESSION['admin'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Add or update doctor
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_POST['id'] ?? '';
+    $name = $conn->real_escape_string($_POST['name']);
+    $hospital = $conn->real_escape_string($_POST['hospital_name']);
+    $phone = $conn->real_escape_string($_POST['phone']);
+    $spec = $conn->real_escape_string($_POST['specialization']);
+    $city = $conn->real_escape_string($_POST['city']);
+    $days = $conn->real_escape_string($_POST['days']);
+    $timing = $conn->real_escape_string($_POST['timing']);
+    $exp = $conn->real_escape_string($_POST['experience']);
+    $desc = $conn->real_escape_string($_POST['description']);
+    $location = $conn->real_escape_string($_POST['location']);
+    $address = $conn->real_escape_string($_POST['address']);
+    $degree = $_POST['degree'] === 'Other'
+    ? $conn->real_escape_string($_POST['other_degree'])
+    : $conn->real_escape_string($_POST['degree']);
+
+    $imagePath = '';
+    if (!empty($_FILES['image']['name'])) {
+        $targetDir = "uploads/";
+        if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
+        $imagePath = $targetDir . basename($_FILES['image']['name']);
+        move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+    }
+
+    if ($id) {
+        $query = "UPDATE doctors SET 
+                    name='$name', hospital_name='$hospital', phone='$phone',
+                    specialization='$spec', city='$city', days='$days',
+                    timing='$timing', experience='$exp', description='$desc',
+                    location='$location', address='$address', degree='$degree'";
+        if ($imagePath) $query .= ", image='$imagePath'";
+        $query .= " WHERE id=$id";
+        $conn->query($query);
+        $_SESSION['message'] = "Doctor updated successfully!";
+    } else {
+        $conn->query("INSERT INTO doctors 
+            (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree) 
+            VALUES 
+            ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree')");
+        $_SESSION['message'] = "Doctor added successfully!";
+    }
+    header("Location: manage_doctors.php");
+    exit;
+}
+
+// Approve
+if (isset($_GET['approve'])) {
+    $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
+    $_SESSION['message'] = "Doctor approved successfully!";
+    header("Location: manage_doctors.php");
+    exit;
+}
+
+// Delete
+if (isset($_GET['delete'])) {
+    $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
+    $_SESSION['message'] = "Doctor deleted successfully!";
+    header("Location: manage_doctors.php");
+    exit;
+}
+
+// Edit
+$edit = null;
+if (isset($_GET['edit'])) {
+    $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
+    if ($res->num_rows) $edit = $res->fetch_assoc();
+}
+
+// Fetch all
+$doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 ?>
 
+<!-- Messages -->
+<?php if (isset($_SESSION['message'])): ?>
+<div class="alert alert-success">
+    <?= $_SESSION['message'] ?>
+    <?php unset($_SESSION['message']); ?>
+</div>
+<?php endif; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -89,10 +194,10 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
-                        <a href="index.php" class="nav-item nav-link ">Home</a>
+                        <a href="index.php" class="nav-item nav-link active">Home</a>
                         <a href="about.php" class="nav-item nav-link">About</a>
                         <a href="service.php" class="nav-item nav-link">Service</a>
-                        <a href="doctors.php" class="nav-item nav-link active">Doctor</a>
+                        <a href="doctors.php" class="nav-item nav-link">Doctor</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu m-0">
@@ -112,133 +217,9 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
     </div>
     <!-- Navbar End -->
 
-    <?php if ($result->num_rows > 0): ?>
-    <?php while ($row = $result->fetch_assoc()): ?>
-        <div class="card mb-3" style="max-width: 900px;">
-            <div class="row g-0">
-                <!-- Left Side Image -->
-                <div class="col-md-4 d-flex align-items-center justify-content-center">
-                    <img src="doctor-image.jpg" class="img-fluid rounded" alt="Doctor Image">
-                </div>
-
-                <!-- Right Side Data -->
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
-                        <p class="card-text"><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
-                        <p class="card-text"><strong>Specialization:</strong> <?= htmlspecialchars($row['specialization']) ?></p>
-                        <p class="card-text"><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
-                        <p class="card-text"><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
-                        <p class="card-text"><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
-                        <p class="card-text"><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
-                        <p class="card-text"><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
-                        <p class="card-text"><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endwhile; ?>
-<?php else: ?>
-    <div class="alert alert-warning text-center">No approved doctors found.</div>
-<?php endif; ?>
-
-
-
-       <!-- Team Start -->
-    <div class="container-fluid py-5">
-        <div class="container">
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="text-center mx-auto mb-5" style="max-width: 500px;">
-                <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Our Doctors</h5>
-                <h1 class="display-4">Qualified Healthcare Professionals</h1>
-            </div>
-            <div class="owl-carousel team-carousel position-relative">
-                <div class="team-item">
-                    <div class="row g-0 bg-light rounded overflow-hidden">
-                        <div class="col-12 col-sm-5 h-100">
-                            <img class="img-fluid h-100" src="img/team-1.jpg" style="object-fit: cover;">
-                        </div>
-                        <div class="col-12 col-sm-7 h-100 d-flex flex-column">
-                            <div class="mt-auto p-4">
-                                <h3><?= htmlspecialchars($row['name']) ?></h3>
-                                <h6 class="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                <p class="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                            </div>
-                            <div class="d-flex mt-auto border-top p-4">
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endwhile; ?>
-                <?php else: ?>
-                <tr>
-                    <td colspan="10" class="text-center text-muted">No approved doctors found.</td>
-                </tr>
-            <?php endif; ?>
-                <!-- <div class="team-item">
-                    <div class="row g-0 bg-light rounded overflow-hidden">
-                        <div class="col-12 col-sm-5 h-100">
-                            <img class="img-fluid h-100" src="img/team-2.jpg" style="object-fit: cover;">
-                        </div>
-                        <div class="col-12 col-sm-7 h-100 d-flex flex-column">
-                            <div class="mt-auto p-4">
-                                <h3>Doctor Name</h3>
-                                <h6 class="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                <p class="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                            </div>
-                            <div class="d-flex mt-auto border-top p-4">
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="team-item">
-                    <div class="row g-0 bg-light rounded overflow-hidden">
-                        <div class="col-12 col-sm-5 h-100">
-                            <img class="img-fluid h-100" src="img/team-3.jpg" style="object-fit: cover;">
-                        </div>
-                        <div class="col-12 col-sm-7 h-100 d-flex flex-column">
-                            <div class="mt-auto p-4">
-                                <h3>Doctor Name</h3>
-                                <h6 class="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                <p class="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                            </div>
-                            <div class="d-flex mt-auto border-top p-4">
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-            </div>
-        </div>
-    </div>
-    <!-- Team End -->
-      <!-- Back to Top -->
-      <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="lib/easing/easing.min.js"></script>
-<script src="lib/waypoints/waypoints.min.js"></script>
-<script src="lib/owlcarousel/owl.carousel.min.js"></script>
-<script src="lib/tempusdominus/js/moment.min.js"></script>
-<script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-<script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-
-<!-- Template Javascript -->
-<script src="js/main.js"></script>
-<!-- Footer Start -->
-      <div class="container-fluid bg-dark text-light mt-5 py-5">
+    
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light mt-5 py-5">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
@@ -269,7 +250,7 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                         <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Latest Blog</a>
                         <a class="text-light" href="#"><i class="fa fa-angle-right me-2"></i>Contact Us</a>
                     </div>
-            </div>
+                </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Newsletter</h4>
                     <form action="">
@@ -302,6 +283,3 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         </div>
     </div>
     <!-- Footer End -->
-</body>
-
-</html>
