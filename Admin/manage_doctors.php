@@ -34,6 +34,12 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
     <title>Admin Dashboard - Medinova</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Include DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<!-- Include DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <style>
         :root {
             --primary: #13C5DD;
@@ -194,10 +200,6 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         }
         
         /* Content Area */
-        .content-wrapper {
-            padding: 20px;
-        }
-
         .table-wrapper {
         background-color: var(--light);
         border-radius: 10px;
@@ -206,27 +208,26 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         overflow-x: auto;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 1200px;
-    }
-
-    thead {
+    table.dataTable thead {
         background-color: var(--primary);
         color: white;
     }
 
-    th, td {
-        padding: 12px 10px;
+    table.dataTable thead th {
         text-align: center;
-        vertical-align: middle;
-        border: 1px solid #ddd;
-        font-size: 14px;
     }
 
-    tbody tr:hover {
-        background-color: #f1f1f1;
+    table.dataTable tbody td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    img.doctor-img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid var(--primary);
     }
 
     .btn {
@@ -476,81 +477,81 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         </div>
         
         <!-- Content Area - Empty now -->
-        <div class="content-wrapper">
-            <div class="container-fluid pt-4 px-4">
-    <?php if (isset($_SESSION['message'])): ?>
-        <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
-    <?php endif; ?>
+       <div class="content-wrapper">
+        <div class="container-fluid pt-4 px-4">
+            <?php if (isset($_SESSION['message'])): ?>
+                <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
+            <?php endif; ?>
 
-    <div class="table-wrapper">
-    <h4 class="mb-3" style="color: var(--secondary);">Manage Doctors</h4>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Hospital</th>
-                    <th>Specialization</th>
-                    <th>Degree</th>
-                    <th>Phone</th>
-                    <th>City</th>
-                    <th>Location</th>
-                    <th>Address</th>
-                    <th>Days</th>
-                    <th>Timing</th>
-                    <th>Experience</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th>Created</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($doctors->num_rows > 0): ?>
-                    <?php while ($row = $doctors->fetch_assoc()): ?>
-                        <tr>
-                           <td><?= htmlspecialchars($row['id']) ?></td>
-                            <td><img src="<?= $row['image'] ?>" width="50" height="50" style="object-fit: cover; border-radius: 5px;"></td>
-                            <td><?= htmlspecialchars($row['name']) ?></td>
-                            <td><?= htmlspecialchars($row['hospital_name']) ?></td>
-                            <td><?= htmlspecialchars($row['specialization']) ?></td>
-                            <td><?= htmlspecialchars($row['degree']) ?></td>
-                            <td><?= htmlspecialchars($row['phone']) ?></td>
-                            <td><?= htmlspecialchars($row['city']) ?></td>
-                            <td><?= htmlspecialchars($row['location']) ?></td>
-                            <td><?= htmlspecialchars($row['address']) ?></td>
-                            <td><?= htmlspecialchars($row['days']) ?></td>
-                            <td><?= htmlspecialchars($row['timing']) ?></td>
-                            <td><?= htmlspecialchars($row['experience']) ?></td>
-                            <td><?= htmlspecialchars($row['description']) ?></td>
-                            <td>
-                                <?php if ($row['status'] === 'pending'): ?>
-                                    <span class="badge badge-pending">Pending</span>
-                                <?php else: ?>
-                                    <span class="badge badge-approved">Approved</span>
-                                <?php endif; ?>
-                            </td>
-                            <td><?= date("d M Y", strtotime($row['created_at'])) ?></td>
-                            <td>
-                                <?php if ($row['status'] === 'pending'): ?>
-                                    <a href="?approve=<?= $row['id'] ?>" class="btn btn-approve mb-1">Approve</a><br>
-                                <?php endif; ?>
-                                <a href="add_doctor.php?edit=<?= $row['id'] ?>" class="btn btn-edit mb-1">Edit</a><br>
-                                <a href="?delete=<?= $row['id'] ?>" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this doctor?')">Delete</a>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <tr><td colspan="16">No doctors found.</td></tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-</div>
+            <div class="table-wrapper">
+                <h4 class="mb-3" style="color: var(--secondary);">Manage Doctors</h4>
+                <div class="table-responsive">
+                    <table id="doctorTable" class="display nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Hospital</th>
+                                <th>Specialization</th>
+                                <th>Degree</th>
+                                <th>Phone</th>
+                                <th>City</th>
+                                <th>Location</th>
+                                <th>Address</th>
+                                <th>Days</th>
+                                <th>Timing</th>
+                                <th>Experience</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($doctors->num_rows > 0): ?>
+                                <?php while ($row = $doctors->fetch_assoc()): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($row['id']) ?></td>
+                                        <td><img src="<?= $row['image'] ?>" class="doctor-img"></td>
+                                        <td><?= htmlspecialchars($row['name']) ?></td>
+                                        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
+                                        <td><?= htmlspecialchars($row['specialization']) ?></td>
+                                        <td><?= htmlspecialchars($row['degree']) ?></td>
+                                        <td><?= htmlspecialchars($row['phone']) ?></td>
+                                        <td><?= htmlspecialchars($row['city']) ?></td>
+                                        <td><?= htmlspecialchars($row['location']) ?></td>
+                                        <td><?= htmlspecialchars($row['address']) ?></td>
+                                        <td><?= htmlspecialchars($row['days']) ?></td>
+                                        <td><?= htmlspecialchars($row['timing']) ?></td>
+                                        <td><?= htmlspecialchars($row['experience']) ?></td>
+                                        <td><?= htmlspecialchars($row['description']) ?></td>
+                                        <td>
+                                            <?php if ($row['status'] === 'pending'): ?>
+                                                <span class="badge badge-pending">Pending</span>
+                                            <?php else: ?>
+                                                <span class="badge badge-approved">Approved</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= date("d M Y", strtotime($row['created_at'])) ?></td>
+                                        <td>
+                                            <?php if ($row['status'] === 'pending'): ?>
+                                                <a href="view_doctors.php?approve=<?= $row['id'] ?>" class="btn btn-approve mb-1">Approve</a><br>
+                                            <?php endif; ?>
+                                            <a href="add_doctor.php?edit=<?= $row['id'] ?>" class="btn btn-edit mb-1">Edit</a><br>
+                                            <a href="?delete=<?= $row['id'] ?>" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this doctor?')">Delete</a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr><td colspan="16">No doctors found.</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+    </div>
     </div>
 </div>
 
@@ -665,6 +666,13 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         if (currentUrl === '' || currentUrl === 'index.php') {
             document.querySelector('a[href="dashboard.php"]').classList.add('active');
         }
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#doctorTable').DataTable({
+            responsive: true
+        });
     });
 </script>
 </body>

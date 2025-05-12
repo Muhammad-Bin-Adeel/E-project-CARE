@@ -9,18 +9,29 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Fetch only approved doctors
-$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
+$sql = "SELECT * FROM doctors WHERE status = 'approved' ORDER BY created_at DESC";
+$doctors = $conn->query($sql);
 ?>
 
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Medinova</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- DataTables CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+
     <style>
         :root {
             --primary: #13C5DD;
@@ -184,6 +195,69 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         .content-wrapper {
             padding: 20px;
         }
+
+        .container {
+      max-width: 95%;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        color: var(--secondary);
+        font-weight: 600;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    th, td {
+        padding: 12px 10px;
+        text-align: center;
+        vertical-align: middle;
+        border: 1px solid #ddd;
+        font-size: 14px;
+    }
+
+    tbody tr:hover {
+        background-color: var(--light);
+    }
+
+    img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    }
+
+    td strong {
+        color: var(--dark);
+    }
+
+    td small {
+        color: #666;
+        font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+        th, td {
+            font-size: 12px;
+            padding: 8px 6px;
+        }
+        h2 {
+            font-size: 20px;
+        }
+    }
         
         /* Dropdown Animation */
         .collapse:not(.show) {
@@ -379,57 +453,56 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         <!-- Content Area - Empty now -->
         <div class="container mt-5">
     <h2 class="mb-4">Approved Doctors</h2>
-    <table class="table table-bordered">
+    <table id="doctorTable" class="table table-bordered">
         <thead>
             <tr>
-               
-                <th>#ID</th>
+                <th>S.No.</th>
+                <th>ID</th>
                 <th>Image</th>
                 <th>Name</th>
                 <th>Hospital</th>
                 <th>Specialization</th>
+                <th>Degree</th>
                 <th>Phone</th>
                 <th>City</th>
-                <th>Days</th>
-                <th>Timing</th>
+                <th>Location</th>
+                <th>Schedule</th>
                 <th>Experience</th>
-                <th>Description</th>
-                
+                <th>Created</th>
             </tr>
         </thead>
         <tbody>
-            <?php if ($result->num_rows > 0): ?>
-                <?php while ($row = $result->fetch_assoc()): ?>
-    <tr style="background-color: #e7f9f0;">
-        <td><?= $row['id'] ?></td>
-        <td>
-             <?php if (!empty($doctor['image'])): ?>
-         <img src="<?= $doctor['image'] ?>" class="doctor-image">
-         <?php else: ?>
-          <i class="fas fa-user-md fa-2x text-muted"></i>
-           <?php endif; ?>
-                                                </td>
-        <td><?= htmlspecialchars($row['name']) ?></td>
-        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
-        <td><?= htmlspecialchars($row['specialization']) ?></td>
-        <td><?= htmlspecialchars($row['phone']) ?></td>
-        <td><?= htmlspecialchars($row['city']) ?></td>
-        <td><?= htmlspecialchars($row['days']) ?></td>
-        <td><?= htmlspecialchars($row['timing']) ?></td>
-        <td><?= htmlspecialchars($row['experience']) ?></td>
-        <td><?= htmlspecialchars($row['description']) ?></td>
-    </tr>
-<?php endwhile; ?>
-
+            <?php if ($doctors->num_rows > 0): ?>
+                <?php $sn = 1; ?>
+                <?php while ($row = $doctors->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= $sn++ ?></td>
+                        <td><?= $row['id'] ?></td>
+                        <td><img src="<?= $row['image'] ?>" alt="Doctor Image"></td>
+                        <td><?= htmlspecialchars($row['name']) ?></td>
+                        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
+                        <td><?= htmlspecialchars($row['specialization']) ?></td>
+                        <td><?= htmlspecialchars($row['degree']) ?></td>
+                        <td><?= htmlspecialchars($row['phone']) ?></td>
+                        <td><?= htmlspecialchars($row['city']) ?></td>
+                        <td>
+                            <strong><?= htmlspecialchars($row['location']) ?></strong><br>
+                            <small><?= htmlspecialchars($row['address']) ?></small>
+                        </td>
+                        <td>
+                            <strong><?= htmlspecialchars($row['days']) ?></strong><br>
+                            <small><?= htmlspecialchars($row['timing']) ?></small>
+                        </td>
+                        <td><?= htmlspecialchars($row['experience']) ?></td>
+                        <td><?= date("d M Y", strtotime($row['created_at'])) ?></td>
+                    </tr>
+                <?php endwhile; ?>
             <?php else: ?>
-                <tr>
-                    <td colspan="10" class="text-center text-muted">No approved doctors found.</td>
-                </tr>
+                <tr><td colspan="13">No approved doctors found.</td></tr>
             <?php endif; ?>
         </tbody>
     </table>
-            <!-- Content will be added here as needed -->
-        </div>
+</div>
     </div>
 </div>
 
@@ -544,6 +617,15 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         if (currentUrl === '' || currentUrl === 'index.php') {
             document.querySelector('a[href="dashboard.php"]').classList.add('active');
         }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#doctorTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: ['excelHtml5'],
+            pageLength: 10,
+        });
     });
 </script>
 </body>
