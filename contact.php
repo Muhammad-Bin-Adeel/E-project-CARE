@@ -2,6 +2,25 @@
 <html lang="en">
 
 <style>
+    /* Join Doctor Button Style */
+
+.join-doctor-btn {
+    padding: 8px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    border-radius: 30px;
+    background-color: #0d6efd; /* Bootstrap primary */
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.join-doctor-btn:hover {
+    background-color:rgb(178, 188, 202);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
      /* Position submenus properly */
      .dropdown-submenu {
       position: relative;
@@ -11,6 +30,30 @@
       left: 100%;
       margin-top: -1px;
     }
+
+/* Submenu Styling */
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+}
+
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+}
+
+.sub-menu {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+}
+
+.dropdown-submenu:hover > .sub-menu {
+    display: block;
+}
+
 </style>
 
 <head>
@@ -80,56 +123,57 @@
 
 
     <!-- Navbar Start -->
-    <div class="container-fluid sticky-top bg-white shadow-sm mb-5">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
-                <a href="index.php" class="navbar-brand">
-                    <h1 class="m-0 text-uppercase text-primary"><i class="fa fa-clinic-medical me-2"></i>care</h1>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto py-0">
-                        <a href="index.php" class="nav-item nav-link">Home</a>
-                        <a href="about.php" class="nav-item nav-link">About</a>
-                        <a href="doctors.php" class="nav-item nav-link">Doctor</a>
-                   
+   <!-- Navbar Start -->
+<div class="container-fluid sticky-top bg-white shadow-sm mb-5">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
+            <a href="index.php" class="navbar-brand">
+                <h1 class="m-0 text-uppercase text-primary">
+                    <i class="fa fa-clinic-medical me-2"></i>Care
+                </h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                    <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
+                    <li class="nav-item"><a href="doctors.php" class="nav-link">Doctor</a></li>
 
-                       <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Service</a>
-                            <!-- <a class="dropdown-item dropdown-toggle" href="#">Find doctor by speciality</a> -->
-                            <div class="dropdown-menu m-0">
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Service</a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-submenu position-relative">
+                                <a class="dropdown-item dropdown-toggle" href="#">Dermatologist</a>
+                                <ul class="dropdown-menu sub-menu">
+                                    <li><a class="dropdown-item" href="#">Dermatologist in Lahore</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown-submenu position-relative">
+                                <a class="dropdown-item dropdown-toggle" href="#">Gynecologist</a>
+                                <ul class="dropdown-menu sub-menu">
+                                    <li><a class="dropdown-item" href="#">Gynecologist in Karachi</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown-submenu position-relative">
+                                <a class="dropdown-item dropdown-toggle" href="#">Urologist</a>
+                                <ul class="dropdown-menu sub-menu">
+                                    <li><a class="dropdown-item" href="#">Urologist in Islamabad</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
 
-                                 <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Dermatologist</a>
-                             <ul class="dropdown-menu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Dermatologist in lahore </a>
-                             </ul>
-                             </li>
-
-                                  <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Gynecologistt</a>
-                             <ul class="dropdown-menu">
-                             <li><a class="dropdown-item" href="#">Gynecologist in karachi </a></li>
-                             </ul>
-                             </li>
-
-                                <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Urologist</a>
-                             <ul class="dropdown-menu">
-                             <li><a class="dropdown-item" href="#">Urologistin Islamabad </a></li>
-                             </ul>
-                             </li>
-
-                            </div>
-                        </div>
-                        <a href="contact.php" class="nav-item nav-link">Contact</a>
-                    </div>
-                </div>
-            </nav>
-        </div>
+                    <li class="nav-item"><a href="contact.php" class="nav-link active">Contact</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </div>
+</div>
     <!-- Navbar End -->
 
 

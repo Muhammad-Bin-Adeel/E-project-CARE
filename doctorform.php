@@ -143,6 +143,70 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+<style>
+    /* Form Grid Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Full Width Fields (like Description, Location etc.) */
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Form Labels */
+.form-label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* Inputs & Textareas */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 5px rgba(13, 110, 253, 0.3);
+}
+
+/* Buttons */
+.form-actions .btn-primary {
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    background: linear-gradient(90deg, #0d6efd, #0b5ed7);
+    border: none;
+}
+
+.form-actions .btn-primary:hover {
+    background: linear-gradient(90deg, #0b5ed7, #0a58ca);
+}
+
+/* Card Styling */
+.card {
+    border-radius: 12px;
+    border: none;
+}
+
+/* Heading Icon */
+h4.text-primary i {
+    color: #0d6efd;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
 </head>
 
 <body>
@@ -181,6 +245,8 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
     </div>
     <!-- Topbar End -->
 
+      
+
 
     <!-- Navbar Start -->
     <div class="container-fluid sticky-top bg-white shadow-sm">
@@ -194,10 +260,10 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
-                        <a href="index.php" class="nav-item nav-link active">Home</a>
+                        <a href="index.php" class="nav-item nav-link ">Home</a>
                         <a href="about.php" class="nav-item nav-link">About</a>
                         <a href="service.php" class="nav-item nav-link">Service</a>
-                        <a href="doctors.php" class="nav-item nav-link">Doctor</a>
+                        <a href="doctors.php" class="nav-item nav-link active">Doctor</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu m-0">
@@ -216,8 +282,127 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         </div>
     </div>
     <!-- Navbar End -->
+ <!-- Content Area -->
+ <div class="content-wrapper">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow p-4">
+        <h4 class="mb-4 text-primary">
+          <i class="fas fa-user-md me-2"></i> <?= isset($edit) ? 'Edit Doctor' : 'Add New Doctor' ?>
+        </h4>
 
+        <form method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="id" value="<?= $edit['id'] ?? '' ?>">
+
+          <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Name:</label>
+      <input type="text" name="name" class="form-control" value="<?= $edit['name'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Hospital Name:</label>
+      <input type="text" name="hospital_name" class="form-control" value="<?= $edit['hospital_name'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone:</label>
+      <input type="text" name="phone" class="form-control" value="<?= $edit['phone'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Specialization:</label>
+      <input type="text" name="specialization" class="form-control" value="<?= $edit['specialization'] ?? '' ?>" required>
+    </div>
+
+        <div class="form-group">
+    <label for="degree">Degree</label>
+    <select name="degree" id="degree" class="form-control" required onchange="toggleOtherDegree(this)">
+        <option value="">-- Select Degree --</option>
+        <option value="MBBS" <?= isset($edit['degree']) && $edit['degree'] == 'MBBS' ? 'selected' : '' ?>>MBBS</option>
+        <option value="MD" <?= isset($edit['degree']) && $edit['degree'] == 'MD' ? 'selected' : '' ?>>MD (Doctor of Medicine)</option>
+        <option value="MS" <?= isset($edit['degree']) && $edit['degree'] == 'MS' ? 'selected' : '' ?>>MS (Master of Surgery)</option>
+        <option value="BDS" <?= isset($edit['degree']) && $edit['degree'] == 'BDS' ? 'selected' : '' ?>>BDS (Dental)</option>
+        <option value="MDS" <?= isset($edit['degree']) && $edit['degree'] == 'MDS' ? 'selected' : '' ?>>MDS (Dental Surgery)</option>
+        <option value="BHMS" <?= isset($edit['degree']) && $edit['degree'] == 'BHMS' ? 'selected' : '' ?>>BHMS (Homeopathy)</option>
+        <option value="BAMS" <?= isset($edit['degree']) && $edit['degree'] == 'BAMS' ? 'selected' : '' ?>>BAMS (Ayurveda)</option>
+        <option value="DNB" <?= isset($edit['degree']) && $edit['degree'] == 'DNB' ? 'selected' : '' ?>>DNB</option>
+        <option value="PhD" <?= isset($edit['degree']) && $edit['degree'] == 'PhD' ? 'selected' : '' ?>>PhD</option>
+        <option value="Other" <?= isset($edit['degree']) && !in_array($edit['degree'], ['MBBS','MD','MS','BDS','MDS','BHMS','BAMS','DNB','PhD']) ? 'selected' : '' ?>>Other</option>
+    </select>
+</div>
+
+<div class="form-group" id="other-degree-group" style="display: none;">
+    <label for="other_degree">Please specify</label>
+    <input type="text" name="other_degree" id="other_degree" class="form-control"
+           value="<?= (!in_array($edit['degree'] ?? '', ['MBBS','MD','MS','BDS','MDS','BHMS','BAMS','DNB','PhD']) && isset($edit['degree'])) ? $edit['degree'] : '' ?>">
+</div>
     
+    <div class="form-group">
+      <label class="form-label">City:</label>
+      <input type="text" name="city" class="form-control" value="<?= $edit['city'] ?? '' ?>" required>
+    </div>
+    
+
+    <div class="form-group">
+      <label class="form-label">Days:</label>
+      <input type="text" name="days" class="form-control" value="<?= $edit['days'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Timing:</label>
+      <input type="text" name="timing" class="form-control" value="<?= $edit['timing'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Experience:</label>
+      <input type="text" name="experience" class="form-control" value="<?= $edit['experience'] ?? '' ?>" required>
+    </div>
+
+    <div class="form-group full-width">
+      <label class="form-label">Description:</label>
+      <textarea name="description" class="form-control"><?= $edit['description'] ?? '' ?></textarea>
+    </div>
+
+    <div class="form-group">
+    <label for="address">Full Address</label>
+    <textarea name="address" id="address" class="form-control"><?= $edit['address'] ?? '' ?></textarea>
+</div>
+
+   
+    <div class="form-group full-width">
+              <label class="form-label">Location (Google Maps)</label>
+              <input type="text" name="location" class="form-control" value="<?= $edit['location'] ?? '' ?>" required>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Image</label>
+              <input type="file" name="image" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-actions text-end mt-4">
+            <button type="submit" class="btn btn-primary px-4">Save Doctor</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light mt-5 py-5">
         <div class="container py-5">

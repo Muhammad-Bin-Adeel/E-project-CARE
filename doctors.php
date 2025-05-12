@@ -38,6 +38,23 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <style> .join-doctor-btn {
+    padding: 8px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    border-radius: 30px;
+    background-color: #0d6efd; /* Bootstrap primary */
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.join-doctor-btn:hover {
+    background-color: #0b5ed7;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+</style>
 </head>
 
 <body>
@@ -105,7 +122,12 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                             </div>
                         </div>
                         <a href="contact.php" class="nav-item nav-link">Contact</a>
+
                     </div>
+                      <!-- Corrected Button -->
+                <div class="ms-3">
+                    <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
+                </div>
                 </div>
             </nav>
         </div>
