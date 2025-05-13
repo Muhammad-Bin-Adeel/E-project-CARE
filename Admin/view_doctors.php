@@ -13,28 +13,30 @@ $sql = "SELECT * FROM doctors WHERE status = 'approved' ORDER BY created_at DESC
 $doctors = $conn->query($sql);
 
 if (!$doctors) {
-    die("Query failed: " . $conn->error); // Will show any errors related to SQL query
+    die("Query failed: " . $conn->error);
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Medinova</title>
+    <title>Approved Doctors - Medinova Admin</title>
+    
+    <!-- Bootstrap & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- DataTables CSS & JS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 
+    <!-- jQuery & DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <style>
         :root {
             --primary: #13C5DD;
@@ -196,71 +198,76 @@ if (!$doctors) {
         
         /* Content Area */
         .content-wrapper {
-            padding: 20px;
+            padding: 20px;  
         }
 
-        .container {
-      max-width: 95%;
-            margin: 40px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-        color: var(--secondary);
+         h2 {
+        color: var(--primary);
         font-weight: 600;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
+    .table-responsive {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
     }
 
-    thead {
+    table.dataTable thead {
         background-color: var(--primary);
         color: white;
     }
 
-    th, td {
-        padding: 12px 10px;
-        text-align: center;
+    table.dataTable tbody tr td {
         vertical-align: middle;
-        border: 1px solid #ddd;
+    }
+
+    table.dataTable td img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid var(--secondary);
+    }
+
+    table.dataTable th,
+    table.dataTable td {
+        padding: 12px;
         font-size: 14px;
     }
 
-    tbody tr:hover {
-        background-color: var(--light);
+    .btn {
+        font-size: 13px;
+        padding: 5px 10px;
     }
 
-    img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-        box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    .wrapper {
+        display: flex;
+        min-height: 100vh;
     }
 
-    td strong {
-        color: var(--dark);
+    .main-content {
+        flex-grow: 1;
+        padding: 20px;
     }
 
-    td small {
-        color: #666;
-        font-size: 12px;
-    }
-
+    /* Responsive tweak */
     @media (max-width: 768px) {
-        th, td {
-            font-size: 12px;
-            padding: 8px 6px;
+        table.dataTable th,
+        table.dataTable td {
+            white-space: nowrap;
         }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
         h2 {
             font-size: 20px;
+            text-align: center;
         }
     }
+   
         
         /* Dropdown Animation */
         .collapse:not(.show) {
@@ -297,61 +304,6 @@ if (!$doctors) {
                 margin-right: 10px;
             }
         }
-        table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-thead {
-    background-color: #007bff;
-    color: #fff;
-}
-
-th, td {
-    padding: 12px 15px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-tbody tr:hover {
-    background-color: #eef5ff;
-}
-
-img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid #007bff;
-}
-
-h2 {
-    color: #333;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-td small {
-    color: #666;
-    font-size: 0.85rem;
-}
-
-td strong {
-    color: #333;
-}
-
-.table-responsive {
-    overflow-x: auto;
-}
-
     </style>
 </head>
 <body>
@@ -508,47 +460,102 @@ td strong {
             </div>
         </div>
         
-        <!-- Content Area -->
-        <div class="container mt-5">
-    <h2 class="mb-4">Approved Doctors</h2>
-    <div class="table-responsive">
-    <table class="table table-bordered table-striped">
-        <tbody>
-            <?php if ($doctors->num_rows > 0): ?>
-                <?php $sn = 1; ?>
-                <?php while ($row = $doctors->fetch_assoc()): ?>
+        <!-- Content Area - Empty now -->
+       <div class="content-wrapper">
+    <div class="container mt-5">
+        <h2 class="mb-4 text-primary">Approved Doctors</h2>
+
+        <!-- Filters -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="filterCity" class="form-label">Filter by City</label>
+                <select id="filterCity" class="form-select select-filter">
+                    <option value="">All Cities</option>
+                    <?php
+                    $cityQuery = $conn->query("SELECT DISTINCT city FROM doctors WHERE status='approved'");
+                    while ($c = $cityQuery->fetch_assoc()) {
+                        echo "<option value='" . htmlspecialchars($c['city']) . "'>" . htmlspecialchars($c['city']) . "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="filterSpecialization" class="form-label">Filter by Specialization</label>
+                <select id="filterSpecialization" class="form-select select-filter">
+                    <option value="">All Specializations</option>
+                    <?php
+                    $specQuery = $conn->query("SELECT DISTINCT specialization FROM doctors WHERE status='approved'");
+                    while ($s = $specQuery->fetch_assoc()) {
+                        echo "<option value='" . htmlspecialchars($s['specialization']) . "'>" . htmlspecialchars($s['specialization']) . "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table id="doctorsTable" class="table table-bordered table-hover">
+                <thead>
                     <tr>
-                        <td><?= $sn++ ?></td>
-                        <td><?= $row['id'] ?></td>
-                        <td><img src="<?= $row['image'] ?>" alt="Doctor Image"></td>
-                        <td><?= htmlspecialchars($row['name']) ?></td>
-                        <td><?= htmlspecialchars($row['hospital_name']) ?></td>
-                        <td><?= htmlspecialchars($row['specialization']) ?></td>
-                        <td><?= htmlspecialchars($row['degree']) ?></td>
-                        <td><?= htmlspecialchars($row['phone']) ?></td>
-                        <td><?= htmlspecialchars($row['city']) ?></td>
-                        <td>
-                            <strong><?= htmlspecialchars($row['location']) ?></strong><br>
-                            <small><?= htmlspecialchars($row['address']) ?></small>
-                        </td>
-                        <td>
-                            <strong><?= htmlspecialchars($row['days']) ?></strong><br>
-                            <small><?= htmlspecialchars($row['timing']) ?></small>
-                        </td>
-                        <td><?= htmlspecialchars($row['experience']) ?></td>
-                        <td><?= date("d M Y", strtotime($row['created_at'])) ?></td>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Hospital</th>
+                        <th>Specialization</th>
+                        <th>Degree</th>
+                        <th>Phone</th>
+                        <th>City</th>
+                        <th>Location</th>
+                        <th>Schedule</th>
+                        <th>Experience</th>
+                        <th>Created</th>
                     </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr><td colspan="13">No approved doctors found.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-</div>
+                </thead>
+                <tbody>
+                    <?php if ($doctors->num_rows > 0): ?>
+                        <?php $sn = 1; ?>
+                        <?php while ($row = $doctors->fetch_assoc()): ?>
+                            <tr>
+                                <td><?= $sn++ ?></td>
+                                <td><?= htmlspecialchars($row['id']) ?></td>
+                                <td>
+                                    <?php if ($row['image']): ?>
+                                        <img src="<?= htmlspecialchars($row['image']) ?>" alt="Doctor Image">
+                                    <?php else: ?>
+                                        <span class="text-muted">No Image</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?= htmlspecialchars($row['name']) ?></td>
+                                <td><?= htmlspecialchars($row['hospital_name']) ?></td>
+                                <td><?= htmlspecialchars($row['specialization']) ?></td>
+                                <td><?= htmlspecialchars($row['degree']) ?></td>
+                                <td><?= htmlspecialchars($row['phone']) ?></td>
+                                <td><?= htmlspecialchars($row['city']) ?></td>
+                                <td>
+                                    <strong><?= htmlspecialchars($row['location']) ?></strong><br>
+                                    <small><?= htmlspecialchars($row['address']) ?></small>
+                                </td>
+                                <td>
+                                    <strong><?= htmlspecialchars($row['days']) ?></strong><br>
+                                    <small><?= htmlspecialchars($row['timing']) ?></small>
+                                </td>
+                                <td><?= htmlspecialchars($row['experience']) ?></td>
+                                <td><?= date("d M Y", strtotime($row['created_at'])) ?></td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr><td colspan="13" class="text-center text-muted">No approved doctors found.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+    </div>
+        </div>
 
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -665,10 +672,19 @@ td strong {
 </script>
 <script>
     $(document).ready(function () {
-        $('#doctorTable').DataTable({
+        var table = $('#doctorsTable').DataTable({
             dom: 'Bfrtip',
-            buttons: ['excelHtml5'],
-            pageLength: 10,
+            buttons: ['copyHtml5', 'excelHtml5', 'csvHtml5']
+        });
+
+        // Filter by city
+        $('#filterCity').on('change', function () {
+            table.column(8).search(this.value).draw();
+        });
+
+        // Filter by specialization
+        $('#filterSpecialization').on('change', function () {
+            table.column(5).search(this.value).draw();
         });
     });
 </script>
