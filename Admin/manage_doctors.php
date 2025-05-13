@@ -11,7 +11,7 @@ if (!isset($_SESSION['admin'])) {
 if (isset($_GET['approve'])) {
     $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
     $_SESSION['message'] = "Doctor approved successfully!";
-    header("Location: manage_doctors.php");
+    header("Location: view_doctors.php");
     exit;
 }
 
