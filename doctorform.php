@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree) 
             VALUES 
             ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree')");
-        $_SESSION['message'] = "Doctor added successfully!";
+        $_SESSION['message'] = "Doctor Request submited successfully!";
         header("Location: thanks.php");
         exit;
     }
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Approve doctor
 if (isset($_GET['approve'])) {
     $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
-    $_SESSION['message'] = "Doctor approved successfully!";
+    $_SESSION['message'] = "Your Request Has Been Submitted!";
     header("Location: manage_doctors.php");
     exit;
 }
