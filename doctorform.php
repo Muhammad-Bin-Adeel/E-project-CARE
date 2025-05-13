@@ -2,11 +2,6 @@
 session_start();
 include("db.php");
 
-// Add new columns if not already added
-$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS location VARCHAR(255)");
-$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS address TEXT");
-$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS degree VARCHAR(255)");
-
 // Create table if not exists (with address and degree)
 $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,11 +22,8 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
-
-
-
 // Add or update doctor
-if ($_SERVER['REQUEST_METHOD'] == 'POST') 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = $_POST['id'] ?? '';
     $name = $conn->real_escape_string($_POST['name']);
     $hospital = $conn->real_escape_string($_POST['hospital_name']);
@@ -44,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $desc = $conn->real_escape_string($_POST['description']);
     $location = $conn->real_escape_string($_POST['location']);
     $address = $conn->real_escape_string($_POST['address']);
-    $degree = $_POST['degree'] === 'Other'
-    ? $conn->real_escape_string($_POST['other_degree'])
-    : $conn->real_escape_string($_POST['degree']);
+    $degree = ($_POST['degree'] === 'Other') 
+        ? $conn->real_escape_string($_POST['other_degree']) 
+        : $conn->real_escape_string($_POST['degree']);
 
     $imagePath = '';
     if (!empty($_FILES['image']['name'])) {
@@ -57,33 +49,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     }
 
     if ($id) {
-        // Doctor update karne wala part same rehne do
+        // Update existing doctor
         $query = "UPDATE doctors SET 
                     name='$name', hospital_name='$hospital', phone='$phone',
                     specialization='$spec', city='$city', days='$days',
                     timing='$timing', experience='$exp', description='$desc',
                     location='$location', address='$address', degree='$degree'";
         if ($imagePath) $query .= ", image='$imagePath'";
-        $query .= " WHERE id=$id";
+        $query .= " WHERE id=" . intval($id);
+
         $conn->query($query);
         $_SESSION['message'] = "Doctor updated successfully!";
-        header("Location: manage_doctors.php");  // ✅ yeh update per hi jaayega
+        header("Location: manage_doctors.php");
         exit;
     } else {
-        // Naya doctor add hone ke baad yeh line change karni hai:
+        // Insert new doctor
         $conn->query("INSERT INTO doctors 
             (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree) 
             VALUES 
             ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree')");
         $_SESSION['message'] = "Doctor added successfully!";
-    
-        // ✅ Ye line change karo:
-        header("Location: thanks.php");  // ✅ yehi jana chahiye
+        header("Location: thanks.php");
         exit;
     }
-    
+}
 
-// Approve
+// Approve doctor
 if (isset($_GET['approve'])) {
     $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
     $_SESSION['message'] = "Doctor approved successfully!";
@@ -91,7 +82,7 @@ if (isset($_GET['approve'])) {
     exit;
 }
 
-// Delete
+// Delete doctor
 if (isset($_GET['delete'])) {
     $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
     $_SESSION['message'] = "Doctor deleted successfully!";
@@ -99,17 +90,16 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// Edit
+// Edit doctor (fetch single doctor)
 $edit = null;
 if (isset($_GET['edit'])) {
     $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
     if ($res->num_rows) $edit = $res->fetch_assoc();
 }
 
-// Fetch all
+// Fetch all doctors
 $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 ?>
-
 
 <!-- Messages -->
 <?php if (isset($_SESSION['message'])): ?>
