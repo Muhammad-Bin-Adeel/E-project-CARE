@@ -7,7 +7,6 @@ include("db.php");
 // Fetch only approved doctors
 $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,7 +37,8 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-    <style> .join-doctor-btn {
+    <style>
+        .join-doctor-btn {
     padding: 8px 20px;
     font-weight: 600;
     font-size: 14px;
@@ -54,7 +54,8 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
     color: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-</style>
+
+    </style>
 </head>
 
 <body>
@@ -95,44 +96,49 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 
 
     <!-- Navbar Start -->
-    <div class="container-fluid sticky-top bg-white shadow-sm">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
-                <a href="index.php" class="navbar-brand">
-                    <h1 class="m-0 text-uppercase text-primary"><i class="fa fa-clinic-medical me-2"></i>Medinova</h1>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto py-0">
-                        <a href="index.php" class="nav-item nav-link ">Home</a>
-                        <a href="about.php" class="nav-item nav-link">About</a>
-                        <a href="service.php" class="nav-item nav-link">Service</a>
-                        <a href="doctors.php" class="nav-item nav-link active">Doctor</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                            <div class="dropdown-menu m-0">
-                                <a href="blog.php" class="dropdown-item">Blog Grid</a>
-                                <a href="#" class="dropdown-item">Blog Detail</a>
-                                <a href="#" class="dropdown-item">The Team</a>
-                                <a href="#" class="dropdown-item">Testimonial</a>
-                                <a href="appointment.php" class="dropdown-item">Appointment</a>
-                                <a href="search.php" class="dropdown-item">Search</a>
-                            </div>
-                        </div>
-                        <a href="contact.php" class="nav-item nav-link">Contact</a>
 
+<div class="container-fluid sticky-top bg-white shadow-sm">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
+            <a href="index.php" class="navbar-brand">
+                <h1 class="m-0 text-uppercase text-primary">
+                    <i class="fa fa-clinic-medical me-2"></i>Medinova
+                </h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0">
+                    <a href="index.php" class="nav-item nav-link ">Home</a>
+                    <a href="about.php" class="nav-item nav-link">About</a>
+                   
+                    <a href="doctors.php" class="nav-item nav-link active">Doctor</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <div class="dropdown-menu m-0">
+                            <a href="blog.php" class="dropdown-item">Blog Grid</a>
+                            <a href="#" class="dropdown-item">Blog Detail</a>
+                            <a href="#" class="dropdown-item">The Team</a>
+                            <a href="#" class="dropdown-item">Testimonial</a>
+                            <a href="appointment.php" class="dropdown-item">Appointment</a>
+                            <a href="search.php" class="dropdown-item">Search</a>
+                        </div>
                     </div>
-                      <!-- Corrected Button -->
+                    <a href="contact.php" class="nav-item nav-link">Contact</a>
+                </div>
+                <!-- Corrected Button -->
                 <div class="ms-3">
                     <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
                 </div>
-                </div>
-            </nav>
-        </div>
+            </div>
+        </nav>
     </div>
+</div>
     <!-- Navbar End -->
+     
+     
+    <!-- Team Start -->
     <div class="container-fluid py-5">
     <div class="container">
         <?php if ($result->num_rows > 0): ?>
@@ -141,44 +147,36 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                 <h1 class="display-4">Qualified Healthcare Professionals</h1>
             </div>
 
-            <div class="owl-carousel team-carousel position-relative">
+            <div class="row g-4">
                 <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
-                    <div class="team-item">
-                        <div class="card shadow h-100">
-                            <div class="row g-0">
-                                <div class="col-sm-5">
-                                    <img src="<?= htmlspecialchars($row['image']) ?>" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
-                                </div>
-                                <div class="col-sm-7 d-flex flex-column">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
-                                        <h6 class="fw-normal fst-italic text-primary mb-3"><?= htmlspecialchars($row['specialization']) ?></h6>
-                                        <p class="mb-2"><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
-                                        <p class="mb-2"><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm h-100">
+                            <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
+                                <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
+                                <p><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
+                                <p><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
+                                <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
 
-                                        <!-- Hidden More Details -->
-                                        <div class="collapse" id="doctorDetails<?= $counter ?>">
-                                            <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
-                                            <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
-                                            <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
-                                            <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
-                                            <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
-                                            <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
-                                            <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
-                                            <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
-                                        </div>
-
-                                        <!-- More Details Button -->
-                                        <button class="btn btn-sm btn-outline-primary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#doctorDetails<?= $counter ?>" aria-expanded="false" aria-controls="doctorDetails<?= $counter ?>" onclick="toggleButtonText(this)">
-                                            More Details
-                                        </button>
-                                    </div>
-                                    <div class="card-footer bg-white border-0 mt-auto d-flex justify-content-start">
-                                        <a class="btn btn-sm btn-primary rounded-circle me-2" href="#"><i class="fab fa-twitter"></i></a>
-                                        <a class="btn btn-sm btn-primary rounded-circle me-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                                        <a class="btn btn-sm btn-primary rounded-circle" href="#"><i class="fab fa-linkedin-in"></i></a>
-                                    </div>
+                                <div class="collapse" id="doctorDetails<?= $counter ?>">
+                                    <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
+                                    <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
+                                    <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
+                                    <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
+                                    <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
+                                    <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
+                                    <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
                                 </div>
+
+                                <button class="btn btn-sm btn-outline-primary mt-2 toggle-details-btn" 
+                                    type="button" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#doctorDetails<?= $counter ?>" 
+                                    aria-expanded="false" 
+                                    aria-controls="doctorDetails<?= $counter ?>">
+                                    More Details
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -189,66 +187,13 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         <?php endif; ?>
     </div>
 </div>
-                <!-- <div class="team-item">
-                    <div class="row g-0 bg-light rounded overflow-hidden">
-                        <div class="col-12 col-sm-5 h-100">
-                            <img class="img-fluid h-100" src="img/team-2.jpg" style="object-fit: cover;">
-                        </div>
-                        <div class="col-12 col-sm-7 h-100 d-flex flex-column">
-                            <div class="mt-auto p-4">
-                                <h3>Doctor Name</h3>
-                                <h6 class="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                <p class="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                            </div>
-                            <div class="d-flex mt-auto border-top p-4">
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="team-item">
-                    <div class="row g-0 bg-light rounded overflow-hidden">
-                        <div class="col-12 col-sm-5 h-100">
-                            <img class="img-fluid h-100" src="img/team-3.jpg" style="object-fit: cover;">
-                        </div>
-                        <div class="col-12 col-sm-7 h-100 d-flex flex-column">
-                            <div class="mt-auto p-4">
-                                <h3>Doctor Name</h3>
-                                <h6 class="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                <p class="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                            </div>
-                            <div class="d-flex mt-auto border-top p-4">
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-            </div>
-        </div>
-    </div>
+
     <!-- Team End -->
-      <!-- Back to Top -->
-      <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
 
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="lib/easing/easing.min.js"></script>
-<script src="lib/waypoints/waypoints.min.js"></script>
-<script src="lib/owlcarousel/owl.carousel.min.js"></script>
-<script src="lib/tempusdominus/js/moment.min.js"></script>
-<script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-<script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
-<!-- Template Javascript -->
-<script src="js/main.js"></script>
-<!-- Footer Start -->
-      <div class="container-fluid bg-dark text-light mt-5 py-5">
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light mt-5 py-5">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
@@ -278,8 +223,9 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                         <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Meet The Team</a>
                         <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Latest Blog</a>
                         <a class="text-light" href="#"><i class="fa fa-angle-right me-2"></i>Contact Us</a>
+                        <a class="text-light" href="doctorform.php"><i class="fa fa-angle-right me-2"></i>Join As Doctor </a>
                     </div>
-            </div>
+                </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Newsletter</h4>
                     <form action="">
@@ -312,21 +258,39 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         </div>
     </div>
     <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <!-- Template Javascript -->
+
+    <script src="js/main.js"></script>
     <script>
-function toggleButtonText(button) {
-    const targetId = button.getAttribute('data-bs-target');
-    const collapseEl = document.querySelector(targetId);
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.toggle-details-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = btn.getAttribute('data-bs-target');
+                const collapseEl = document.querySelector(targetId);
 
-    setTimeout(() => {
-        if (collapseEl.classList.contains('show')) {
-            button.textContent = 'Less Details';
-        } else {
-            button.textContent = 'More Details';
-        }
-    }, 300); // delay for animation
-}
+                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+                
+                // Delay check for smooth toggle text
+                setTimeout(() => {
+                    if (collapseEl.classList.contains('show')) {
+                        btn.textContent = 'Less Details';
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-outline-danger');
+                    } else {
+                        btn.textContent = 'More Details';
+                        btn.classList.remove('btn-outline-danger');
+                        btn.classList.add('btn-outline-primary');
+                    }
+                }, 200);
+            });
+        });
+    });
 </script>
-
 </body>
 
 </html>
