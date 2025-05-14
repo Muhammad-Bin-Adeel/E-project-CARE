@@ -2,12 +2,7 @@
 session_start();
 include("db.php");
 
-// Add new columns if not already added
-$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS location VARCHAR(255)");
-$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS address TEXT");
-$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS degree VARCHAR(255)");
-
-// Create table if not exists (with address and degree)
+// Create table with email and password
 $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
@@ -23,9 +18,14 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     location VARCHAR(255),
     address TEXT,
     degree VARCHAR(255),
+    email VARCHAR(255),
+    password VARCHAR(255),
     status ENUM('pending','approved') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
+$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS email VARCHAR(255)");
+$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS password VARCHAR(255)");
+
 
 if (!isset($_SESSION['admin'])) {
     header("Location: login.php");
@@ -47,8 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $location = $conn->real_escape_string($_POST['location']);
     $address = $conn->real_escape_string($_POST['address']);
     $degree = $_POST['degree'] === 'Other'
-    ? $conn->real_escape_string($_POST['other_degree'])
-    : $conn->real_escape_string($_POST['degree']);
+        ? $conn->real_escape_string($_POST['other_degree'])
+        : $conn->real_escape_string($_POST['degree']);
+    $email = $conn->real_escape_string($_POST['email']);
+
+    $passwordInput = $_POST['password'] ?? '';
+    $passwordHashed = !empty($passwordInput) ? password_hash($passwordInput, PASSWORD_DEFAULT) : '';
 
     $imagePath = '';
     if (!empty($_FILES['image']['name'])) {
@@ -60,21 +64,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($id) {
         $query = "UPDATE doctors SET 
-                    name='$name', hospital_name='$hospital', phone='$phone',
-                    specialization='$spec', city='$city', days='$days',
-                    timing='$timing', experience='$exp', description='$desc',
-                    location='$location', address='$address', degree='$degree'";
-        if ($imagePath) $query .= ", image='$imagePath'";
+            name='$name', hospital_name='$hospital', phone='$phone',
+            specialization='$spec', city='$city', days='$days',
+            timing='$timing', experience='$exp', description='$desc',
+            location='$location', address='$address', degree='$degree',
+            email='$email'";
+
+        if (!empty($passwordHashed)) {
+            $query .= ", password='$passwordHashed'";
+        }
+        if ($imagePath) {
+            $query .= ", image='$imagePath'";
+        }
+
         $query .= " WHERE id=$id";
         $conn->query($query);
         $_SESSION['message'] = "Doctor updated successfully!";
     } else {
         $conn->query("INSERT INTO doctors 
-            (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree) 
+            (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree, email, password) 
             VALUES 
-            ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree')");
+            ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree','$email','$passwordHashed')");
         $_SESSION['message'] = "Doctor added successfully!";
     }
+
     header("Location: manage_doctors.php");
     exit;
 }
@@ -106,13 +119,14 @@ if (isset($_GET['edit'])) {
 $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 ?>
 
-<!-- Messages -->
+<!-- Success Message -->
 <?php if (isset($_SESSION['message'])): ?>
 <div class="alert alert-success">
     <?= $_SESSION['message'] ?>
     <?php unset($_SESSION['message']); ?>
 </div>
 <?php endif; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -646,6 +660,16 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
     <div class="form-group">
     <label for="address">Full Address</label>
     <textarea name="address" id="address" class="form-control"><?= $edit['address'] ?? '' ?></textarea>
+</div>
+
+<div class="form-group">
+    <label>Email</label>
+    <input type="email" name="email" class="form-control" value="<?= $edit['email'] ?? '' ?>" required>
+</div>
+
+<div class="form-group">
+    <label>Password <?= isset($edit) ? '(Leave blank to keep unchanged)' : '' ?></label>
+    <input type="password" name="password" class="form-control" <?= isset($edit) ? '' : 'required' ?>>
 </div>
 
    
