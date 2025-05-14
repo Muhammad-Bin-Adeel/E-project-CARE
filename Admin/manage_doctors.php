@@ -496,6 +496,8 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                                 <th>Specialization</th>
                                 <th>Degree</th>
                                 <th>Phone</th>
+                                <th>Email</th>
+                                <th>Password</th>
                                 <th>City</th>
                                 <th>Location</th>
                                 <th>Address</th>
@@ -519,6 +521,8 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                                         <td><?= htmlspecialchars($row['specialization']) ?></td>
                                         <td><?= htmlspecialchars($row['degree']) ?></td>
                                         <td><?= htmlspecialchars($row['phone']) ?></td>
+                                        <td><?= htmlspecialchars($row['email']) ?></td>
+                                        <td><?= htmlspecialchars($row['password']) ?></td>
                                         <td><?= htmlspecialchars($row['city']) ?></td>
                                         <td><?= htmlspecialchars($row['location']) ?></td>
                                         <td><?= htmlspecialchars($row['address']) ?></td>
@@ -526,6 +530,7 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                                         <td><?= htmlspecialchars($row['timing']) ?></td>
                                         <td><?= htmlspecialchars($row['experience']) ?></td>
                                         <td><?= htmlspecialchars($row['description']) ?></td>
+                                        
                                         <td>
                                             <?php if ($row['status'] === 'pending'): ?>
                                                 <span class="badge badge-pending">Pending</span>
