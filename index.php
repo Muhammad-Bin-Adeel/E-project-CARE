@@ -95,8 +95,15 @@
                             </div>
                         </div>
                         <a href="contact.php" class="nav-item nav-link">Contact</a>
-                    </div>
-                </div>
+                                  </div>
+                                  
+                                    <div class="button-container">
+                                         <a href="Admin/users/signup.php"  class="btn btn-signup" >Sign Up</a>
+                                           <a href="Admin/users/signin.php"  class="btn btn-signin" >Sign in</a>
+  </div>
+
+
+                                           
             </nav>
         </div>
     </div>
