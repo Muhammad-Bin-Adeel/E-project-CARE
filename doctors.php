@@ -35,6 +35,9 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
     <style>
@@ -266,30 +269,32 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 
     <script src="js/main.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('.toggle-details-btn');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const targetId = btn.getAttribute('data-bs-target');
-                const collapseEl = document.querySelector(targetId);
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.toggle-details-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = btn.getAttribute('data-bs-target');
+            const collapseEl = document.querySelector(targetId);
 
-                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
-                
-                // Delay check for smooth toggle text
-                setTimeout(() => {
-                    if (collapseEl.classList.contains('show')) {
-                        btn.textContent = 'Less Details';
-                        btn.classList.remove('btn-outline-primary');
-                        btn.classList.add('btn-outline-danger');
-                    } else {
-                        btn.textContent = 'More Details';
-                        btn.classList.remove('btn-outline-danger');
-                        btn.classList.add('btn-outline-primary');
-                    }
-                }, 200);
-            });
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+
+            // No need for manual toggle, Bootstrap does this by data-bs-toggle automatically
+
+            // Delay to wait for collapse animation
+            setTimeout(() => {
+                if (collapseEl.classList.contains('show')) {
+                    btn.textContent = 'Less Details';
+                    btn.classList.remove('btn-outline-primary');
+                    btn.classList.add('btn-outline-danger');
+                } else {
+                    btn.textContent = 'More Details';
+                    btn.classList.remove('btn-outline-danger');
+                    btn.classList.add('btn-outline-primary');
+                }
+            }, 300); // Delay for smooth animation check
         });
     });
+});
 </script>
 </body>
 
