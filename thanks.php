@@ -29,6 +29,12 @@
             margin-bottom: 30px;
         }
 
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
         .btn {
             display: inline-block;
             padding: 12px 30px;
@@ -48,7 +54,10 @@
 <body>
     <div class="container">
         <h1>Your Request Has Been Submitted</h1>
-        <a href="index.php" class="btn">Back to Home Page</a>
+        <div class="btn-group">
+    <a href="index.php" class="btn">Back to Home Page</a>
+    <a href="Admin/login.php" class="btn">Login</a>
+</div>
     </div>
 </body>
 </html>
