@@ -49,6 +49,13 @@
         .btn:hover {
             background-color: #0056b3;
         }
+        
+        @media (max-width: 600px) {
+    .btn-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
     </style>
 </head>
 <body>

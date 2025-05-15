@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Dashboard - Medinova</title>
+    <title>Admin Dashboard - Medinova</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -207,65 +207,65 @@
         }
     </style>
 </head>
-<body>
-<div class="wrapper">
+<body><div class="wrapper">
     <!-- Sidebar -->
-<nav class="sidebar">
-    <div class="brand-title">
-        <i class="fas fa-clinic-medical me-2"></i>MEDINOVA
-    </div>
-    
-    <div class="sidebar-menu">
-        <!-- Dashboard Section -->
-        <div class="sidebar-section">
-            <div class="section-title">Dashboard</div>
-            <a href="doctor_dashboard.php" class="nav-link active">
-                <i class="fas fa-chart-pie"></i>
-                <span>Overview</span>
-            </a>
+    <nav class="sidebar">
+        <div class="brand-title">
+            <i class="fas fa-clinic-medical me-2"></i>MEDINOVA
         </div>
         
-        <!-- My Appointments -->
-        <div class="sidebar-section">
-            <div class="section-title">Appointments</div>
-            <a href="doctor_appointments.php" class="nav-link">
-                <i class="fas fa-calendar-check"></i>
-                <span>My Appointments</span>
-            </a>
+        <div class="sidebar-menu">
+            <!-- Dashboard Section -->
+            <div class="sidebar-section">
+                <div class="section-title">Dashboard</div>
+                <a href="dashboard.php" class="nav-link active">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            
+            <!-- My Panel Section -->
+            <div class="sidebar-section">
+                <div class="section-title">My Panel</div>
+                
+                <!-- My Patients -->
+                <div class="nav-link" onclick="toggleCollapse('patientsCollapse')">
+                    <i class="fas fa-procedures"></i>
+                    <span>Patients</span>
+                    <i class="fas fa-angle-down ms-auto" id="patientsCollapseIcon"></i>
+                </div>
+                <div class="collapse" id="patientsCollapse">
+                    <a href="view_patients.php" class="nav-link ps-4">
+                        <i class="fas fa-list"></i>
+                        <span>View Patients</span>
+                    </a>
+                    <a href="manage_patients.php" class="nav-link ps-4">
+                        <i class="fas fa-edit"></i>
+                        <span>Modify Patients</span>
+                    </a>
+                </div>
+                
+                <!-- My Appointments -->
+                <a href="doctor_appointments.php" class="nav-link">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+            </div>
+            
+            <!-- Account Section -->
+            <div class="sidebar-section">
+                <div class="section-title">Account</div>
+                <a href="profile.php" class="nav-link">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Profile Settings</span>
+                </a>
+                <a href="logout.php" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
         </div>
-        
-        <!-- Availability -->
-        <div class="sidebar-section">
-            <div class="section-title">Availability</div>
-            <a href="doctor_availability.php" class="nav-link">
-                <i class="fas fa-clock"></i>
-                <span>Manage Availability</span>
-            </a>
-        </div>
-        
-        <!-- Profile Section -->
-        <div class="sidebar-section">
-            <div class="section-title">Profile</div>
-            <a href="doctor_profile_view.php" class="nav-link">
-                <i class="fas fa-user"></i>
-                <span>View Profile</span>
-            </a>
-            <a href="doctor_profile_edit.php" class="nav-link">
-                <i class="fas fa-edit"></i>
-                <span>Edit Profile</span>
-            </a>
-        </div>
-        
-        <!-- Account Section -->
-        <div class="sidebar-section">
-            <div class="section-title">Account</div>
-            <a href="logout.php" class="nav-link">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </a>
-        </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -274,7 +274,7 @@
             <button class="btn btn-sm btn-outline-light d-lg-none" id="sidebarToggle">
                 <i class="fas fa-bars"></i>
             </button>
-            <h4 class="page-title">Admin Dashboard</h4>
+            <h4 class="page-title">Doctor Dashboard</h4>
             
             <div class="d-flex align-items-center">
                 <div class="search-bar">
@@ -289,8 +289,8 @@
                 
                 <div class="user-menu dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown">
-                        <img src="assets/img/admin-avatar.jpg" alt="Admin">
-                        <span class="ms-2 d-none d-sm-inline">Admin</span>
+                        <img src="assets/img/doctor-avatar.jpg" alt="Doctor">
+                        <span class="ms-2 d-none d-sm-inline">Doctor</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
@@ -308,6 +308,7 @@
         </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
