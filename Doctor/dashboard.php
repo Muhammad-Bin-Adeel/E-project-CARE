@@ -2,10 +2,21 @@
 session_start();
 include("db.php");
 
+// Check if doctor is logged in
+if (!isset($_SESSION['doctor_email'])) {
+    header("Location: doctor_login.php");
+    exit;
+}
 
+$doctorEmail = $conn->real_escape_string($_SESSION['doctor_email']);
+$result = $conn->query("SELECT name, specialization, hospital_name, city, degree, experience, phone, email, image FROM doctors WHERE email = '$doctorEmail' AND status = 'approved' LIMIT 1");
 
-// Fetch only approved doctors
-$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
+$doctor = $result->fetch_assoc();
+
+if (!$doctor) {
+    echo "Doctor not found or not approved.";
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,9 +37,43 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         }
         
         body {
-            background-color: var(--light);
-            font-family: 'Segoe UI', sans-serif;
-            overflow-x: hidden;
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            padding: 40px;
+        }
+        .dashboard {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .profile-header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ccc;
+        }
+        .profile-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .info p {
+            margin: 8px 0;
+            color: #555;
+        }
+        .label {
+            font-weight: bold;
+            color: #222;
         }
         
         /* Sidebar Styles */
@@ -313,55 +358,26 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         </div>
         
         <!-- Content Area - Empty now -->
-        <div class="content-wrapper">
+        
         <!-- Team Start -->
-    <div class="container-fluid py-5">
-    <div class="container">
-        <?php if ($result->num_rows > 0): ?>
-            <div class="text-center mx-auto mb-5" style="max-width: 500px;">
-                
-            </div>
+   
+<div class="dashboard">
+    <div class="profile-header">
+        <img src="<?= !empty($doctor['image']) ? htmlspecialchars($doctor['image']) : 'default_doctor.png' ?>" alt="Doctor Image">
+        <div>
+            <h2>Welcome, Dr. <?= htmlspecialchars($doctor['name']) ?></h2>
+            <p><?= htmlspecialchars($doctor['specialization']) ?> at <?= htmlspecialchars($doctor['hospital_name']) ?>, <?= htmlspecialchars($doctor['city']) ?></p>
+        </div>
+    </div>
 
-            <div class="row g-4">
-                <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card shadow-sm h-100">
-                            <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
-                                <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
-                                <p><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
-                                <p><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
-                                <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
-
-                                <div class="collapse" id="doctorDetails<?= $counter ?>">
-                                    <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
-                                    <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
-                                    <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
-                                    <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
-                                    <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
-                                    <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
-                                    <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
-                                </div>
-
-                                <button class="btn btn-sm btn-outline-primary mt-2 toggle-details-btn" 
-                                    type="button" 
-                                    data-bs-toggle="collapse" 
-                                    data-bs-target="#doctorDetails<?= $counter ?>" 
-                                    aria-expanded="false" 
-                                    aria-controls="doctorDetails<?= $counter ?>">
-                                    More Details
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                <?php $counter++; endwhile; ?>
-            </div>
-        <?php else: ?>
-            <p class="text-center text-muted">No approved doctors found.</p>
-        <?php endif; ?>
+    <div class="info">
+        <p><span class="label">Degree:</span> <?= htmlspecialchars($doctor['degree']) ?></p>
+        <p><span class="label">Experience:</span> <?= htmlspecialchars($doctor['experience']) ?></p>
+        <p><span class="label">Phone:</span> <?= htmlspecialchars($doctor['phone']) ?></p>
+        <p><span class="label">Email:</span> <?= htmlspecialchars($doctor['email']) ?></p>
     </div>
 </div>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
