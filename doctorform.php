@@ -388,7 +388,7 @@ h4.text-primary i {
 
 <div class="form-group">
     <label>Password</label>
-    <input type="password" name="password" value="<?= isset($edit) ? $edit['password'] : '' ?>" required />
+    <input type="password" name="password" class="form-control" value="<?= isset($edit) ? $edit['password'] : '' ?>" required />
 </div>
    
     <div class="form-group full-width">

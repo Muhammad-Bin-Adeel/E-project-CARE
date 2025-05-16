@@ -669,7 +669,7 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 
 <div class="form-group">
     <label>Password</label>
-    <input type="password" name="password" value="<?= isset($edit) ? $edit['password'] : '' ?>" required/>
+    <input type="password" name="password" class="form-control" value="<?= isset($edit) ? $edit['password'] : '' ?>" required/>
 </div>
 
    
