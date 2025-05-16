@@ -1,4 +1,4 @@
-<?php
+<?php 
 $conn = new mysqli("localhost", "root", "", "mydbnew");
 
 // Check connection
@@ -6,24 +6,21 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST["username"];
     $Email = $_POST["Email"];
-    $phone = $_POST["phone"];
-    $address = $_POST["address"];
+    $phoneNumber = $_POST["phoneNumber"];
+    $Address = $_POST["Address"];
 
-    $stmt = $conn->prepare("SELECT * FROM users4 WHERE username = ? AND Email = ? AND phone = ? AND address = ?");
-    $stmt->bind_param("ssss", $username, $Email, $phone, $address);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt = $conn->prepare("INSERT INTO users4 (username, Email, phoneNumber, Address) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $username, $Email, $phoneNumber, $Address);
 
-    if ($result->num_rows === 1) {
-        $user = $result->fetch_assoc();
-        // You can start a session here if needed
-        echo "<script>alert('Welcome, " . $user['username'] . "! You are now signed in.');</script>";
+    if ($stmt->execute()) {
+        // Redirect to sign-in page
+        header("Location: signin.php");
+        exit();
     } else {
-        $error = "Invalid username, email, phone or address.";
+        echo "Error: " . $stmt->error;
     }
 }
 ?>
@@ -61,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
+    
     <!-- Topbar Start -->
     <div class="container-fluid py-2 border-bottom d-none d-lg-block">
         <div class="container">
@@ -98,6 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     <!-- Navbar Start -->
+
     <div class="container-fluid sticky-top bg-white shadow-sm">
         <div class="container">
             <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
@@ -128,28 +127,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                   </div>
                                   
                                     <div class="button-container">
-                                         <a href="Admin/users/signup.php"  class="btn btn-signup" >Sign Up</a>
-                                           <a href="Admin/users/signin.php"  class="btn btn-signin" >Sign in</a>
-  </div> -->
-
+                                         <a href="users/signup.php"  class="btn btn-signup" >Sign Up</a>
+                                           <a href="users/signin.php"  class="btn btn-signin" >Sign in</a>
+  </div>
+ -->
 
                                            
             </nav>
         </div>
     </div>
-    <!-- Navbar End -->
-
 
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign-In</title>
+    <title>Sign-Up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(to right, #f8f9fa, #d0e8ff);
+            background: linear-gradient(to right, #e0f7ff, #b3e0ff);
             font-family: 'Segoe UI', sans-serif;
         }
         form {
@@ -160,6 +157,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             width: 100%;
             max-width: 400px;
             margin: 60px auto;
+        }
+        label {
+            font-weight: 500;
         }
         input[type="text"] {
             width: 100%;
@@ -179,37 +179,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         button:hover {
             background-color: #005f8e;
         }
-        .error {
-            color: red;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
     </style>
 </head>
 <body>
     <form method="POST" action="">
-        <h2 class="text-center mb-4">Sign-In</h2>
-
-        <?php if ($error): ?>
-            <div class="error"><?php echo $error; ?></div>
-        <?php endif; ?>
+        <h2 class="text-center mb-4">Sign-Up</h2>
 
         <label for="username">Username</label>
-        <input type="text" name="username" required placeholder="Enter your username">
+        <input type="text" name="username" id="username" required placeholder="Enter your username">
 
         <label for="Email">Email</label>
-        <input type="text" name="Email" required placeholder="Enter your Email">
+        <input type="text" name="Email" id="Email" required placeholder="Enter your Email">
 
-        <label for="phone">Phone</label>
-        <input type="text" name="phone" required placeholder="Enter your phone number">
+        <label for="phoneNumber">Phone Number</label>
+        <input type="text" name="phoneNumber" id="phoneNumber" required placeholder="Enter your phone number">
 
-        <label for="address">Address</label>
-        <input type="text" name="address" required placeholder="Enter your address">
+        <label for="Address">Address</label>
+        <input type="text" name="Address" id="Address" required placeholder="Enter your address">
 
         <div class="d-grid">
-            <button type="submit">Sign In</button>
+            <button type="submit">Sign up</button>
         </div>
     </form>
+
 
     
     <!-- Footer Start -->

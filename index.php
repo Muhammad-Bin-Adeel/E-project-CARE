@@ -31,6 +31,7 @@
 </head>
 
 <body>
+
     <!-- Topbar Start -->
     <div class="container-fluid py-2 border-bottom d-none d-lg-block">
         <div class="container">
@@ -98,8 +99,8 @@
                                   </div>
                                   
                                     <div class="button-container">
-                                         <a href="Admin/users/signup.php"  class="btn btn-signup" >Sign Up</a>
-                                           <a href="Admin/users/signin.php"  class="btn btn-signin" >Sign in</a>
+                                         <a href="users/signup.php"  class="btn btn-signup" >Sign Up</a>
+                                           <a href="users/signin.php"  class="btn btn-signin" >Sign in</a>
   </div>
 
 
@@ -639,6 +640,7 @@
     <!-- Blog End -->
     
 
+
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light mt-5 py-5">
         <div class="container py-5">
@@ -722,6 +724,8 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+    
 </body>
 
 </html>
