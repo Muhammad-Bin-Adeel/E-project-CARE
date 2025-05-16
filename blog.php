@@ -232,7 +232,7 @@ $result = $conn->query($query);
             <?php while ($row = $result->fetch_assoc()): ?>
                 <div class="col-md-4">
                     <div class="news-card">
-                        <img src="<?= htmlspecialchars($row['image']) ?>" alt="News Image">
+                        <img src="Admin?= htmlspecialchars($row['image']) ?>" alt="News Image">
                         <div class="news-content">
                             <h5><?= htmlspecialchars($row['title']) ?></h5>
                             <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
