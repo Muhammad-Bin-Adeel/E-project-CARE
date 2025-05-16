@@ -46,8 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         : $conn->real_escape_string($_POST['degree']);
         $email = $conn->real_escape_string($_POST['email']);
 
-    $passwordInput = $_POST['password'] ?? '';
-    $passwordHashed = !empty($passwordInput) ? password_hash($passwordInput, PASSWORD_DEFAULT) : '';
+    $password = $conn->real_escape_string($_POST['password'] ?? '');
 
 
     $imagePath = '';
@@ -68,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
            
-        if (!empty($passwordHashed)) {
-            $query .= ", password='$passwordHashed'";
+        if (!empty($password)) {
+            $query .= ", password='$password'";
         }
         if ($imagePath) $query .= ", image='$imagePath'";
         $query .= " WHERE id=" . intval($id);
@@ -83,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $conn->query("INSERT INTO doctors 
         (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree, email, password) 
         VALUES 
-        ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree','$email','$passwordHashed')");
+        ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree','$email','$password')");
         $_SESSION['message'] = "Doctor Request submited successfully!";
     
         }
@@ -388,8 +387,8 @@ h4.text-primary i {
 </div>
 
 <div class="form-group">
-    <label>Password <?= isset($edit) ? '(Leave blank to keep unchanged)' : '' ?></label>
-    <input type="password" name="password" class="form-control" <?= isset($edit) ? '' : 'required' ?>>
+    <label>Password</label>
+    <input type="password" name="password" value="<?= isset($edit) ? $edit['password'] : '' ?>" required />
 </div>
    
     <div class="form-group full-width">

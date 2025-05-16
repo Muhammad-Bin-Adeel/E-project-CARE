@@ -59,12 +59,13 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         /* Sidebar Styles */
         .sidebar {
             height: 100vh;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e6ed;
-            position: fixed;
-            width: 250px;
-            transition: all 0.3s;
-            z-index: 1000;
+    overflow-y: auto; /* ✅ Enable vertical scroll */
+    background-color: #ffffff;
+    border-right: 1px solid #e0e6ed;
+    position: fixed;
+    width: 250px;
+    transition: all 0.3s;
+    z-index: 1000;
         }
         
         .brand-title {

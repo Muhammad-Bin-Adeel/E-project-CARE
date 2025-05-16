@@ -51,8 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         : $conn->real_escape_string($_POST['degree']);
     $email = $conn->real_escape_string($_POST['email']);
 
-    $passwordInput = $_POST['password'] ?? '';
-    $passwordHashed = !empty($passwordInput) ? password_hash($passwordInput, PASSWORD_DEFAULT) : '';
+    $password = $conn->real_escape_string($_POST['password'] ?? '');
 
     $imagePath = '';
     if (!empty($_FILES['image']['name'])) {
@@ -70,8 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             location='$location', address='$address', degree='$degree',
             email='$email'";
 
-        if (!empty($passwordHashed)) {
-            $query .= ", password='$passwordHashed'";
+        if (!empty($password)) {
+            $query .= ", password='$password'";
         }
         if ($imagePath) {
             $query .= ", image='$imagePath'";
@@ -84,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $conn->query("INSERT INTO doctors 
             (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree, email, password) 
             VALUES 
-            ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree','$email','$passwordHashed')");
+            ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree','$email','$password')");
         $_SESSION['message'] = "Doctor added successfully!";
     }
 
@@ -154,12 +153,13 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         /* Sidebar Styles */
         .sidebar {
             height: 100vh;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e6ed;
-            position: fixed;
-            width: 250px;
-            transition: all 0.3s;
-            z-index: 1000;
+    overflow-y: auto; /* ✅ Enable vertical scroll */
+    background-color: #ffffff;
+    border-right: 1px solid #e0e6ed;
+    position: fixed;
+    width: 250px;
+    transition: all 0.3s;
+    z-index: 1000;
         }
         
         .brand-title {
@@ -668,8 +668,8 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 </div>
 
 <div class="form-group">
-    <label>Password <?= isset($edit) ? '(Leave blank to keep unchanged)' : '' ?></label>
-    <input type="password" name="password" class="form-control" <?= isset($edit) ? '' : 'required' ?>>
+    <label>Password</label>
+    <input type="password" name="password" value="<?= isset($edit) ? $edit['password'] : '' ?>" required/>
 </div>
 
    
