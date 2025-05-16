@@ -29,7 +29,7 @@ if (isset($_POST['add'])) {
 
     $conn->query("INSERT INTO medical_news (title, content, author, image) 
                   VALUES ('$title', '$content', '$author', '$imagePath')");
-    header("Location: medicalnews.php");
+    header("Location: medical_news.php");
     exit;
 }
 

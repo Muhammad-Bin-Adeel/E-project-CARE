@@ -2,6 +2,10 @@
 session_start();
 include("db.php");
 
+
+
+// Fetch only approved doctors
+$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -310,51 +314,52 @@ include("db.php");
         
         <!-- Content Area - Empty now -->
         <div class="content-wrapper">
-            
-<div class="container-fluid">
-    <h5 class="mb-4">My Patients</h5>
-    <div class="card">
-        <div class="card-body">
-            <table class="table table-bordered table-striped">
-                <thead class="table-primary">
-                    <tr>
-                        <th>ID</th>
-                        <th>Full Name</th>
-                        <th>Gender</th>
-                        <th>Age</th>
-                        <th>Contact</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $sql = "SELECT * FROM doctor";  // Adjust table name if needed
-                    $result = $conn->query($sql);
+        <!-- Team Start -->
+    <div class="container-fluid py-5">
+    <div class="container">
+        <?php if ($result->num_rows > 0): ?>
+            <div class="text-center mx-auto mb-5" style="max-width: 500px;">
+                
+            </div>
 
-                    if ($result->num_rows > 0) {
-                        while($row = $result->fetch_assoc()) {
-                            echo "<tr>";
-                            echo "<td>" . $row['id'] . "</td>";
-                            echo "<td>" . $row['full_name'] . "</td>";
-                            echo "<td>" . $row['gender'] . "</td>";
-                            echo "<td>" . $row['age'] . "</td>";
-                            echo "<td>" . $row['contact'] . "</td>";
-                            echo "<td>
-                                    <a href='view_patient.php?id=" . $row['id'] . "' class='btn btn-sm btn-info'>View</a>
-                                    <a href='edit_patient.php?id=" . $row['id'] . "' class='btn btn-sm btn-warning'>Edit</a>
-                                  </td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='6' class='text-center'>No patients found</td></tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-        </div>
+            <div class="row g-4">
+                <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm h-100">
+                            <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
+                                <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
+                                <p><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
+                                <p><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
+                                <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
+
+                                <div class="collapse" id="doctorDetails<?= $counter ?>">
+                                    <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
+                                    <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
+                                    <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
+                                    <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
+                                    <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
+                                    <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
+                                    <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
+                                </div>
+
+                                <button class="btn btn-sm btn-outline-primary mt-2 toggle-details-btn" 
+                                    type="button" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#doctorDetails<?= $counter ?>" 
+                                    aria-expanded="false" 
+                                    aria-controls="doctorDetails<?= $counter ?>">
+                                    More Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php $counter++; endwhile; ?>
+            </div>
+        <?php else: ?>
+            <p class="text-center text-muted">No approved doctors found.</p>
+        <?php endif; ?>
     </div>
 </div>
 
