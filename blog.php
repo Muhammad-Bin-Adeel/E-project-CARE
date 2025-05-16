@@ -1,3 +1,16 @@
+<?php
+include("db.php");
+
+// Handle Like Button
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['like_id'])) {
+    $like_id = intval($_POST['like_id']);
+    $conn->query("UPDATE medica_lnews SET likes = likes + 1 WHERE id = $like_id");
+}
+
+// Fetch news from the table
+$query = "SELECT * FROM medical_news ORDER BY id DESC";
+$result = $conn->query($query);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,6 +24,81 @@
       left: 100%;
       margin-top: -1px;
     }
+     .section-title {
+            text-align: center;
+            padding: 40px 0 20px;
+        }
+
+        .section-title h2 {
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .news-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-content h5 {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .news-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            background-color: var(--light);
+        }
+
+        .news-footer img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+
+        .meta form {
+            display: inline-block;
+            margin: 0;
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .like-btn:hover {
+            color: red;
+        }
 </style>
 
 <head>
@@ -139,186 +227,39 @@
                 <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Blog Post</h5>
                 <h1 class="display-4">Our Latest Medical Blog Posts</h1>
             </div>
-            <div class="row g-5">
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-1.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
+            <div class="row g-4">
+        <?php if ($result && $result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <div class="col-md-4">
+                    <div class="news-card">
+                        <img src="<?= htmlspecialchars($row['image']) ?>" alt="News Image">
+                        <div class="news-content">
+                            <h5><?= htmlspecialchars($row['title']) ?></h5>
+                            <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
                         </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
+                        <div class="news-footer">
+                            <div class="author">
+                                <img src="img/user.png" alt="Author">
+                                <?= htmlspecialchars($row['author']) ?>
                             </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-2.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
+                            <div class="meta">
+                                <form method="POST">
+                                    <input type="hidden" name="like_id" value="<?= $row['id'] ?>">
+                                    <button type="submit" class="like-btn">
+                                        <i class="fa fa-heart text-danger"></i> <?= $row['likes'] ?>
+                                    </button>
+                                </form>
+                                &nbsp;&nbsp;
+                                <i class="fa fa-calendar-alt text-primary"></i> <?= date("d M Y", strtotime($row['created_at'])) ?>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-3.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-2.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-3.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-1.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-3.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-1.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-2.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo  diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
-                        </div>
-                    </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <div class="col-12 text-center text-muted">No medical news available.</div>
+        <?php endif; ?>
+    </div>
                 </div>
                 <div class="col-12 text-center">
                     <button class="btn btn-primary py-3 px-5">Load More</button>
