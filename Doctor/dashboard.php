@@ -361,21 +361,25 @@ if (!$doctor) {
         
         <!-- Team Start -->
    
-<div class="dashboard">
-    <div class="profile-header">
-        <img src="<?= !empty($doctor['image']) ? htmlspecialchars($doctor['image']) : 'default_doctor.png' ?>" alt="Doctor Image">
-        <div>
-            <h2>Welcome, Dr. <?= htmlspecialchars($doctor['name']) ?></h2>
-            <p><?= htmlspecialchars($doctor['specialization']) ?> at <?= htmlspecialchars($doctor['hospital_name']) ?>, <?= htmlspecialchars($doctor['city']) ?></p>
-        </div>
-    </div>
-
-    <div class="info">
-        <p><span class="label">Degree:</span> <?= htmlspecialchars($doctor['degree']) ?></p>
-        <p><span class="label">Experience:</span> <?= htmlspecialchars($doctor['experience']) ?></p>
-        <p><span class="label">Phone:</span> <?= htmlspecialchars($doctor['phone']) ?></p>
-        <p><span class="label">Email:</span> <?= htmlspecialchars($doctor['email']) ?></p>
-    </div>
+        <div class="panel">
+    <center>
+        <?php if (!empty($doctor['image'])): ?>
+            <img src="<?= $doctor['image'] ?>" alt="Profile Image" class="profile-img">
+        <?php else: ?>
+            <img src="default-doctor.png" alt="Profile Image" class="profile-img">
+        <?php endif; ?>
+        <h1>Welcome, Dr. <?= $doctor['name'] ?>!</h1>
+        <p><strong>Specialization:</strong> <?= $doctor['specialization'] ?></p>
+        <p><strong>Hospital:</strong> <?= $doctor['hospital_name'] ?></p>
+        <p><strong>Experience:</strong> <?= $doctor['experience'] ?></p>
+        <p><strong>City:</strong> <?= $doctor['city'] ?></p>
+        <p><strong>Timing:</strong> <?= $doctor['days'] ?> (<?= $doctor['timing'] ?>)</p>
+        <p><strong>Degree:</strong> <?= $doctor['degree'] ?></p>
+        <p><strong>Contact:</strong> <?= $doctor['phone'] ?> | <?= $doctor['email'] ?></p>
+        <p><strong>Address:</strong> <?= $doctor['address'] ?></p>
+        <p><strong>Description:</strong> <?= $doctor['description'] ?></p>
+        <a href="logout.php" class="logout">Logout</a>
+    </center>
 </div>
 
 
