@@ -1,9 +1,14 @@
+<?php
+session_start();
+include("db.php");
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Medinova</title>
+    <title>Doctor Dashboard - Medinova</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -207,7 +212,8 @@
         }
     </style>
 </head>
-<body><div class="wrapper">
+<body>
+    <div class="wrapper">
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="brand-title">
@@ -293,7 +299,7 @@
                         <span class="ms-2 d-none d-sm-inline">Doctor</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="doctor_profile_view.php"><i class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
@@ -304,7 +310,50 @@
         
         <!-- Content Area - Empty now -->
         <div class="content-wrapper">
-            <!-- Content will be added here as needed -->
+            
+<div class="container-fluid">
+    <h5 class="mb-4">My Patients</h5>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Gender</th>
+                        <th>Age</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $sql = "SELECT * FROM doctor";  // Adjust table name if needed
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        while($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . $row['id'] . "</td>";
+                            echo "<td>" . $row['full_name'] . "</td>";
+                            echo "<td>" . $row['gender'] . "</td>";
+                            echo "<td>" . $row['age'] . "</td>";
+                            echo "<td>" . $row['contact'] . "</td>";
+                            echo "<td>
+                                    <a href='view_patient.php?id=" . $row['id'] . "' class='btn btn-sm btn-info'>View</a>
+                                    <a href='edit_patient.php?id=" . $row['id'] . "' class='btn btn-sm btn-warning'>Edit</a>
+                                  </td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='6' class='text-center'>No patients found</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>
