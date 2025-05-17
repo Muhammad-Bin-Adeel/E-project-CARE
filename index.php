@@ -50,6 +50,7 @@
 </head>
 
 <body>
+
     <!-- Topbar Start -->
     <div class="container-fluid py-2 border-bottom d-none d-lg-block">
         <div class="container">
@@ -115,6 +116,7 @@
                             <a href="appointment.php" class="dropdown-item">Appointment</a>
                             <a href="search.php" class="dropdown-item">Search</a>
                         </div>
+<<<<<<< HEAD
                     </div>
                     <a href="contact.php" class="nav-item nav-link">Contact</a>
                 </div>
@@ -124,6 +126,20 @@
                 </div>
             </div>
         </nav>
+=======
+                        <a href="contact.php" class="nav-item nav-link">Contact</a>
+                                  </div>
+                                  
+                                    <div class="button-container">
+                                         <a href="users/signup.php"  class="btn btn-signup" >Sign Up</a>
+                                           <a href="users/signin.php"  class="btn btn-signin" >Sign in</a>
+  </div>
+
+
+                                           
+            </nav>
+        </div>
+>>>>>>> 37ae66270858e201afa0c6f6b9c09918e056e045
     </div>
 </div>
     <!-- Navbar End -->
@@ -658,6 +674,7 @@
     <!-- Blog End -->
     
 
+
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light mt-5 py-5">
         <div class="container py-5">
@@ -742,6 +759,8 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+    
 </body>
 
 </html>

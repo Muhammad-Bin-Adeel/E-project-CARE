@@ -1,3 +1,31 @@
+<?php
+session_start();
+include("db.php");
+
+// Create city table if it doesn't exist
+$table = "CREATE TABLE IF NOT EXISTS city (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city_name VARCHAR(100) NOT NULL,
+    province VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+$conn->query($table);
+
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin_login.php");
+    exit;
+}
+
+// Add city form handler
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
+    $city_name = $conn->real_escape_string($_POST['city_name']);
+    $province = $conn->real_escape_string($_POST['province']);
+
+    $conn->query("INSERT INTO city (city_name, province) VALUES ('$city_name', '$province')");
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -220,7 +248,7 @@
             <!-- Dashboard Section -->
             <div class="sidebar-section">
                 <div class="section-title">Dashboard</div>
-                <a href="dashboard.php" class="nav-link active">
+                <a href="admin_dashboard.php" class="nav-link active">
                     <i class="fas fa-chart-pie"></i>
                     <span>Overview</span>
                 </a>
@@ -319,7 +347,7 @@
             <!-- Account Section -->
             <div class="sidebar-section">
                 <div class="section-title">Account</div>
-                <a href="logout.php" class="nav-link">
+                <a href="admin_logout.php" class="nav-link">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
@@ -356,14 +384,27 @@
                         <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        <li><a class="dropdown-item" href="admin_logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </div>
             </div>
         </div>
         
-        <!-- Content Area - Empty now -->
-        <div class="content-wrapper">
+        <!-- Content Area - Empty now --> <div class="main-content">
+                <!-- Add city Form -->
+                <form method="POST" action="">
+    <div class="mb-3">
+        <label for="city_name" class="form-label">City Name</label>
+        <input type="text" class="form-control" id="city_name" name="city_name" required>
+    </div>
+    <div class="mb-3">
+        <label for="province" class="form-label">Province (optional)</label>
+        <input type="text" class="form-control" id="province" name="province">
+    </div>
+    <button type="submit" name="add_city" class="btn btn-primary">Add City</button>
+</form>
+            <!-- Content will be added here as needed -->
+        </div>
             <!-- Content will be added here as needed -->
         </div>
     </div>
@@ -478,7 +519,7 @@
         
         // Special case for dashboard (default page)
         if (currentUrl === '' || currentUrl === 'index.php') {
-            document.querySelector('a[href="dashboard.php"]').classList.add('active');
+            document.querySelector('a[href="admin_dashboard.php"]').classList.add('active');
         }
     });
 </script>
