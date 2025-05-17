@@ -14,20 +14,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Check in doctors table
-    $query = "SELECT * FROM doctors WHERE email='$email' AND status='approved'";
-    $result = mysqli_query($conn, $query);
-    
-    if (mysqli_num_rows($result) == 1) {
-        $doctor = mysqli_fetch_assoc($result);
-    
-        if ($doctor['password'] == $password) {  // Simple match (if plain text)
-            $_SESSION['role'] = 'doctor';
-            $_SESSION['email'] = $email;
-            header("Location: doctor_dashboard.php");
-            exit();
-        }
+   // Check in doctors table
+$query = "SELECT * FROM doctors WHERE email='$email' AND status='approved'";
+$result = mysqli_query($conn, $query);
+
+if (mysqli_num_rows($result) == 1) {
+    $doctor = mysqli_fetch_assoc($result);
+
+    if ($doctor['password'] == $password) {  // Simple match (if plain text)
+        $_SESSION['role'] = 'doctor';
+        $_SESSION['doctor_email'] = $email;  // ✅ Corrected this line
+        header("Location: doctor_dashboard.php");
+        exit();
     }
+}
     // // Check in patients table
     // $query = "SELECT * FROM patients WHERE email='$email' AND password='$password'";
     // $result = mysqli_query($conn, $query);
