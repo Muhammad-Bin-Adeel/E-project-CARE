@@ -14,6 +14,11 @@ $conn->query("CREATE TABLE IF NOT EXISTS medical_news (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin_login.php");
+    exit;
+}
+
 // Add news
 if (isset($_POST['add'])) {
     $title = $conn->real_escape_string($_POST['title']);
@@ -350,7 +355,7 @@ if (isset($_GET['edit'])) {
             <!-- Dashboard Section -->
             <div class="sidebar-section">
                 <div class="section-title">Dashboard</div>
-                <a href="dashboard.php" class="nav-link active">
+                <a href="admin_dashboard.php" class="nav-link active">
                     <i class="fas fa-chart-pie"></i>
                     <span>Overview</span>
                 </a>
@@ -449,7 +454,7 @@ if (isset($_GET['edit'])) {
             <!-- Account Section -->
             <div class="sidebar-section">
                 <div class="section-title">Account</div>
-                <a href="logout.php" class="nav-link">
+                <a href="admin_logout.php" class="nav-link">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
@@ -486,7 +491,7 @@ if (isset($_GET['edit'])) {
                         <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        <li><a class="dropdown-item" href="admin_logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -677,7 +682,7 @@ if (isset($_GET['edit'])) {
         
         // Special case for dashboard (default page)
         if (currentUrl === '' || currentUrl === 'index.php') {
-            document.querySelector('a[href="dashboard.php"]').classList.add('active');
+            document.querySelector('a[href="admin_dashboard.php"]').classList.add('active');
         }
     });
 </script>
