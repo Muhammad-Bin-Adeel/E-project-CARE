@@ -181,7 +181,7 @@
           <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
         </div>
         <div class="button-container ms-2">
-          <a href="patient_signup.php" class="btn btn-outline-primary btn-sm">Sign Up</a>
+          <a href="patient_singup.php" class="btn btn-outline-primary btn-sm">Sign Up</a>
           <a href="loginn.php" class="btn btn-outline-secondary btn-sm">Sign in</a>
         </div>
       </div>

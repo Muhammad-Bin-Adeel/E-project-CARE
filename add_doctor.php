@@ -92,30 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Approve
-if (isset($_GET['approve'])) {
-    $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
-    $_SESSION['message'] = "Doctor approved successfully!";
-    header("Location: manage_doctors.php");
-    exit;
-}
 
-// Delete
-if (isset($_GET['delete'])) {
-    $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
-    $_SESSION['message'] = "Doctor deleted successfully!";
-    header("Location: manage_doctors.php");
-    exit;
-}
-
-// Edit
-$edit = null;
-if (isset($_GET['edit'])) {
-    $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
-    if ($res->num_rows) $edit = $res->fetch_assoc();
-}
-
-// Fetch all
-$doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 ?>
 
 <!-- Success Message -->
