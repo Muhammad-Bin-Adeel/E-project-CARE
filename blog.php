@@ -4,7 +4,7 @@ include("db.php");
 // Handle Like Button
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['like_id'])) {
     $like_id = intval($_POST['like_id']);
-    $conn->query("UPDATE medica_lnews SET likes = likes + 1 WHERE id = $like_id");
+    $conn->query("UPDATE medical_news SET likes = likes + 1 WHERE id = $like_id");
 }
 
 // Fetch news from the table
