@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>MEDINOVA - Hospital Website Template</title>
+    <title>MEDINOVA</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -116,7 +116,7 @@
                             <a href="appointment.php" class="dropdown-item">Appointment</a>
                             <a href="search.php" class="dropdown-item">Search</a>
                         </div>
-<<<<<<< HEAD
+
                     </div>
                     <a href="contact.php" class="nav-item nav-link">Contact</a>
                 </div>
@@ -124,24 +124,16 @@
                 <div class="ms-3">
                     <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
                 </div>
+                <div class="button-container">
+                     <a href="users/signup.php"  class="btn btn-signup" >Sign Up</a>
+                     <a href="users/signin.php"  class="btn btn-signin" >Sign in</a>
+                       </div>   
             </div>
-        </nav>
-=======
-                        <a href="contact.php" class="nav-item nav-link">Contact</a>
-                                  </div>
                                   
-                                    <div class="button-container">
-                                         <a href="users/signup.php"  class="btn btn-signup" >Sign Up</a>
-                                           <a href="users/signin.php"  class="btn btn-signin" >Sign in</a>
-  </div>
-
-
-                                           
             </nav>
         </div>
->>>>>>> 37ae66270858e201afa0c6f6b9c09918e056e045
     </div>
-</div>
+
     <!-- Navbar End -->
 
 
