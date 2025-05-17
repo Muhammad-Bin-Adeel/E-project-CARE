@@ -28,18 +28,17 @@ if (mysqli_num_rows($result) == 1) {
         exit();
     }
 }
-    // // Check in patients table
-    // $query = "SELECT * FROM patients WHERE email='$email' AND password='$password'";
-    // $result = mysqli_query($conn, $query);
-    // if (mysqli_num_rows($result) == 1) {
-    //     $_SESSION['role'] = 'patient';
-    //     $_SESSION['email'] = $email;
-    //     header("Location: patient_dashboard.php");
-    //     exit();
-    // }
-
-    // If no match found
-    echo "Invalid email or password.";
+    // Check in patients table
+    $query = "SELECT * FROM patients WHERE email='$email' AND password='$password'";
+    $result = mysqli_query($conn, $query);
+  if (mysqli_num_rows($result) == 1) {
+        $_SESSION['role'] = 'patient';
+        $_SESSION['email'] = $email;
+        header("Location: appointment.php");
+        exit();
+    } else {
+        $error = "Invalid email or password.";
+    }
 }
 ?>
 <!DOCTYPE html>

@@ -29,6 +29,20 @@
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
     <style>
+        .dropdown-submenu {
+  position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -1px;
+}
+
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle::after {
+  content: " \25B8";
+  float: right;
+}
         .join-doctor-btn {
     padding: 8px 20px;
     font-weight: 600;
@@ -87,54 +101,97 @@
     <!-- Topbar End -->
 
 
-    <!-- Navbar Start -->
+  <!-- Navbar Start -->
 
+
+<!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
-    <div class="container">
-        <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
-            <a href="index.php" class="navbar-brand">
-                <h1 class="m-0 text-uppercase text-primary">
-                    <i class="fa fa-clinic-medical me-2"></i>Medinova
-                </h1>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto py-0">
-                    <a href="index.php" class="nav-item nav-link active">Home</a>
-                    <a href="about.php" class="nav-item nav-link">About</a>
-                   
-                    <a href="doctors.php" class="nav-item nav-link">Doctor</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu m-0">
-                            <a href="blog.php" class="dropdown-item">Blog Grid</a>
-                            <a href="#" class="dropdown-item">Blog Detail</a>
-                            <a href="#" class="dropdown-item">The Team</a>
-                            <a href="#" class="dropdown-item">Testimonial</a>
-                            <a href="appointment.php" class="dropdown-item">Appointment</a>
-                            <a href="search.php" class="dropdown-item">Search</a>
-                        </div>
+  <div class="container">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
+      <a href="index.php" class="navbar-brand">
+        <h1 class="m-0 text-uppercase text-primary">
+          <i class="fa fa-clinic-medical me-2"></i>Medinova
+        </h1>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-                    </div>
-                    <a href="contact.php" class="nav-item nav-link">Contact</a>
-                </div>
-                <!-- Corrected Button -->
-                <div class="ms-3">
-                    <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
-                </div>
-                <div class="button-container">
-                     <a href="users/signup.php"  class="btn btn-signup" >Sign Up</a>
-                     <a href="users/signin.php"  class="btn btn-signin" >Sign in</a>
-                       </div>   
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0">
+          <a href="index.php" class="nav-item nav-link active">Home</a>
+          <a href="about.php" class="nav-item nav-link">About</a>
+
+          <!-- Doctors Dropdown Start -->
+          <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Doctors</a>
+            <ul class="dropdown-menu m-0">
+
+              <!-- Dermatologist -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Dermatologist</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">In Lahore</a></li>
+                  <li><a class="dropdown-item" href="#">In Islamabad</a></li>
+                  <li><a class="dropdown-item" href="#">In Karachi</a></li>
+                </ul>
+              </li>
+
+              <!-- Cardiologist -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Cardiologist</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">In Lahore</a></li>
+                  <li><a class="dropdown-item" href="#">In Islamabad</a></li>
+                  <li><a class="dropdown-item" href="#">In Karachi</a></li>
+                </ul>
+              </li>
+
+              <!-- Gynecologist -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Gynecologist</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">In Lahore</a></li>
+                  <li><a class="dropdown-item" href="#">In Islamabad</a></li>
+                  <li><a class="dropdown-item" href="#">In Karachi</a></li>
+                </ul>
+              </li>
+
+            </ul>
+          </div>
+          <!-- Doctors Dropdown End -->
+
+          <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+            <div class="dropdown-menu m-0">
+              <a href="blog.php" class="dropdown-item">Blog Grid</a>
+              <a href="#" class="dropdown-item">Blog Detail</a>
+              <a href="#" class="dropdown-item">The Team</a>
+              <a href="#" class="dropdown-item">Testimonial</a>
+              <a href="appointment.php" class="dropdown-item">Appointment</a>
+              <a href="search.php" class="dropdown-item">Search</a>
             </div>
-                                  
-            </nav>
-        </div>
-    </div>
+          </div>
 
-    <!-- Navbar End -->
+          <a href="contact.php" class="nav-item nav-link">Contact</a>
+        </div>
+
+        <!-- Buttons -->
+        <div class="ms-3">
+          <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
+        </div>
+        <div class="button-container ms-2">
+          <a href="patient_signup.php" class="btn btn-outline-primary btn-sm">Sign Up</a>
+          <a href="loginn.php" class="btn btn-outline-secondary btn-sm">Sign in</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+<!-- Navbar End -->
+<!-- Navbar End -->
+
+<!-- Navbar End -->
 
 
     <!-- Hero Start -->
