@@ -53,13 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
         /* Sidebar Styles */
         .sidebar {
             height: 100vh;
-    overflow-y: auto; /* ✅ Enable vertical scroll */
-    background-color: #ffffff;
-    border-right: 1px solid #e0e6ed;
-    position: fixed;
-    width: 250px;
-    transition: all 0.3s;
-    z-index: 1000;
+            background-color: #ffffff;
+            border-right: 1px solid #e0e6ed;
+            position: fixed;
+            width: 250px;
+            transition: all 0.3s;
+            z-index: 1000;
         }
         
         .brand-title {

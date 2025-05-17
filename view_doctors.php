@@ -6,20 +6,37 @@ include("db.php");
 if (!isset($_SESSION['admin'])) {
     header("Location: login.php");
     exit;
-} 
+}
 
 // Fetch only approved doctors
-$result = $conn->query("SELECT * FROM city ORDER BY id DESC");
-?>
+$sql = "SELECT * FROM doctors WHERE status = 'approved' ORDER BY created_at DESC";
+$doctors = $conn->query($sql);
 
+if (!$doctors) {
+    die("Query failed: " . $conn->error);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Medinova</title>
+    <title>Approved Doctors - Medinova Admin</title>
+    
+    <!-- Bootstrap & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+
+    <!-- jQuery & DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <style>
         :root {
             --primary: #13C5DD;
@@ -39,12 +56,13 @@ $result = $conn->query("SELECT * FROM city ORDER BY id DESC");
         /* Sidebar Styles */
         .sidebar {
             height: 100vh;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e6ed;
-            position: fixed;
-            width: 250px;
-            transition: all 0.3s;
-            z-index: 1000;
+    overflow-y: auto; /* ✅ Enable vertical scroll */
+    background-color: #ffffff;
+    border-right: 1px solid #e0e6ed;
+    position: fixed;
+    width: 250px;
+    transition: all 0.3s;
+    z-index: 1000;
         }
         
         .brand-title {
@@ -181,8 +199,75 @@ $result = $conn->query("SELECT * FROM city ORDER BY id DESC");
         
         /* Content Area */
         .content-wrapper {
-            padding: 20px;
+            padding: 20px;  
         }
+
+         h2 {
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .table-responsive {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    }
+
+    table.dataTable thead {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    table.dataTable tbody tr td {
+        vertical-align: middle;
+    }
+
+    table.dataTable td img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid var(--secondary);
+    }
+
+    table.dataTable th,
+    table.dataTable td {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 5px 10px;
+    }
+
+    .wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .main-content {
+        flex-grow: 1;
+    }
+
+    /* Responsive tweak */
+    @media (max-width: 768px) {
+        table.dataTable th,
+        table.dataTable td {
+            white-space: nowrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        h2 {
+            font-size: 20px;
+            text-align: center;
+        }
+    }
+   
         
         /* Dropdown Animation */
         .collapse:not(.show) {
@@ -376,38 +461,101 @@ $result = $conn->query("SELECT * FROM city ORDER BY id DESC");
         </div>
         
         <!-- Content Area - Empty now -->
-        <h2 style="text-align: center;">City List</h2>
+       <div class="content-wrapper">
+    <div class="container mt-5">
+        <h2 class="mb-4 text-primary">Approved Doctors</h2>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>City Name</th>
-            <th>province</th>
-            <th>Created At</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if ($result && $result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['id']); ?></td>
-                    <td><?php echo htmlspecialchars($row['city_name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['province']); ?></td>
-                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="3">No cities found.</td>
-            </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
-            <!-- Content will be added here as needed -->
+        <!-- Filters -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="filterCity" class="form-label">Filter by City</label>
+                <select id="filterCity" class="form-select select-filter">
+                    <option value="">All Cities</option>
+                    <?php
+                    $cityQuery = $conn->query("SELECT DISTINCT city FROM doctors WHERE status='approved'");
+                    while ($c = $cityQuery->fetch_assoc()) {
+                        echo "<option value='" . htmlspecialchars($c['city']) . "'>" . htmlspecialchars($c['city']) . "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="filterSpecialization" class="form-label">Filter by Specialization</label>
+                <select id="filterSpecialization" class="form-select select-filter">
+                    <option value="">All Specializations</option>
+                    <?php
+                    $specQuery = $conn->query("SELECT DISTINCT specialization FROM doctors WHERE status='approved'");
+                    while ($s = $specQuery->fetch_assoc()) {
+                        echo "<option value='" . htmlspecialchars($s['specialization']) . "'>" . htmlspecialchars($s['specialization']) . "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table id="doctorsTable" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Hospital</th>
+                        <th>Specialization</th>
+                        <th>Degree</th>
+                        <th>Phone</th>
+                        <th>City</th>
+                        <th>Location</th>
+                        <th>Schedule</th>
+                        <th>Experience</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($doctors->num_rows > 0): ?>
+                        <?php $sn = 1; ?>
+                        <?php while ($row = $doctors->fetch_assoc()): ?>
+                            <tr>
+                                <td><?= $sn++ ?></td>
+                                <td><?= htmlspecialchars($row['id']) ?></td>
+                                <td>
+                                    <?php if ($row['image']): ?>
+                                        <img src="<?= htmlspecialchars($row['image']) ?>" alt="Doctor Image">
+                                    <?php else: ?>
+                                        <span class="text-muted">No Image</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?= htmlspecialchars($row['name']) ?></td>
+                                <td><?= htmlspecialchars($row['hospital_name']) ?></td>
+                                <td><?= htmlspecialchars($row['specialization']) ?></td>
+                                <td><?= htmlspecialchars($row['degree']) ?></td>
+                                <td><?= htmlspecialchars($row['phone']) ?></td>
+                                <td><?= htmlspecialchars($row['city']) ?></td>
+                                <td>
+                                    <strong><?= htmlspecialchars($row['location']) ?></strong><br>
+                                    <small><?= htmlspecialchars($row['address']) ?></small>
+                                </td>
+                                <td>
+                                    <strong><?= htmlspecialchars($row['days']) ?></strong><br>
+                                    <small><?= htmlspecialchars($row['timing']) ?></small>
+                                </td>
+                                <td><?= htmlspecialchars($row['experience']) ?></td>
+                                <td><?= date("d M Y", strtotime($row['created_at'])) ?></td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr><td colspan="13" class="text-center text-muted">No approved doctors found.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+    </div>
+        </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -520,6 +668,24 @@ $result = $conn->query("SELECT * FROM city ORDER BY id DESC");
         if (currentUrl === '' || currentUrl === 'index.php') {
             document.querySelector('a[href="dashboard.php"]').classList.add('active');
         }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var table = $('#doctorsTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: ['copyHtml5', 'excelHtml5', 'csvHtml5']
+        });
+
+        // Filter by city
+        $('#filterCity').on('change', function () {
+            table.column(8).search(this.value).draw();
+        });
+
+        // Filter by specialization
+        $('#filterSpecialization').on('change', function () {
+            table.column(5).search(this.value).draw();
+        });
     });
 </script>
 </body>

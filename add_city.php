@@ -2,14 +2,28 @@
 session_start();
 include("db.php");
 
+// Create city table if it doesn't exist
+$table = "CREATE TABLE IF NOT EXISTS city (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city_name VARCHAR(100) NOT NULL,
+    province VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+$conn->query($table);
+
 // Redirect if not logged in
 if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
+    header("Location: admin_login.php");
     exit;
-} 
+}
 
-// Fetch only approved doctors
-$result = $conn->query("SELECT * FROM city ORDER BY id DESC");
+// Add city form handler
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
+    $city_name = $conn->real_escape_string($_POST['city_name']);
+    $province = $conn->real_escape_string($_POST['province']);
+
+    $conn->query("INSERT INTO city (city_name, province) VALUES ('$city_name', '$province')");
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,12 +53,13 @@ $result = $conn->query("SELECT * FROM city ORDER BY id DESC");
         /* Sidebar Styles */
         .sidebar {
             height: 100vh;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e6ed;
-            position: fixed;
-            width: 250px;
-            transition: all 0.3s;
-            z-index: 1000;
+    overflow-y: auto; /* ✅ Enable vertical scroll */
+    background-color: #ffffff;
+    border-right: 1px solid #e0e6ed;
+    position: fixed;
+    width: 250px;
+    transition: all 0.3s;
+    z-index: 1000;
         }
         
         .brand-title {
@@ -233,7 +248,7 @@ $result = $conn->query("SELECT * FROM city ORDER BY id DESC");
             <!-- Dashboard Section -->
             <div class="sidebar-section">
                 <div class="section-title">Dashboard</div>
-                <a href="dashboard.php" class="nav-link active">
+                <a href="admin_dashboard.php" class="nav-link active">
                     <i class="fas fa-chart-pie"></i>
                     <span>Overview</span>
                 </a>
@@ -375,35 +390,21 @@ $result = $conn->query("SELECT * FROM city ORDER BY id DESC");
             </div>
         </div>
         
-        <!-- Content Area - Empty now -->
-        <h2 style="text-align: center;">City List</h2>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>City Name</th>
-            <th>province</th>
-            <th>Created At</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if ($result && $result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['id']); ?></td>
-                    <td><?php echo htmlspecialchars($row['city_name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['province']); ?></td>
-                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="3">No cities found.</td>
-            </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
+        <!-- Content Area - Empty now --> <div class="main-content">
+                <!-- Add city Form -->
+                <form method="POST" action="">
+    <div class="mb-3">
+        <label for="city_name" class="form-label">City Name</label>
+        <input type="text" class="form-control" id="city_name" name="city_name" required>
+    </div>
+    <div class="mb-3">
+        <label for="province" class="form-label">Province (optional)</label>
+        <input type="text" class="form-control" id="province" name="province">
+    </div>
+    <button type="submit" name="add_city" class="btn btn-primary">Add City</button>
+</form>
+            <!-- Content will be added here as needed -->
+        </div>
             <!-- Content will be added here as needed -->
         </div>
     </div>

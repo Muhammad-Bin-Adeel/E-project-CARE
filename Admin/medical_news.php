@@ -1,86 +1,3 @@
-<?php
-session_start();
-include("db.php");
-
-// Create table if not exists
-$conn->query("CREATE TABLE IF NOT EXISTS medical_news (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    image VARCHAR(255),
-    likes INT DEFAULT 0,
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)");
-
-// Add news
-if (isset($_POST['add'])) {
-    $title = $conn->real_escape_string($_POST['title']);
-    $content = $conn->real_escape_string($_POST['content']);
-    $author = $conn->real_escape_string($_POST['author']);
-
-    $imagePath = "";
-    if ($_FILES['image']['name']) {
-        $filename = time() . "_" . basename($_FILES['image']['name']);
-        $imagePath = "uploads/" . $filename;
-        move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
-    }
-
-    $conn->query("INSERT INTO medical_news (title, content, author, image) 
-                  VALUES ('$title', '$content', '$author', '$imagePath')");
-    header("Location: medical_news.php");
-    exit;
-}
-
-// Edit news
-if (isset($_POST['update'])) {
-    $id = intval($_POST['id']);
-    $title = $conn->real_escape_string($_POST['title']);
-    $content = $conn->real_escape_string($_POST['content']);
-    $author = $conn->real_escape_string($_POST['author']);
-
-    if ($_FILES['image']['name']) {
-        $filename = time() . "_" . basename($_FILES['image']['name']);
-        $imagePath = "uploads/" . $filename;
-        move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
-        $conn->query("UPDATE medical_news SET title='$title', content='$content', author='$author', image='$imagePath' WHERE id=$id");
-    } else {
-        $conn->query("UPDATE medical_news SET title='$title', content='$content', author='$author' WHERE id=$id");
-    }
-
-    header("Location: medical_news.php");
-    exit;
-}
-
-// Delete
-if (isset($_GET['delete'])) {
-    $id = intval($_GET['delete']);
-    $conn->query("DELETE FROM medical_news WHERE id=$id");
-    header("Location: medical_news.php");
-    exit;
-}
-
-// Like
-if (isset($_GET['like'])) {
-    $id = intval($_GET['like']);
-    $conn->query("UPDATE medical_news SET likes = likes + 1 WHERE id=$id");
-    header("Location: medical_news.php");
-    exit;
-}
-
-// Get all news
-$result = $conn->query("SELECT * FROM medical_news ORDER BY created_at DESC");
-
-// Edit form
-$editing = false;
-$editData = [];
-if (isset($_GET['edit'])) {
-    $editing = true;
-    $id = intval($_GET['edit']);
-    $editData = $conn->query("SELECT * FROM medical_news WHERE id=$id")->fetch_assoc();
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,13 +25,12 @@ if (isset($_GET['edit'])) {
         /* Sidebar Styles */
         .sidebar {
             height: 100vh;
-    overflow-y: auto; /* ✅ Enable vertical scroll */
-    background-color: #ffffff;
-    border-right: 1px solid #e0e6ed;
-    position: fixed;
-    width: 250px;
-    transition: all 0.3s;
-    z-index: 1000;
+            background-color: #ffffff;
+            border-right: 1px solid #e0e6ed;
+            position: fixed;
+            width: 250px;
+            transition: all 0.3s;
+            z-index: 1000;
         }
         
         .brand-title {
@@ -252,53 +168,6 @@ if (isset($_GET['edit'])) {
         /* Content Area */
         .content-wrapper {
             padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-        }
-
-        h2 {
-            color: var(--secondary);
-            margin-bottom: 20px;
-        }
-
-        .form-control, .btn {
-            border-radius: 6px;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border: none;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-        }
-
-        .btn-like {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .table th {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .table td img {
-            width: 80px;
-            height: 60px;
-            object-fit: cover;
-        }
-
-        .news-image {
-            max-width: 100px;
         }
         
         /* Dropdown Animation */
@@ -494,76 +363,7 @@ if (isset($_GET['edit'])) {
         
         <!-- Content Area - Empty now -->
         <div class="content-wrapper">
-          <div class="container-fluid px-5 mt-5">
-    <h2><?= $editing ? "Edit News" : "Add Medical News" ?></h2>
-    <form method="POST" enctype="multipart/form-data" class="mb-5">
-        <?php if ($editing): ?>
-            <input type="hidden" name="id" value="<?= $editData['id'] ?>">
-        <?php endif; ?>
-        <div class="mb-3">
-            <label>Title</label>
-            <input type="text" name="title" class="form-control" required value="<?= $editing ? htmlspecialchars($editData['title']) : '' ?>">
-        </div>
-        <div class="mb-3">
-            <label>Content</label>
-            <textarea name="content" class="form-control" rows="4" required><?= $editing ? htmlspecialchars($editData['content']) : '' ?></textarea>
-        </div>
-        <div class="mb-3">
-            <label>Author</label>
-            <input type="text" name="author" class="form-control" required value="<?= $editing ? htmlspecialchars($editData['author']) : '' ?>">
-        </div>
-        <div class="mb-3">
-            <label>Image</label>
-            <input type="file" name="image" class="form-control">
-            <?php if ($editing && $editData['image']): ?>
-                <img src="<?= $editData['image'] ?>" class="img-thumbnail mt-2">
-            <?php endif; ?>
-        </div>
-        <button type="submit" name="<?= $editing ? 'update' : 'add' ?>" class="btn btn-primary"><?= $editing ? 'Update' : 'Add News' ?></button>
-    </form>
-
-    <h2>All Medical News</h2>
-    <table class="table table-bordered w-100">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Image</th>
-                <th>Title</th>
-                <th>Content</th>
-                <th>Author</th>
-                <th>Likes</th>
-                
-                <th>Add Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?= $row['id'] ?></td>
-                <td>
-                    <?php if ($row['image']): ?>
-                        <img src="<?= $row['image'] ?>" class="img-thumbnail">
-                    <?php else: ?>
-                        N/A
-                    <?php endif; ?>
-                </td>
-                <td><?= htmlspecialchars($row['title']) ?></td>
-                <td><?= htmlspecialchars($row['content']) ?></td>
-                <td><?= htmlspecialchars($row['author']) ?></td>
-                <td><?= $row['likes'] ?></td>
-            
-                <td><?= date("d-M-Y h:i A", strtotime($row['created_at'])) ?></td>
-                <td>
-                    <a href="?like=<?= $row['id'] ?>" class="btn btn-sm btn-success">Like</a>
-                    <a href="?edit=<?= $row['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="?delete=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this news?')">Delete</a>
-                </td>
-            </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
-</div>
+            <!-- Content will be added here as needed -->
         </div>
     </div>
 </div>

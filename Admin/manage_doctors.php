@@ -11,7 +11,7 @@ if (!isset($_SESSION['admin'])) {
 if (isset($_GET['approve'])) {
     $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
     $_SESSION['message'] = "Doctor approved successfully!";
-    header("Location: view_doctors.php");
+    header("Location: manage_doctors.php");
     exit;
 }
 
@@ -59,13 +59,12 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
         /* Sidebar Styles */
         .sidebar {
             height: 100vh;
-    overflow-y: auto; /* ✅ Enable vertical scroll */
-    background-color: #ffffff;
-    border-right: 1px solid #e0e6ed;
-    position: fixed;
-    width: 250px;
-    transition: all 0.3s;
-    z-index: 1000;
+            background-color: #ffffff;
+            border-right: 1px solid #e0e6ed;
+            position: fixed;
+            width: 250px;
+            transition: all 0.3s;
+            z-index: 1000;
         }
         
         .brand-title {
@@ -497,8 +496,6 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                                 <th>Specialization</th>
                                 <th>Degree</th>
                                 <th>Phone</th>
-                                <th>Email</th>
-                                <th>Password</th>
                                 <th>City</th>
                                 <th>Location</th>
                                 <th>Address</th>
@@ -522,8 +519,6 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                                         <td><?= htmlspecialchars($row['specialization']) ?></td>
                                         <td><?= htmlspecialchars($row['degree']) ?></td>
                                         <td><?= htmlspecialchars($row['phone']) ?></td>
-                                        <td><?= htmlspecialchars($row['email']) ?></td>
-                                        <td><?= htmlspecialchars($row['password']) ?></td>
                                         <td><?= htmlspecialchars($row['city']) ?></td>
                                         <td><?= htmlspecialchars($row['location']) ?></td>
                                         <td><?= htmlspecialchars($row['address']) ?></td>
@@ -531,7 +526,6 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
                                         <td><?= htmlspecialchars($row['timing']) ?></td>
                                         <td><?= htmlspecialchars($row['experience']) ?></td>
                                         <td><?= htmlspecialchars($row['description']) ?></td>
-                                        
                                         <td>
                                             <?php if ($row['status'] === 'pending'): ?>
                                                 <span class="badge badge-pending">Pending</span>
