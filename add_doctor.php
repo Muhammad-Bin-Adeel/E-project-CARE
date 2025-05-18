@@ -2,7 +2,7 @@
 session_start();
 include("db.php");
 
-// Create table with email and password
+// Create table if not exists (with address and degree)
 $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
@@ -23,14 +23,9 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     status ENUM('pending','approved') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
+
 $conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS email VARCHAR(255)");
 $conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS password VARCHAR(255)");
-
-
-if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
-    exit;
-}
 
 // Add or update doctor
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -46,12 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $desc = $conn->real_escape_string($_POST['description']);
     $location = $conn->real_escape_string($_POST['location']);
     $address = $conn->real_escape_string($_POST['address']);
-    $degree = $_POST['degree'] === 'Other'
-        ? $conn->real_escape_string($_POST['other_degree'])
+    $degree = ($_POST['degree'] === 'Other') 
+        ? $conn->real_escape_string($_POST['other_degree']) 
         : $conn->real_escape_string($_POST['degree']);
-    $email = $conn->real_escape_string($_POST['email']);
+        $email = $conn->real_escape_string($_POST['email']);
 
     $password = $conn->real_escape_string($_POST['password'] ?? '');
+
 
     $imagePath = '';
     if (!empty($_FILES['image']['name'])) {
@@ -62,40 +58,67 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if ($id) {
+        // Update existing doctor
         $query = "UPDATE doctors SET 
-            name='$name', hospital_name='$hospital', phone='$phone',
-            specialization='$spec', city='$city', days='$days',
-            timing='$timing', experience='$exp', description='$desc',
-            location='$location', address='$address', degree='$degree',
-            email='$email'";
+                    name='$name', hospital_name='$hospital', phone='$phone',
+                    specialization='$spec', city='$city', days='$days',
+                    timing='$timing', experience='$exp', description='$desc',
+                   location='$location', address='$address', degree='$degree', email='$email'";
 
+
+           
         if (!empty($password)) {
             $query .= ", password='$password'";
         }
-        if ($imagePath) {
-            $query .= ", image='$imagePath'";
-        }
-
-        $query .= " WHERE id=$id";
+        if ($imagePath) $query .= ", image='$imagePath'";
+        $query .= " WHERE id=" . intval($id);
+    
         $conn->query($query);
         $_SESSION['message'] = "Doctor updated successfully!";
+        header("Location: manage_doctors.php");
+        exit;
     } else {
+        // Insert new doctor
         $conn->query("INSERT INTO doctors 
-            (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree, email, password) 
-            VALUES 
-            ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree','$email','$password')");
-        $_SESSION['message'] = "Doctor added successfully!";
-    }
+        (name, hospital_name, phone, specialization, city, days, timing, experience, description, image, location, address, degree, email, password) 
+        VALUES 
+        ('$name','$hospital','$phone','$spec','$city','$days','$timing','$exp','$desc','$imagePath','$location','$address','$degree','$email','$password')");
+        $_SESSION['message'] = "Doctor Request submited successfully!";
+    
+        }
+        header("Location: manage_doctors.php");
+        exit;
+    
+}
 
+// Approve doctor
+if (isset($_GET['approve'])) {
+    $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
+    $_SESSION['message'] = "Your Request Has Been Submitted!";
     header("Location: manage_doctors.php");
     exit;
 }
 
-// Approve
+// Delete doctor
+if (isset($_GET['delete'])) {
+    $conn->query("DELETE FROM doctors WHERE id=" . intval($_GET['delete']));
+    $_SESSION['message'] = "Doctor deleted successfully!";
+    header("Location: manage_doctors.php");
+    exit;
+}
 
+// Edit doctor (fetch single doctor)
+$edit = null;
+if (isset($_GET['edit'])) {
+    $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
+    if ($res->num_rows) $edit = $res->fetch_assoc();
+}
+
+// Fetch all doctors
+$doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 ?>
 
-<!-- Success Message -->
+<!-- Messages -->
 <?php if (isset($_SESSION['message'])): ?>
 <div class="alert alert-success">
     <?= $_SESSION['message'] ?>
