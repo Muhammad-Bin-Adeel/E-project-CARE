@@ -318,10 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="card-footer text-muted">
                     Reviewed: <?= date('d M Y, h:i A', strtotime($row['reviewed_date'])) ?>
-                    <div class="mt-2">
-                        <a href="?edit=<?= $row['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                        <a href="?delete=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete?')">Delete</a>
-                    </div>
+
                 </div>
             </div>
         </div>
