@@ -318,7 +318,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="card-footer text-muted">
                     Reviewed: <?= date('d M Y, h:i A', strtotime($row['reviewed_date'])) ?>
-
                 </div>
             </div>
         </div>

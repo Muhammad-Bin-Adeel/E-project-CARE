@@ -21,6 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
+// Fetch all feedbacks
+$result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
+?>
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -53,6 +56,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
     <style>
+         .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .feedback-card {
+            background: #ffffff;
+            border-left: 5px solid #007bff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .feedback-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .feedback-email {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .feedback-subject {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 8px;
+        }
+
+        .feedback-message {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .feedback-time {
+            text-align: right;
+            font-size: 13px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .feedback-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .feedback-time {
+                text-align: left;
+            }
+        }
         .dropdown-submenu {
   position: relative;
 }
@@ -749,7 +825,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <!-- Blog End -->
     
+    <!-- Contact -->
+     <center><h1>feedback</h1></center>
+<?php
 
+
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        echo '
+        <div class="feedback-card">
+            <h4>' . htmlspecialchars($row["name"]) . ' </h4>
+            <strong>Subject:</strong> ' . htmlspecialchars($row["subject"]) . '<br>
+            <p>' . nl2br(htmlspecialchars($row["message"])) . '</p>
+            <small>Submitted at: ' . $row["submitted_at"] . '</small>
+        </div>';
+    }
+} else {
+    echo "<p>No feedback submitted yet.</p>";
+}
+
+$conn->close();
+?>
+
+  <!-- Contact  -->
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light mt-5 py-5">
