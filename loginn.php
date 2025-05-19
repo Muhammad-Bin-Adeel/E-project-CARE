@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     // Check for admin (hardcoded)
-    if ($email === 'admin@example.com' && $password === 'admin123') {
+    if ($email === 'admin' && $password === 'admin123') {
         $_SESSION['role'] = 'admin';
         $_SESSION['email'] = $email;
         header("Location: admin_dashboard.php");
