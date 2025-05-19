@@ -1,3 +1,68 @@
+<?php
+session_start();
+include("db.php");
+
+
+$conn->query("CREATE TABLE IF NOT EXISTS diseases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    image VARCHAR(255) DEFAULT NULL,
+    reviewed_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);");
+
+function uploadImage($file) {
+    $targetDir = "uploads/";
+    $fileName = basename($file["name"]);
+    $targetFile = $targetDir . time() . "_" . $fileName;
+
+    if (move_uploaded_file($file["tmp_name"], $targetFile)) {
+        return $targetFile;
+    }
+    return null;
+}
+
+// Handle Add
+if (isset($_POST['add'])) {
+    $name = $_POST['name'];
+    $desc = $_POST['description'];
+    $image = uploadImage($_FILES['image']);
+    $conn->query("INSERT INTO diseases (name, description, image) VALUES ('$name', '$desc', '$image')");
+}
+
+// Handle Delete
+if (isset($_GET['delete'])) {
+    $id = $_GET['delete'];
+    $conn->query("DELETE FROM diseases WHERE id = $id");
+}
+
+// Handle Edit Data Load
+$edit_mode = false;
+$edit_id = '';
+$edit_name = '';
+$edit_description = '';
+$edit_image = '';
+
+if (isset($_GET['edit'])) {
+    $edit_mode = true;
+    $edit_id = $_GET['edit'];
+    $result = $conn->query("SELECT * FROM diseases WHERE id = $edit_id");
+    $row = $result->fetch_assoc();
+    $edit_name = $row['name'];
+    $edit_description = $row['description'];
+    $edit_image = $row['image'];
+}
+
+// Handle Update
+if (isset($_POST['update'])) {
+    $id = $_POST['id'];
+    $name = $_POST['name'];
+    $desc = $_POST['description'];
+    $image = $_FILES['image']['name'] ? uploadImage($_FILES['image']) : $_POST['existing_image'];
+    $conn->query("UPDATE diseases SET name='$name', description='$desc', image='$image' WHERE id=$id");
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -169,6 +234,43 @@
         /* Content Area */
         .content-wrapper {
             padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin-top: 40px;
+        }
+
+        .form-section, .table-section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        h2 {
+            color: var(--dark);
+        }
+
+        .table img {
+            height: 60px;
+            width: auto;
+            border-radius: 5px;
+        }
+
+        .table th {
+            background-color: var(--primary);
+            color: white;
         }
         
         /* Dropdown Animation */
@@ -364,7 +466,81 @@
         
         <!-- Content Area - Empty now -->
         <div class="content-wrapper">
-            <!-- Content will be added here as needed -->
+            <div class="container">
+    <div class="form-section">
+        <h2 class="mb-4"><?= $edit_mode ? "Edit Disease" : "Add New Disease" ?></h2>
+        <form method="post" enctype="multipart/form-data">
+            <?php if ($edit_mode): ?>
+                <input type="hidden" name="id" value="<?= $edit_id ?>">
+                <input type="hidden" name="existing_image" value="<?= $edit_image ?>">
+            <?php endif; ?>
+
+            <div class="mb-3">
+                <label class="form-label">Disease Name</label>
+                <input type="text" class="form-control" name="name" value="<?= $edit_name ?>" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="description" rows="3" required><?= $edit_description ?></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Image</label>
+                <input class="form-control" type="file" name="image" accept="image/*">
+                <?php if ($edit_mode && $edit_image): ?>
+                    <div class="mt-2">
+                        <img src="<?= $edit_image ?>" height="80">
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <button type="submit" class="btn btn-primary" name="<?= $edit_mode ? 'update' : 'add' ?>">
+                <?= $edit_mode ? 'Update Disease' : 'Add Disease' ?>
+            </button>
+        </form>
+    </div>
+
+    <div class="table-section">
+        <h2 class="mb-4">Disease Records</h2>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Disease</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Reviewed Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+            $result = $conn->query("SELECT * FROM diseases ORDER BY reviewed_date DESC");
+            while ($row = $result->fetch_assoc()):
+            ?>
+                <tr>
+                    <td><?= $row['id'] ?></td>
+                    <td><?= $row['name'] ?></td>
+                    <td><?= $row['description'] ?></td>
+                    <td>
+                        <?php if ($row['image']): ?>
+                            <img src="<?= $row['image'] ?>" alt="Disease Image">
+                        <?php else: ?>
+                            No Image
+                        <?php endif; ?>
+                    </td>
+                    <td><?= date('d M Y, h:i A', strtotime($row['reviewed_date'])) ?></td>
+                    <td>
+                        <a href="?edit=<?= $row['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="?delete=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete?')">Delete</a>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
         </div>
     </div>
 </div>

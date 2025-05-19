@@ -1,3 +1,27 @@
+<?php
+include("db.php");
+
+// Get all specialists (specialization column)
+$specialists_result = $conn->query("SELECT DISTINCT specialization FROM doctors ORDER BY specialization");
+
+// Get all cities (saari cities)
+$cities_result = $conn->query("SELECT DISTINCT city FROM doctors ORDER BY city");
+
+// Selected values agar form submit ho chuka ho
+$selected_specialist = $_POST['specialist'] ?? '';
+$selected_city = $_POST['city'] ?? '';
+
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!$selected_specialist || !$selected_city) {
+        $error = "Please select both Specialist and City.";
+    } else {
+        // Dono select hain, redirect kar do doctors.php with params
+        header("Location: doctors.php?specialist=" . urlencode($selected_specialist) . "&city=" . urlencode($selected_city));
+        exit;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -123,42 +147,44 @@
           <a href="about.php" class="nav-item nav-link">About</a>
 
           <!-- Doctors Dropdown Start -->
-          <div class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Doctors</a>
-            <ul class="dropdown-menu m-0">
+          
+        <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                Doctors
+            </a>
+            <div class="dropdown-menu p-4" style="min-width: 300px;">
+                <form method="post" action="">
+                    <div class="mb-2">
+                        <label for="specialist-select" class="form-label">Specialist</label>
+                        <select name="specialist" id="specialist-select" class="form-select" required>
+                            <option value="">-- Select Specialist --</option>
+                            <?php while ($row = $specialists_result->fetch_assoc()): ?>
+                                <option value="<?= htmlspecialchars($row['specialization']) ?>" <?= ($selected_specialist == $row['specialization']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($row['specialization']) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
 
-              <!-- Dermatologist -->
-              <li class="dropdown-submenu">
-                <a class="dropdown-item dropdown-toggle" href="#">Dermatologist</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">In Lahore</a></li>
-                  <li><a class="dropdown-item" href="#">In Islamabad</a></li>
-                  <li><a class="dropdown-item" href="#">In Karachi</a></li>
-                </ul>
-              </li>
+                    <div class="mb-2">
+                        <label for="city-select" class="form-label">City</label>
+                        <select name="city" id="city-select" class="form-select" required>
+                            <option value="">-- Select City --</option>
+                            <?php while ($row = $cities_result->fetch_assoc()): ?>
+                                <option value="<?= htmlspecialchars($row['city']) ?>" <?= ($selected_city == $row['city']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($row['city']) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
 
-              <!-- Cardiologist -->
-              <li class="dropdown-submenu">
-                <a class="dropdown-item dropdown-toggle" href="#">Cardiologist</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">In Lahore</a></li>
-                  <li><a class="dropdown-item" href="#">In Islamabad</a></li>
-                  <li><a class="dropdown-item" href="#">In Karachi</a></li>
-                </ul>
-              </li>
-
-              <!-- Gynecologist -->
-              <li class="dropdown-submenu">
-                <a class="dropdown-item dropdown-toggle" href="#">Gynecologist</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">In Lahore</a></li>
-                  <li><a class="dropdown-item" href="#">In Islamabad</a></li>
-                  <li><a class="dropdown-item" href="#">In Karachi</a></li>
-                </ul>
-              </li>
-
-            </ul>
-          </div>
+                    <button type="submit" class="btn btn-primary w-100">Find Doctors</button>
+                </form>
+                <?php if ($error): ?>
+                    <p class="text-danger mt-2"><?= htmlspecialchars($error) ?></p>
+                <?php endif; ?>
+            </div>
+        </div>
           <!-- Doctors Dropdown End -->
 
           <div class="nav-item dropdown">
