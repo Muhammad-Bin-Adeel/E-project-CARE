@@ -23,18 +23,12 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     status ENUM('pending','approved') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
-<<<<<<< HEAD
-
-
-=======
-
 
 
 if (!isset($_SESSION['admin'])) {
     hdeear("Location: admin_login.php");
     exit;
 }
->>>>>>> 1166e38c121efc99a665f7696bea478be648c980
 
 // Add or update doctor
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
