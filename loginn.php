@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     // Check for admin (hardcoded)
-    if ($email === 'admin@example.com' && $password === 'admin123') {
+    if ($email === 'admin' && $password === 'admin123') {
         $_SESSION['role'] = 'admin';
         $_SESSION['email'] = $email;
         header("Location: admin_dashboard.php");
@@ -28,18 +28,17 @@ if (mysqli_num_rows($result) == 1) {
         exit();
     }
 }
-    // // Check in patients table
-    // $query = "SELECT * FROM patients WHERE email='$email' AND password='$password'";
-    // $result = mysqli_query($conn, $query);
-    // if (mysqli_num_rows($result) == 1) {
-    //     $_SESSION['role'] = 'patient';
-    //     $_SESSION['email'] = $email;
-    //     header("Location: patient_dashboard.php");
-    //     exit();
-    // }
-
-    // If no match found
-    echo "Invalid email or password.";
+    // Check in patients table
+    $query = "SELECT * FROM patients WHERE email='$email' AND password='$password'";
+    $result = mysqli_query($conn, $query);
+  if (mysqli_num_rows($result) == 1) {
+        $_SESSION['role'] = 'patient';
+        $_SESSION['email'] = $email;
+        header("Location: appointment.php");
+        exit();
+    } else {
+        $error = "Invalid email or password.";
+    }
 }
 ?>
 <!DOCTYPE html>

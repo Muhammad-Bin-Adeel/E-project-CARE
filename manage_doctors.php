@@ -23,6 +23,13 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
+$edit = null;
+if (isset($_GET['edit'])) {
+    $res = $conn->query("SELECT * FROM doctors WHERE id=" . intval($_GET['edit']));
+    if ($res->num_rows) $edit = $res->fetch_assoc();
+}
+
+
 // Fetch all doctors
 $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 ?>

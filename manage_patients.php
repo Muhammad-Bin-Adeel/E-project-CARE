@@ -1,3 +1,18 @@
+<?php
+session_start();
+include("db.php");
+
+// Delete logic
+if (isset($_GET['delete'])) {
+    $id = intval($_GET['delete']);
+    $conn->query("DELETE FROM patients WHERE id = $id");
+    $_SESSION["success"] = "Patient deleted.";
+    header("Location: manage_patients.php");
+    exit;
+}
+
+$patients = $conn->query("SELECT * FROM patients");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -171,6 +186,91 @@
             padding: 20px;
         }
         
+           h2 {
+            text-align: center;
+            color: var(--dark);
+            margin-top: 20px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .add-btn {
+            background-color: var(--secondary);
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .add-btn:hover {
+            background-color: #2b3e77;
+        }
+
+        .success-message {
+            color: green;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        thead {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--light);
+        }
+
+        tbody tr:hover {
+            background-color: #d7f1f6;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            color: white;
+            margin-right: 5px;
+        }
+
+        .delete-btn {
+            background-color: var(--danger);
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
         /* Dropdown Animation */
         .collapse:not(.show) {
             display: none;
@@ -364,8 +464,49 @@
         
         <!-- Content Area - Empty now -->
         <div class="content-wrapper">
-            <!-- Content will be added here as needed -->
-        </div>
+    <h2>Manage Patients</h2>
+
+    <div class="top-bar">
+        <a href="add_patient.php" class="add-btn">
+            <i class="fas fa-plus-circle"></i> Add Patient
+        </a>
+    </div>
+
+    <?php if (isset($_SESSION["success"])): ?>
+        <div class="alert alert-success"><?= $_SESSION["success"]; unset($_SESSION["success"]); ?></div>
+    <?php endif; ?>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th><th>Name</th><th>Email</th><th>Phone</th>
+                    <th>Gender</th><th>Age</th><th>Address</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = $patients->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= $row['id'] ?></td>
+                        <td><?= $row['name'] ?></td>
+                        <td><?= $row['email'] ?></td>
+                        <td><?= $row['phone'] ?></td>
+                        <td><?= $row['gender'] ?></td>
+                        <td><?= $row['age'] ?></td>
+                        <td><?= $row['address'] ?></td>
+                        <td>
+                            <a href="manage_patients.php?delete=<?= $row['id'] ?>" 
+                               class="action-btn delete-btn" 
+                               onclick="return confirm('Delete this patient?')">
+                               <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
     </div>
 </div>
 

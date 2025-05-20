@@ -1,10 +1,122 @@
+<?php
+session_start();
+include("db.php");
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Correct table creation query
+$conn->query("CREATE TABLE IF NOT EXISTS feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    subject VARCHAR(150),
+    message TEXT,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
+// Check if form is submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Sanitize and get form values
+    $name = $conn->real_escape_string($_POST['name']);
+    $email = $conn->real_escape_string($_POST['email']);
+    $subject = $conn->real_escape_string($_POST['subject']);
+    $message = $conn->real_escape_string($_POST['message']);
+
+    // Insert query
+    $sql = "INSERT INTO feedback (name, email, subject, message)
+            VALUES ('$name', '$email', '$subject', '$message')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "<script>alert('Feedback submitted successfully!'); window.location.href = document.referrer;</script>";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+// Fetch all feedbacks
+$result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <style>
-    /* Join Doctor Button Style */
+    .container {
+            max-width: 900px;
+            margin: auto;
+        }
 
-.join-doctor-btn {
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .feedback-card {
+            background: #ffffff;
+            border-left: 5px solid #007bff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .feedback-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .feedback-email {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .feedback-subject {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 8px;
+        }
+
+        .feedback-message {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .feedback-time {
+            text-align: right;
+            font-size: 13px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .feedback-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .feedback-time {
+                text-align: left;
+            }
+        }
+
+     .join-doctor-btn {
     padding: 8px 20px;
     font-weight: 600;
     font-size: 14px;
@@ -13,9 +125,9 @@
     background-color: #0d6efd; /* Bootstrap primary */
     color: white;
     transition: all 0.3s ease;
-}
+  }
 
-.join-doctor-btn:hover {
+ .join-doctor-btn:hover {
     background-color:rgb(178, 188, 202);
     color: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -121,8 +233,6 @@
     </div>
     <!-- Topbar End -->
 
-
-    <!-- Navbar Start -->
    <!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm mb-5">
     <div class="container">
@@ -216,38 +326,59 @@
                         <iframe class="position-relative w-100 h-100"
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
                             frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
-                            tabindex="0"></iframe>
+                            tabindex="0">
+                        </iframe>
                     </div>
                 </div>
             </div>
             <div class="row justify-content-center position-relative" style="margin-top: -200px; z-index: 1;">
                 <div class="col-lg-8">
                     <div class="bg-white rounded p-5 m-5 mb-0">
-                        <form>
-                            <div class="row g-3">
-                                <div class="col-12 col-sm-6">
-                                    <input type="text" class="form-control bg-light border-0" placeholder="Your Name" style="height: 55px;">
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <input type="email" class="form-control bg-light border-0" placeholder="Your Email" style="height: 55px;">
-                                </div>
-                                <div class="col-12">
-                                    <input type="text" class="form-control bg-light border-0" placeholder="Subject" style="height: 55px;">
-                                </div>
-                                <div class="col-12">
-                                    <textarea class="form-control bg-light border-0" rows="5" placeholder="Message"></textarea>
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
-                                </div>
-                            </div>
-                        </form>
+                        <form action="" method="POST">
+    <div class="row g-3">
+        <div class="col-12 col-sm-6">
+            <input type="text" name="name" class="form-control bg-light border-0" placeholder="Your Name" style="height: 55px;" required>
+        </div>
+        <div class="col-12 col-sm-6">
+            <input type="email" name="email" class="form-control bg-light border-0" placeholder="Your Email" style="height: 55px;" required>
+        </div>
+        <div class="col-12">
+            <input type="text" name="subject" class="form-control bg-light border-0" placeholder="Subject" style="height: 55px;" required>
+        </div>
+        <div class="col-12">
+            <textarea name="message" class="form-control bg-light border-0" rows="5" placeholder="Message" required></textarea>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
+        </div>
+    </div>
+</form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Contact End -->
+<?php
+
+
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        echo '
+        <div class="feedback-card">
+            <h4>' . htmlspecialchars($row["name"]) . ' </h4>
+            <strong>Subject:</strong> ' . htmlspecialchars($row["subject"]) . '<br>
+            <p>' . nl2br(htmlspecialchars($row["message"])) . '</p>
+            <small>Submitted at: ' . $row["submitted_at"] . '</small>
+        </div>';
+    }
+} else {
+    echo "<p>No feedback submitted yet.</p>";
+}
+
+$conn->close();
+?>
 
 
     <!-- Footer Start -->

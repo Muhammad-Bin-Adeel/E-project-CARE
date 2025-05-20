@@ -1,3 +1,30 @@
+<?php
+include("db.php");
+
+// Get all specialists (specialization column)
+$specialists_result = $conn->query("SELECT DISTINCT specialization FROM doctors ORDER BY specialization");
+
+// Get all cities (saari cities)
+$cities_result = $conn->query("SELECT DISTINCT city FROM doctors ORDER BY city");
+
+// Selected values agar form submit ho chuka ho
+$selected_specialist = $_POST['specialist'] ?? '';
+$selected_city = $_POST['city'] ?? '';
+
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!$selected_specialist || !$selected_city) {
+        $error = "Please select both Specialist and City.";
+    } else {
+        // Dono select hain, redirect kar do doctors.php with params
+        header("Location: doctors.php?specialist=" . urlencode($selected_specialist) . "&city=" . urlencode($selected_city));
+        exit;
+    }
+}
+// Fetch all feedbacks
+$result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
+?>
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,6 +56,93 @@
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
     <style>
+         .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .feedback-card {
+            background: #ffffff;
+            border-left: 5px solid #007bff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .feedback-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .feedback-email {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .feedback-subject {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 8px;
+        }
+
+        .feedback-message {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .feedback-time {
+            text-align: right;
+            font-size: 13px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .feedback-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .feedback-time {
+                text-align: left;
+            }
+        }
+        .dropdown-submenu {
+  position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -1px;
+}
+
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle::after {
+  content: " \25B8";
+  float: right;
+}
         .join-doctor-btn {
     padding: 8px 20px;
     font-weight: 600;
@@ -87,54 +201,100 @@
     <!-- Topbar End -->
 
 
-    <!-- Navbar Start -->
+  <!-- Navbar Start -->
 
+
+<!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
-    <div class="container">
-        <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
-            <a href="index.php" class="navbar-brand">
-                <h1 class="m-0 text-uppercase text-primary">
-                    <i class="fa fa-clinic-medical me-2"></i>Medinova
-                </h1>
+  <div class="container">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
+      <a href="index.php" class="navbar-brand">
+        <h1 class="m-0 text-uppercase text-primary">
+          <i class="fa fa-clinic-medical me-2"></i>Medinova
+        </h1>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0">
+          <a href="index.php" class="nav-item nav-link active ">Home</a>
+          <a href="about.php" class="nav-item nav-link">About</a>
+           <a href="Disease.php" class="nav-item nav-link ">Disease</a>
+
+          <!-- Doctors Dropdown Start -->
+          
+        <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                Doctors
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto py-0">
-                    <a href="index.php" class="nav-item nav-link active">Home</a>
-                    <a href="about.php" class="nav-item nav-link">About</a>
-                   
-                    <a href="doctors.php" class="nav-item nav-link">Doctor</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu m-0">
-                            <a href="blog.php" class="dropdown-item">Blog Grid</a>
-                            <a href="#" class="dropdown-item">Blog Detail</a>
-                            <a href="#" class="dropdown-item">The Team</a>
-                            <a href="#" class="dropdown-item">Testimonial</a>
-                            <a href="appointment.php" class="dropdown-item">Appointment</a>
-                            <a href="search.php" class="dropdown-item">Search</a>
-                        </div>
-
+            <div class="dropdown-menu p-4" style="min-width: 300px;">
+                <form method="post" action="">
+                    <div class="mb-2">
+                        <label for="specialist-select" class="form-label">Specialist</label>
+                        <select name="specialist" id="specialist-select" class="form-select" required>
+                            <option value="">-- Select Specialist --</option>
+                            <?php while ($row = $specialists_result->fetch_assoc()): ?>
+                                <option value="<?= htmlspecialchars($row['specialization']) ?>" <?= ($selected_specialist == $row['specialization']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($row['specialization']) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
                     </div>
-                    <a href="contact.php" class="nav-item nav-link">Contact</a>
-                </div>
-                <!-- Corrected Button -->
-                <div class="ms-3">
-                    <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
-                </div>
-                <div class="button-container">
-                     <a href="users/signup.php"  class="btn btn-signup" >Sign Up</a>
-                     <a href="users/signin.php"  class="btn btn-signin" >Sign in</a>
-                       </div>   
-            </div>
-                                  
-            </nav>
-        </div>
-    </div>
 
-    <!-- Navbar End -->
+                    <div class="mb-2">
+                        <label for="city-select" class="form-label">City</label>
+                        <select name="city" id="city-select" class="form-select" required>
+                            <option value="">-- Select City --</option>
+                            <?php while ($row = $cities_result->fetch_assoc()): ?>
+                                <option value="<?= htmlspecialchars($row['city']) ?>" <?= ($selected_city == $row['city']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($row['city']) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Find Doctors</button>
+                </form>
+                <?php if ($error): ?>
+                    <p class="text-danger mt-2"><?= htmlspecialchars($error) ?></p>
+                <?php endif; ?>
+            </div>
+        </div>
+          <!-- Doctors Dropdown End -->
+
+          <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+            <div class="dropdown-menu m-0">
+              <a href="blog.php" class="dropdown-item">Blog Grid</a>
+              <a href="#" class="dropdown-item">Blog Detail</a>
+              <a href="#" class="dropdown-item">The Team</a>
+              <a href="#" class="dropdown-item">Testimonial</a>
+              <a href="appointment.php" class="dropdown-item">Appointment</a>
+              <a href="search.php" class="dropdown-item">Search</a>
+            </div>
+          </div>
+
+          <a href="contact.php" class="nav-item nav-link">Contact</a>
+        </div>
+
+        <!-- Buttons -->
+        <div class="ms-3">
+          <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
+        </div>
+        <div class="button-container ms-2">
+          <a href="patient_singup.php" class="btn btn-outline-primary btn-sm">Sign Up</a>
+          <a href="loginn.php" class="btn btn-outline-secondary btn-sm">Sign in</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+<!-- Navbar End -->
+<!-- Navbar End -->
+
+<!-- Navbar End -->
 
 
     <!-- Hero Start -->
@@ -146,7 +306,7 @@
                     <h1 class="display-1 text-white mb-md-4">Best Healthcare Solution In Your City</h1>
                     <div class="pt-2">
                         <a href="doctors.php" class="btn btn-light rounded-pill py-md-3 px-md-5 mx-2">Find Doctor</a>
-                        <a href="" class="btn btn-outline-light rounded-pill py-md-3 px-md-5 mx-2">Appointment</a>
+                        <a href="appointment.php" class="btn btn-outline-light rounded-pill py-md-3 px-md-5 mx-2">Appointment</a>
                     </div>
                 </div>
             </div>
@@ -665,7 +825,29 @@
     </div>
     <!-- Blog End -->
     
+    <!-- Contact -->
+     <center><h1>feedback</h1></center>
+<?php
 
+
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        echo '
+        <div class="feedback-card">
+            <h4>' . htmlspecialchars($row["name"]) . ' </h4>
+            <strong>Subject:</strong> ' . htmlspecialchars($row["subject"]) . '<br>
+            <p>' . nl2br(htmlspecialchars($row["message"])) . '</p>
+            <small>Submitted at: ' . $row["submitted_at"] . '</small>
+        </div>';
+    }
+} else {
+    echo "<p>No feedback submitted yet.</p>";
+}
+
+$conn->close();
+?>
+
+  <!-- Contact  -->
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light mt-5 py-5">

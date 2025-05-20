@@ -1,3 +1,11 @@
+<?php
+include("db.php");
+session_start();
+
+// Fetch patients
+$result = $conn->query("SELECT * FROM patients");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -169,6 +177,41 @@
         /* Content Area */
         .content-wrapper {
             padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--dark);
+            padding: 20px 0;
+        }
+
+        table {
+            width: 90%;
+            margin: 0 auto 30px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--light);
+        }
+
+        tbody tr:hover {
+            background-color: #d6f0f6;
         }
         
         /* Dropdown Animation */
@@ -364,7 +407,40 @@
         
         <!-- Content Area - Empty now -->
         <div class="content-wrapper">
-            <!-- Content will be added here as needed -->
+           <h2>Patients List</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Gender</th>
+            <th>Age</th>
+            <th>Address</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if ($result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($row["id"]) ?></td>
+                    <td><?= htmlspecialchars($row["name"]) ?></td>
+                    <td><?= htmlspecialchars($row["email"]) ?></td>
+                    <td><?= htmlspecialchars($row["phone"]) ?></td>
+                    <td><?= htmlspecialchars($row["gender"]) ?></td>
+                    <td><?= htmlspecialchars($row["age"]) ?></td>
+                    <td><?= htmlspecialchars($row["address"]) ?></td>
+                    <td><?= htmlspecialchars($row["created_at"]) ?></td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="8">No patients found.</td></tr>
+        <?php endif; ?>
+    </tbody>
+</table>
         </div>
     </div>
 </div>
