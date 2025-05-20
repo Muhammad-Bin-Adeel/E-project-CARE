@@ -171,10 +171,6 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
     </div>
     <!-- Topbar End -->
 
-
-  <!-- Navbar Start -->
-
-
 <!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
   <div class="container">
@@ -225,10 +221,6 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
   </div>
 </div>
 <!-- Navbar End -->
-<!-- Navbar End -->
-
-<!-- Navbar End -->
-
 
     <!-- Hero Start -->
     <div class="container-fluid bg-primary py-5 mb-5 hero-header">
@@ -392,7 +384,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
                         <h1 class="display-4">Make An Appointment For Your Family</h1>
                     </div>
                     <p class="text-white mb-5">Eirmod sed tempor lorem ut dolores. Aliquyam sit sadipscing kasd ipsum. Dolor ea et dolore et at sea ea at dolor, justo ipsum duo rebum sea invidunt voluptua. Eos vero eos vero ea et dolore eirmod et. Dolores diam duo invidunt lorem. Elitr ut dolores magna sit. Sea dolore sanctus sed et. Takimata takimata sanctus sed.</p>
-                    <a class="btn btn-dark rounded-pill py-3 px-5 me-3" href="">Find Doctor</a>
+                    <a class="btn btn-dark rounded-pill py-3 px-5 me-3" href="doctors.php">Find Doctor</a>
                     <a class="btn btn-outline-dark rounded-pill py-3 px-5" href="">Read More</a>
                 </div>
                 <div class="col-lg-6">

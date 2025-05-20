@@ -259,7 +259,7 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                     <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
                         <div class="col-md-6 col-lg-4">
                             <div class="card shadow-sm h-100">
-                                <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
+                                <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="width: 100%; height: 300px; object-fit: cover; object-position: top;" alt="<?= htmlspecialchars($row['name']) ?>">
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
                                     <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
