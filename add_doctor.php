@@ -23,12 +23,11 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
     status ENUM('pending','approved') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
-$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS email VARCHAR(255)");
-$conn->query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS password VARCHAR(255)");
+
 
 
 if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
+    hdeear("Location: admin_login.php");
     exit;
 }
 

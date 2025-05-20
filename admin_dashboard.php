@@ -17,6 +17,7 @@
         }
         
         body {
+            
             background-color: var(--light);
             font-family: 'Segoe UI', sans-serif;
             overflow-x: hidden;
