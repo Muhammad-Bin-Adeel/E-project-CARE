@@ -4,7 +4,7 @@ include("db.php");
 
 // Redirect if not logged in
 if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
+    header("Location: admin_login.php");
     exit;
 }
 
@@ -56,12 +56,13 @@ if (!$doctors) {
         /* Sidebar Styles */
         .sidebar {
             height: 100vh;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e6ed;
-            position: fixed;
-            width: 250px;
-            transition: all 0.3s;
-            z-index: 1000;
+    overflow-y: auto; /* ✅ Enable vertical scroll */
+    background-color: #ffffff;
+    border-right: 1px solid #e0e6ed;
+    position: fixed;
+    width: 250px;
+    transition: all 0.3s;
+    z-index: 1000;
         }
         
         .brand-title {
@@ -317,7 +318,7 @@ if (!$doctors) {
             <!-- Dashboard Section -->
             <div class="sidebar-section">
                 <div class="section-title">Dashboard</div>
-                <a href="dashboard.php" class="nav-link active">
+                <a href="admin_dashboard.php" class="nav-link active">
                     <i class="fas fa-chart-pie"></i>
                     <span>Overview</span>
                 </a>
@@ -416,7 +417,7 @@ if (!$doctors) {
             <!-- Account Section -->
             <div class="sidebar-section">
                 <div class="section-title">Account</div>
-                <a href="logout.php" class="nav-link">
+                <a href="admin_logout.php" class="nav-link">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
@@ -453,7 +454,7 @@ if (!$doctors) {
                         <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        <li><a class="dropdown-item" href="admin_logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -665,7 +666,7 @@ if (!$doctors) {
         
         // Special case for dashboard (default page)
         if (currentUrl === '' || currentUrl === 'index.php') {
-            document.querySelector('a[href="dashboard.php"]').classList.add('active');
+            document.querySelector('a[href="admin_dashboard.php"]').classList.add('active');
         }
     });
 </script>

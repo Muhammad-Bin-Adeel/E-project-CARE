@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>MEDINOVA - Hospital Website Template</title>
+    <title>MEDINOVA</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -50,6 +50,7 @@
 </head>
 
 <body>
+
     <!-- Topbar Start -->
     <div class="container-fluid py-2 border-bottom d-none d-lg-block">
         <div class="container">
@@ -115,6 +116,7 @@
                             <a href="appointment.php" class="dropdown-item">Appointment</a>
                             <a href="search.php" class="dropdown-item">Search</a>
                         </div>
+
                     </div>
                     <a href="contact.php" class="nav-item nav-link">Contact</a>
                 </div>
@@ -122,10 +124,16 @@
                 <div class="ms-3">
                     <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
                 </div>
+                <div class="button-container">
+                     <a href="users/signup.php"  class="btn btn-signup" >Sign Up</a>
+                     <a href="users/signin.php"  class="btn btn-signin" >Sign in</a>
+                       </div>   
             </div>
-        </nav>
+                                  
+            </nav>
+        </div>
     </div>
-</div>
+
     <!-- Navbar End -->
 
 
@@ -658,6 +666,7 @@
     <!-- Blog End -->
     
 
+
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light mt-5 py-5">
         <div class="container py-5">
@@ -742,6 +751,8 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+    
 </body>
 
 </html>
