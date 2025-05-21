@@ -1,3 +1,32 @@
+<?php
+include("db.php");
+
+// Create appointments table if not exists
+$conn->query("CREATE TABLE IF NOT EXISTS appointments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_name VARCHAR(255),
+    email VARCHAR(255),
+    specialization VARCHAR(255),
+    doctor_id INT,
+    appointment_date DATE,
+    appointment_time TIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
+if (isset($_POST['specialization'])) {
+    $specialization = $_POST['specialization'];
+    $query = $conn->prepare("SELECT id, name FROM doctors WHERE specialization = ?");
+    $query->bind_param("s", $specialization);
+    $query->execute();
+    $result = $query->get_result();
+
+    echo "<option value=''>Select Doctor</option>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<option value='" . $row['id'] . "'>" . $row['name'] . "</option>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -133,68 +162,64 @@
 
 
     <!-- Appointment Start -->
-    <div class="container-fluid py-5">
-        <div class="container">
-            <div class="row gx-5">
-                <div class="col-lg-6 mb-5 mb-lg-0">
-                    <div class="mb-4">
-                        <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Appointment</h5>
-                        <h1 class="display-4">Make An Appointment For Your Family</h1>
-                    </div>
-                    <p class="mb-5">Eirmod sed tempor lorem ut dolores. Aliquyam sit sadipscing kasd ipsum. Dolor ea et dolore et at sea ea at dolor, justo ipsum duo rebum sea invidunt voluptua. Eos vero eos vero ea et dolore eirmod et. Dolores diam duo invidunt lorem. Elitr ut dolores magna sit. Sea dolore sanctus sed et. Takimata takimata sanctus sed.</p>
-                    <a href="doctors.php" class="btn btn-primary rounded-pill py-3 px-5 me-3" >Find Doctor</a>
-                </div>
-                <div class="col-lg-6">
-                    <div class="bg-light text-center rounded p-5">
-                        <h1 class="mb-4">Book An Appointment</h1>
-                        <form>
-                            <div class="row g-3">
-                                <div class="col-12 col-sm-6">
-                                    <select class="form-select bg-white border-0" style="height: 55px;">
-                                        <option selected>Choose Department</option>
-                                        <option value="1">Department 1</option>
-                                        <option value="2">Department 2</option>
-                                        <option value="3">Department 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <select class="form-select bg-white border-0" style="height: 55px;">
-                                        <option selected>Select Doctor</option>
-                                        <option value="1">Doctor 1</option>
-                                        <option value="2">Doctor 2</option>
-                                        <option value="3">Doctor 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <input type="text" class="form-control bg-white border-0" placeholder="Your Name" style="height: 55px;">
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <input type="email" class="form-control bg-white border-0" placeholder="Your Email" style="height: 55px;">
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="date" id="date" data-target-input="nearest">
-                                        <input type="text"
-                                            class="form-control bg-white border-0 datetimepicker-input"
-                                            placeholder="Date" data-target="#date" data-toggle="datetimepicker" style="height: 55px;">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="time" id="time" data-target-input="nearest">
-                                        <input type="text"
-                                            class="form-control bg-white border-0 datetimepicker-input"
-                                            placeholder="Time" data-target="#time" data-toggle="datetimepicker" style="height: 55px;">
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn btn-primary w-100 py-3" type="submit">Make An Appointment</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid py-5">
+  <div class="container">
+    <div class="row gx-5">
+      <div class="col-lg-6 mb-5 mb-lg-0">
+        <div class="mb-4">
+          <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Appointment</h5>
+          <h1 class="display-4">Make An Appointment For Your Family</h1>
         </div>
+        <p class="mb-5">Book a consultation with our specialists.</p>
+        <a href="doctors.php" class="btn btn-primary rounded-pill py-3 px-5 me-3">Find Doctor</a>
+      </div>
+      <div class="col-lg-6">
+        <div class="bg-light text-center rounded p-5">
+          <h1 class="mb-4">Book An Appointment</h1>
+          <form method="POST" action="book_appointment.php">
+            <div class="row g-3">
+              <div class="col-12 col-sm-6">
+                <select id="specialization" name="specialization" class="form-select bg-white border-0" style="height: 55px;">
+                  <option selected>Select Specialist</option>
+                  <?php
+                  $specialists = $conn->query("SELECT DISTINCT specialization FROM doctors");
+                  while ($row = $specialists->fetch_assoc()) {
+                    echo "<option value='" . $row['specialization'] . "'>" . $row['specialization'] . "</option>";
+                  }
+                  ?>
+                </select>
+              </div>
+              <div class="col-12 col-sm-6">
+                <select id="doctor" name="doctor_id" class="form-select bg-white border-0" style="height: 55px;">
+                  <option>Select Doctor</option>
+                </select>
+              </div>
+              <div class="col-12 col-sm-6">
+                <input type="text" name="patient_name" class="form-control bg-white border-0" placeholder="Patient Name" style="height: 55px;">
+              </div>
+              <div class="col-12 col-sm-6">
+                <input type="email" name="email" class="form-control bg-white border-0" placeholder="Your Email" style="height: 55px;">
+              </div>
+              <div class="col-12 col-sm-6">
+                <select id="date" name="appointment_date" class="form-select bg-white border-0" style="height: 55px;">
+                  <option>Select Date</option>
+                </select>
+              </div>
+              <div class="col-12 col-sm-6">
+                <select id="time" name="appointment_time" class="form-select bg-white border-0" style="height: 55px;">
+                  <option>Select Time</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <button class="btn btn-primary w-100 py-3" type="submit">Make An Appointment</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
     <!-- Appointment End -->
 
 
@@ -291,6 +316,39 @@
         nextEl.classList.toggle('show');
       }
     });
+  });
+</script>
+<!-- AJAX Script -->
+<script>
+  document.getElementById("specialization").addEventListener("change", function () {
+    const spec = this.value;
+    fetch("get_doctors.php?specialization=" + spec)
+      .then((res) => res.text())
+      .then((data) => {
+        document.getElementById("doctor").innerHTML = data;
+        document.getElementById("date").innerHTML = '<option>Select Date</option>';
+        document.getElementById("time").innerHTML = '<option>Select Time</option>';
+      });
+  });
+
+  document.getElementById("doctor").addEventListener("change", function () {
+    const docId = this.value;
+    fetch("get_dates.php?doctor_id=" + docId)
+      .then((res) => res.text())
+      .then((data) => {
+        document.getElementById("date").innerHTML = data;
+        document.getElementById("time").innerHTML = '<option>Select Time</option>';
+      });
+  });
+
+  document.getElementById("date").addEventListener("change", function () {
+    const docId = document.getElementById("doctor").value;
+    const date = this.value;
+    fetch("get_times.php?doctor_id=" + docId + "&date=" + date)
+      .then((res) => res.text())
+      .then((data) => {
+        document.getElementById("time").innerHTML = data;
+      });
   });
 </script>
 </body>
