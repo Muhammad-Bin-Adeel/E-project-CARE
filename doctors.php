@@ -5,7 +5,7 @@ include("db.php");
 
 
 // Fetch only approved doctors
-$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
+$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id ASC");
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -9,7 +9,7 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Fetch only approved doctors
-$sql = "SELECT * FROM doctors WHERE status = 'approved' ORDER BY created_at DESC";
+$sql = "SELECT * FROM doctors WHERE status = 'approved' ORDER BY created_at ASC";
 $doctors = $conn->query($sql);
 
 if (!$doctors) {
