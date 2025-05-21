@@ -2,11 +2,76 @@
 session_start();
 include("db.php");
 
+// Check if this is an AJAX request for filtering
+if (isset($_POST['action']) && $_POST['action'] == 'filter') {
+    $specialization = isset($_POST['specialization']) ? $conn->real_escape_string($_POST['specialization']) : '';
+    $city = isset($_POST['city']) ? $conn->real_escape_string($_POST['city']) : '';
+    $search = isset($_POST['search']) ? $conn->real_escape_string($_POST['search']) : '';
 
+    $query = "SELECT * FROM doctors WHERE status = 'approved'";
 
-// Fetch only approved doctors
-$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id ASC");
+    if ($specialization != '') {
+        $query .= " AND specialization LIKE '%$specialization%'";
+    }
+    if ($city != '') {
+        $query .= " AND city LIKE '%$city%'";
+    }
+    if ($search != '') {
+        $query .= " AND (name LIKE '%$search%' OR specialization LIKE '%$search%' OR city LIKE '%$search%')";
+    }
+
+    $query .= " ORDER BY id DESC";
+
+    $result = $conn->query($query);
+
+    if ($result->num_rows > 0) {
+        $counter = 1;
+        while ($row = $result->fetch_assoc()) {
+            ?>
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm h-100">
+                    <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
+                        <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
+                        <p><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
+                        <p><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
+                        <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
+
+                        <div class="collapse" id="doctorDetails<?= $counter ?>">
+                            <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
+                            <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
+                            <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
+                            <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
+                            <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
+                            <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
+                            <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
+                        </div>
+
+                        <button class="btn btn-sm btn-outline-primary mt-2 toggle-details-btn" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#doctorDetails<?= $counter ?>" 
+                            aria-expanded="false" 
+                            aria-controls="doctorDetails<?= $counter ?>">
+                            More Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <?php
+            $counter++;
+        }
+    } else {
+        echo '<p class="text-center text-muted">No approved doctors found for selected filter.</p>';
+    }
+    exit;  // Important to exit after AJAX response
+}
+
+// For normal page load, fetch all approved doctors (initial load)
+$result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,27 +102,30 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+
     <style>
         .join-doctor-btn {
-    padding: 8px 20px;
-    font-weight: 600;
-    font-size: 14px;
-    text-transform: uppercase;
-    border-radius: 30px;
-    background-color: #0d6efd; /* Bootstrap primary */
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.join-doctor-btn:hover {
-    background-color: #0b5ed7;
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
+            padding: 8px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            border-radius: 30px;
+            background-color: #0d6efd;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .join-doctor-btn:hover {
+            background-color: #0b5ed7;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        /* Filter form styles */
+        #filterForm {
+            max-width: 900px;
+            margin: 30px auto;
+        }
     </style>
 </head>
 
@@ -142,54 +210,91 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
      
      
     <!-- Team Start -->
+    <!-- Filter & Search Form -->
+    <div class="container" id="filterForm">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by name, specialization, city...">
+            </div>
+            <div class="col-md-3">
+                <select id="specializationFilter" class="form-select">
+                    <option value="">Select Specialization</option>
+                    <?php
+                    // Fetch distinct specializations from database for filter dropdown
+                    $specRes = $conn->query("SELECT DISTINCT specialization FROM doctors WHERE status = 'approved' ORDER BY specialization ASC");
+                    while ($specRow = $specRes->fetch_assoc()) {
+                        echo '<option value="'.htmlspecialchars($specRow['specialization']).'">'.htmlspecialchars($specRow['specialization']).'</option>';
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="cityFilter" class="form-select">
+                    <option value="">Select City</option>
+                    <?php
+                    // Fetch distinct cities for filter dropdown
+                    $cityRes = $conn->query("SELECT DISTINCT city FROM doctors WHERE status = 'approved' ORDER BY city ASC");
+                    while ($cityRow = $cityRes->fetch_assoc()) {
+                        echo '<option value="'.htmlspecialchars($cityRow['city']).'">'.htmlspecialchars($cityRow['city']).'</option>';
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button id="resetFilter" class="btn btn-secondary w-100">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctors List -->
     <div class="container-fluid py-5">
-    <div class="container">
-        <?php if ($result->num_rows > 0): ?>
+        <div class="container">
             <div class="text-center mx-auto mb-5" style="max-width: 500px;">
                 <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Our Doctors</h5>
                 <h1 class="display-4">Qualified Healthcare Professionals</h1>
             </div>
 
-            <div class="row g-4">
-                <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card shadow-sm h-100">
-                            <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
-                                <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
-                                <p><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
-                                <p><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
-                                <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
+            <div class="row g-4" id="doctorsList">
+                <?php if ($result->num_rows > 0): ?>
+                    <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card shadow-sm h-100">
+                                <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
+                                    <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
+                                    <p><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
+                                    <p><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
+                                    <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
 
-                                <div class="collapse" id="doctorDetails<?= $counter ?>">
-                                    <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
-                                    <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
-                                    <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
-                                    <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
-                                    <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
-                                    <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
-                                    <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
+                                    <div class="collapse" id="doctorDetails<?= $counter ?>">
+                                        <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
+                                        <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
+                                        <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
+                                        <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
+                                        <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
+                                        <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
+                                        <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
+                                    </div>
+
+                                    <button class="btn btn-sm btn-outline-primary mt-2 toggle-details-btn" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#doctorDetails<?= $counter ?>" 
+                                        aria-expanded="false" 
+                                        aria-controls="doctorDetails<?= $counter ?>">
+                                        More Details
+                                    </button>
                                 </div>
-
-                                <button class="btn btn-sm btn-outline-primary mt-2 toggle-details-btn" 
-                                    type="button" 
-                                    data-bs-toggle="collapse" 
-                                    data-bs-target="#doctorDetails<?= $counter ?>" 
-                                    aria-expanded="false" 
-                                    aria-controls="doctorDetails<?= $counter ?>">
-                                    More Details
-                                </button>
                             </div>
                         </div>
-                    </div>
-                <?php $counter++; endwhile; ?>
+                    <?php $counter++; endwhile; ?>
+                <?php else: ?>
+                    <p class="text-center text-muted">No approved doctors found.</p>
+                <?php endif; ?>
             </div>
-        <?php else: ?>
-            <p class="text-center text-muted">No approved doctors found.</p>
-        <?php endif; ?>
+        </div>
     </div>
-</div>
 
     <!-- Team End -->
 
@@ -269,33 +374,90 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 
     <script src="js/main.js"></script>
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const buttons = document.querySelectorAll('.toggle-details-btn');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const targetId = btn.getAttribute('data-bs-target');
-            const collapseEl = document.querySelector(targetId);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle button text for details (existing functionality)
+        const buttons = document.querySelectorAll('.toggle-details-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = btn.getAttribute('data-bs-target');
+                const collapseEl = document.querySelector(targetId);
+                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+                setTimeout(() => {
+                    if (collapseEl.classList.contains('show')) {
+                        btn.textContent = 'Less Details';
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-outline-danger');
+                    } else {
+                        btn.textContent = 'More Details';
+                        btn.classList.remove('btn-outline-danger');
+                        btn.classList.add('btn-outline-primary');
+                    }
+                }, 300);
+            });
+        });
 
-            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+        // Filter elements
+        const searchInput = document.getElementById('searchInput');
+        const specializationFilter = document.getElementById('specializationFilter');
+        const cityFilter = document.getElementById('cityFilter');
+        const resetBtn = document.getElementById('resetFilter');
+        const doctorsList = document.getElementById('doctorsList');
 
-            // No need for manual toggle, Bootstrap does this by data-bs-toggle automatically
+        // Function to fetch filtered doctors via AJAX
+        function fetchDoctors() {
+            const data = new FormData();
+            data.append('action', 'filter');
+            data.append('search', searchInput.value.trim());
+            data.append('specialization', specializationFilter.value);
+            data.append('city', cityFilter.value);
 
-            // Delay to wait for collapse animation
-            setTimeout(() => {
-                if (collapseEl.classList.contains('show')) {
-                    btn.textContent = 'Less Details';
-                    btn.classList.remove('btn-outline-primary');
-                    btn.classList.add('btn-outline-danger');
-                } else {
-                    btn.textContent = 'More Details';
-                    btn.classList.remove('btn-outline-danger');
-                    btn.classList.add('btn-outline-primary');
-                }
-            }, 300); // Delay for smooth animation check
+            fetch('', {  // same page
+                method: 'POST',
+                body: data
+            })
+            .then(response => response.text())
+            .then(html => {
+                doctorsList.innerHTML = html;
+                // Re-bind toggle details buttons after update
+                const newButtons = doctorsList.querySelectorAll('.toggle-details-btn');
+                newButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const targetId = btn.getAttribute('data-bs-target');
+                        const collapseEl = document.querySelector(targetId);
+                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+                        setTimeout(() => {
+                            if (collapseEl.classList.contains('show')) {
+                                btn.textContent = 'Less Details';
+                                btn.classList.remove('btn-outline-primary');
+                                btn.classList.add('btn-outline-danger');
+                            } else {
+                                btn.textContent = 'More Details';
+                                btn.classList.remove('btn-outline-danger');
+                                btn.classList.add('btn-outline-primary');
+                            }
+                        }, 300);
+                    });
+                });
+            })
+            .catch(err => {
+                doctorsList.innerHTML = '<p class="text-center text-danger">Error loading doctors. Please try again.</p>';
+            });
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', fetchDoctors);
+        specializationFilter.addEventListener('change', fetchDoctors);
+        cityFilter.addEventListener('change', fetchDoctors);
+
+        resetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            searchInput.value = '';
+            specializationFilter.value = '';
+            cityFilter.value = '';
+            fetchDoctors();
         });
     });
-});
-</script>
+    </script>
 </body>
 
 </html>
