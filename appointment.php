@@ -1,32 +1,67 @@
 <?php
+session_start();
 include("db.php");
 
-// Create appointments table if not exists
+// Create table if not exists (Optional)
 $conn->query("CREATE TABLE IF NOT EXISTS appointments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    patient_name VARCHAR(255),
-    email VARCHAR(255),
-    specialization VARCHAR(255),
-    doctor_id INT,
-    appointment_date DATE,
-    appointment_time TIME,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  patient_name VARCHAR(255),
+  email VARCHAR(255),
+  specialization VARCHAR(255),
+  doctor_id INT,
+  appointment_date DATE,
+  appointment_time TIME,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
-if (isset($_POST['specialization'])) {
-    $specialization = $_POST['specialization'];
-    $query = $conn->prepare("SELECT id, name FROM doctors WHERE specialization = ?");
-    $query->bind_param("s", $specialization);
-    $query->execute();
-    $result = $query->get_result();
+// Get values from previous submissions
+$specialization = $_POST['specialization'] ?? '';
+$doctor_id = $_POST['doctor_id'] ?? '';
+$appointment_date = $_POST['days'] ?? '';
+$appointment_time = $_POST['time'] ?? '';
 
-    echo "<option value=''>Select Doctor</option>";
-    while ($row = $result->fetch_assoc()) {
-        echo "<option value='" . $row['id'] . "'>" . $row['name'] . "</option>";
+// Fetch specializations
+$specializations = $conn->query("SELECT DISTINCT specialization FROM doctors");
+
+// Fetch doctors based on specialization
+$doctors = [];
+if (!empty($specialization)) {
+    $stmt = $conn->prepare("SELECT id, name FROM doctors WHERE specialization = ?");
+    $stmt->bind_param("s", $specialization);
+    $stmt->execute();
+    $doctors = $stmt->get_result();
+}
+
+// Fetch selected doctor’s available days and timings
+$dates = [];
+$times = [];
+if (!empty($doctor_id)) {
+    $stmt = $conn->prepare("SELECT days, timing FROM doctors WHERE id = ?");
+    $stmt->bind_param("i", $doctor_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $dates = explode(",", $row['days']);
+        $times = explode(",", $row['timing']);
     }
 }
-?>
 
+// Handle final appointment submission
+if (isset($_POST['final_submit'])) {
+    $stmt = $conn->prepare("INSERT INTO appointments (patient_name, email, specialization, doctor_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param(
+        "sssiss",
+        $_POST['patient_name'],
+        $_POST['email'],
+        $specialization,
+        $doctor_id,
+        $appointment_date,
+        $appointment_time
+    );
+    $stmt->execute();
+    $success = true;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -161,7 +196,7 @@ if (isset($_POST['specialization'])) {
     <!-- Navbar End -->
 
 
-    <!-- Appointment Start -->
+    <!-- Appointment Section -->
 <div class="container-fluid py-5">
   <div class="container">
     <div class="row gx-5">
@@ -176,51 +211,60 @@ if (isset($_POST['specialization'])) {
       <div class="col-lg-6">
         <div class="bg-light text-center rounded p-5">
           <h1 class="mb-4">Book An Appointment</h1>
-          <form method="POST" action="book_appointment.php">
-            <div class="row g-3">
-              <div class="col-12 col-sm-6">
-                <select id="specialization" name="specialization" class="form-select bg-white border-0" style="height: 55px;">
-                  <option selected>Select Specialist</option>
-                  <?php
-                  $specialists = $conn->query("SELECT DISTINCT specialization FROM doctors");
-                  while ($row = $specialists->fetch_assoc()) {
-                    echo "<option value='" . $row['specialization'] . "'>" . $row['specialization'] . "</option>";
-                  }
-                  ?>
-                </select>
-              </div>
-              <div class="col-12 col-sm-6">
-                <select id="doctor" name="doctor_id" class="form-select bg-white border-0" style="height: 55px;">
-                  <option>Select Doctor</option>
-                </select>
-              </div>
-              <div class="col-12 col-sm-6">
-                <input type="text" name="patient_name" class="form-control bg-white border-0" placeholder="Patient Name" style="height: 55px;">
-              </div>
-              <div class="col-12 col-sm-6">
-                <input type="email" name="email" class="form-control bg-white border-0" placeholder="Your Email" style="height: 55px;">
-              </div>
-              <div class="col-12 col-sm-6">
-                <select id="date" name="appointment_date" class="form-select bg-white border-0" style="height: 55px;">
-                  <option>Select Date</option>
-                </select>
-              </div>
-              <div class="col-12 col-sm-6">
-                <select id="time" name="appointment_time" class="form-select bg-white border-0" style="height: 55px;">
-                  <option>Select Time</option>
-                </select>
-              </div>
-              <div class="col-12">
-                <button class="btn btn-primary w-100 py-3" type="submit">Make An Appointment</button>
-              </div>
-            </div>
+
+          <?php if (!empty($success)): ?>
+            <div class="alert alert-success">Appointment booked successfully!</div>
+          <?php endif; ?>
+
+          <form method="POST" action="">
+            <!-- Specialization -->
+            <select class="form-control mb-3" name="specialization" onchange="this.form.submit()">
+              <option value="">Select Specialist</option>
+              <?php while ($row = $specializations->fetch_assoc()): ?>
+                <option value="<?= $row['specialization'] ?>" <?= $specialization == $row['specialization'] ? 'selected' : '' ?>>
+                  <?= $row['specialization'] ?>
+                </option>
+              <?php endwhile; ?>
+            </select>
+
+            <!-- Doctor -->
+            <select class="form-control mb-3" name="doctor_id" onchange="this.form.submit()">
+              <option value="">Select Doctor</option>
+              <?php if (!empty($doctors)): ?>
+                <?php while ($row = $doctors->fetch_assoc()): ?>
+                  <option value="<?= $row['id'] ?>" <?= $doctor_id == $row['id'] ? 'selected' : '' ?>>
+                    <?= $row['name'] ?>
+                  </option>
+                <?php endwhile; ?>
+              <?php endif; ?>
+            </select>
+
+            <!-- Date -->
+            <select class="form-control mb-3" name="days" onchange="this.form.submit()">
+              <option value="">Select Date</option>
+              <?php foreach ($dates as $date): ?>
+                <option value="<?= $date ?>" <?= $appointment_date == $date ? 'selected' : '' ?>><?= $date ?></option>
+              <?php endforeach; ?>
+            </select>
+
+            <!-- Time -->
+            <select class="form-control mb-3" name="time">
+              <option value="">Select Time</option>
+              <?php foreach ($times as $time): ?>
+                <option value="<?= $time ?>" <?= $appointment_time == $time ? 'selected' : '' ?>><?= $time ?></option>
+              <?php endforeach; ?>
+            </select>
+
+            <!-- Patient Info -->
+            <input class="form-control mb-3" type="text" name="patient_name" placeholder="Patient Name" required>
+            <input class="form-control mb-3" type="email" name="email" placeholder="Email" required>
+            <button type="submit" name="final_submit" class="btn btn-primary w-100">Make Appointment</button>
           </form>
         </div>
       </div>
     </div>
   </div>
 </div>
-    <!-- Appointment End -->
 
 
     <!-- Footer Start -->
@@ -306,51 +350,7 @@ if (isset($_POST['specialization'])) {
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-    <script>
-  document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function (el) {
-    el.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      let nextEl = this.nextElementSibling;
-      if (nextEl && nextEl.classList.contains('dropdown-menu')) {
-        nextEl.classList.toggle('show');
-      }
-    });
-  });
-</script>
-<!-- AJAX Script -->
-<script>
-  document.getElementById("specialization").addEventListener("change", function () {
-    const spec = this.value;
-    fetch("get_doctors.php?specialization=" + spec)
-      .then((res) => res.text())
-      .then((data) => {
-        document.getElementById("doctor").innerHTML = data;
-        document.getElementById("date").innerHTML = '<option>Select Date</option>';
-        document.getElementById("time").innerHTML = '<option>Select Time</option>';
-      });
-  });
-
-  document.getElementById("doctor").addEventListener("change", function () {
-    const docId = this.value;
-    fetch("get_dates.php?doctor_id=" + docId)
-      .then((res) => res.text())
-      .then((data) => {
-        document.getElementById("date").innerHTML = data;
-        document.getElementById("time").innerHTML = '<option>Select Time</option>';
-      });
-  });
-
-  document.getElementById("date").addEventListener("change", function () {
-    const docId = document.getElementById("doctor").value;
-    const date = this.value;
-    fetch("get_times.php?doctor_id=" + docId + "&date=" + date)
-      .then((res) => res.text())
-      .then((data) => {
-        document.getElementById("time").innerHTML = data;
-      });
-  });
-</script>
+    
 </body>
 
 </html>
