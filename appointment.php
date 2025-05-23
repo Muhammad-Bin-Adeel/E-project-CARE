@@ -2,6 +2,11 @@
 session_start();
 include("db.php");
 
+if (!isset($_SESSION['patient_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
 // Create appointments table if not exists (optional)
 $conn->query("CREATE TABLE IF NOT EXISTS appointments (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -136,6 +141,74 @@ if (isset($_POST['final_submit'])) {
       left: 100%;
       margin-top: -1px;
     }
+    /* Form container background */
+.bg-light.text-center.rounded.p-5 {
+    background-color: #EFF5F9 !important;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+}
+
+/* Headings */
+h1.display-4 {
+    font-weight: 700;
+    color: #1D2A4D;
+}
+
+h1.mb-4 {
+    font-weight: 700;
+    color: #1D2A4D;
+}
+
+/* Labels */
+form label {
+    display: block;
+    font-weight: 600;
+    color: #1D2A4D;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+/* Inputs and selects */
+form input[type="text"],
+form input[type="email"],
+form select {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+
+/* Submit button */
+form button[type="submit"] {
+    background-color: #13C5DD;
+    border: none;
+    padding: 12px 24px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 30px;
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+
+form button[type="submit"]:hover {
+    background-color: #0fb3c7;
+}
+
+/* Success alert */
+.alert.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
 </style>
 
 <head>
@@ -279,53 +352,68 @@ if (isset($_POST['final_submit'])) {
 
           
 <form method="POST" action="">
-    <label>Name:</label><br />
-    <input type="text" name="patient_name" required /><br /><br />
+    <div class="row">
+        <div class="col-md-6">
+            <label>Name:</label>
+            <input type="text" name="patient_name" required />
+        </div>
+        <div class="col-md-6">
+            <label>Email:</label>
+            <input type="email" name="email" required />
+        </div>
+    </div>
 
-    <label>Email:</label><br />
-    <input type="email" name="email" required /><br /><br />
+    <div class="row">
+        <div class="col-md-6">
+            <label>Medical Concern:</label>
+            <select name="specialization" onchange="this.form.submit()">
+                <option value="">Select Medical Concern</option>
+                <?php while ($spec = $specializations->fetch_assoc()): ?>
+                    <option value="<?= htmlspecialchars($spec['specialization']) ?>" <?= ($specialization == $spec['specialization']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($spec['specialization']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label>Doctor:</label>
+            <select name="doctor_id" onchange="this.form.submit()">
+                <option value="">Select Doctor</option>
+                <?php if ($doctors): ?>
+                    <?php while ($doc = $doctors->fetch_assoc()): ?>
+                        <option value="<?= $doc['id'] ?>" <?= ($doctor_id == $doc['id']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($doc['name']) ?>
+                        </option>
+                    <?php endwhile; ?>
+                <?php endif; ?>
+            </select>
+        </div>
+    </div>
 
-    <label>Specialization:</label><br />
-    <select name="specialization" onchange="this.form.submit()">
-        <option value="">Select Specialization</option>
-        <?php while ($spec = $specializations->fetch_assoc()): ?>
-            <option value="<?= htmlspecialchars($spec['specialization']) ?>" <?= ($specialization == $spec['specialization']) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($spec['specialization']) ?>
-            </option>
-        <?php endwhile; ?>
-    </select><br /><br />
-
-    <label>Doctor:</label><br />
-    <select name="doctor_id" onchange="this.form.submit()">
-        <option value="">Select Doctor</option>
-        <?php if ($doctors): ?>
-            <?php while ($doc = $doctors->fetch_assoc()): ?>
-                <option value="<?= $doc['id'] ?>" <?= ($doctor_id == $doc['id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($doc['name']) ?>
-                </option>
-            <?php endwhile; ?>
-        <?php endif; ?>
-    </select><br /><br />
-
-    <label>Date:</label><br />
-    <select name="days" onchange="this.form.submit()">
-        <option value="">Select Date</option>
-        <?php foreach ($dates as $date): ?>
-            <option value="<?= $date ?>" <?= ($appointment_date == $date) ? 'selected' : '' ?>>
-                <?= $date ?>
-            </option>
-        <?php endforeach; ?>
-    </select><br /><br />
-
-    <label>Time:</label><br />
-    <select name="time" required>
-        <option value="">Select Time</option>
-        <?php foreach ($times as $time): ?>
-            <option value="<?= $time ?>" <?= ($appointment_time == $time) ? 'selected' : '' ?>>
-                <?= date('h:i A', strtotime($time)) ?>
-            </option>
-        <?php endforeach; ?>
-    </select><br /><br />
+    <div class="row">
+        <div class="col-md-6">
+            <label>Date:</label>
+            <select name="days" onchange="this.form.submit()">
+                <option value="">Select Date</option>
+                <?php foreach ($dates as $date): ?>
+                    <option value="<?= $date ?>" <?= ($appointment_date == $date) ? 'selected' : '' ?>>
+                        <?= $date ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label>Time:</label>
+            <select name="time" required>
+                <option value="">Select Time</option>
+                <?php foreach ($times as $time): ?>
+                    <option value="<?= $time ?>" <?= ($appointment_time == $time) ? 'selected' : '' ?>>
+                        <?= date('h:i A', strtotime($time)) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
 
     <button type="submit" name="final_submit">Book Appointment</button>
 </form>
