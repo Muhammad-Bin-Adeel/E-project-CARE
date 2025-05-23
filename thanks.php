@@ -63,7 +63,7 @@
         <h1>Your Request Has Been Submitted</h1>
         <div class="btn-group">
     <a href="index.php" class="btn">Back to Home Page</a>
-    <a href="loginn.php" class="btn">Login</a>
+    <a href="login.php" class="btn">Login</a>
 </div>
     </div>
 </body>
