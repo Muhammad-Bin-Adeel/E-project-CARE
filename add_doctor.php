@@ -38,8 +38,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $phone = $conn->real_escape_string($_POST['phone']);
     $spec = $conn->real_escape_string($_POST['specialization']);
     $city = $conn->real_escape_string($_POST['city']);
-    $days = $conn->real_escape_string($_POST['days']);
-    $timing = $conn->real_escape_string($_POST['timing']);
+    $days = '';
+if (isset($_POST['days']) && is_array($_POST['days'])) {
+    // Sanitize and join checked days
+    $sanitizedDays = array_map(function($day) use ($conn) {
+        return $conn->real_escape_string($day);
+    }, $_POST['days']);
+    $days = implode(',', $sanitizedDays);
+}
+    $timing = '';
+if (isset($_POST['timing']) && is_array($_POST['timing'])) {
+    $sanitizedTimes = array_map(function($time) use ($conn) {
+        return $conn->real_escape_string($time);
+    }, $_POST['timing']);
+    $timing = implode(',', $sanitizedTimes);
+}
     $exp = $conn->real_escape_string($_POST['experience']);
     $desc = $conn->real_escape_string($_POST['description']);
     $location = $conn->real_escape_string($_POST['location']);
@@ -641,14 +654,36 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
     
 
     <div class="form-group">
-      <label class="form-label">Days:</label>
-      <input type="text" name="days" class="form-control" value="<?= $edit['days'] ?? '' ?>" required>
-    </div>
+  <label class="form-label">Available Days:</label><br>
+  <?php
+    $selectedDays = isset($edit['days']) ? explode(',', $edit['days']) : [];
+    $allDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    foreach ($allDays as $day) {
+        $checked = in_array($day, $selectedDays) ? 'checked' : '';
+        echo "<label><input type='checkbox' name='days[]' value='$day' $checked> $day</label><br>";
+    }
+  ?>
+</div>
 
     <div class="form-group">
-      <label class="form-label">Timing:</label>
-      <input type="text" name="timing" class="form-control" value="<?= $edit['timing'] ?? '' ?>" required>
-    </div>
+  <label class="form-label">Timing:</label>
+  <select name="timing[]" class="form-control" multiple required>
+    <?php
+      $available_timings = [
+          "09:00 AM - 11:00 AM",
+          "11:00 AM - 01:00 PM",
+          "02:00 PM - 04:00 PM",
+          "04:00 PM - 06:00 PM"
+      ];
+      $selectedTimings = isset($edit['timing']) ? explode(",", $edit['timing']) : [];
+      foreach ($available_timings as $time) {
+          $selected = in_array($time, $selectedTimings) ? 'selected' : '';
+          echo "<option value=\"$time\" $selected>$time</option>";
+      }
+    ?>
+  </select>
+  <small>Hold Ctrl (Windows) or Cmd (Mac) to select multiple</small>
+</div>
 
     <div class="form-group">
       <label class="form-label">Experience:</label>

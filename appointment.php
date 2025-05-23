@@ -41,8 +41,40 @@ if (!empty($doctor_id)) {
     $stmt->execute();
     $result = $stmt->get_result();
     if ($row = $result->fetch_assoc()) {
-        $dates = explode(",", $row['days']);
-        $times = explode(",", $row['timing']);
+        $days = array_map('trim', explode(",", $row['days']));
+        $raw_times = explode(",", $row['timing']);
+
+// Fetch already booked times for selected doctor and date
+$booked_times = [];
+if (!empty($appointment_date)) {
+    $stmt = $conn->prepare("SELECT appointment_time FROM appointments WHERE doctor_id = ? AND appointment_date = ?");
+    $stmt->bind_param("is", $doctor_id, $appointment_date);
+    $stmt->execute();
+    $result2 = $stmt->get_result();
+    while ($r = $result2->fetch_assoc()) {
+        $booked_times[] = $r['appointment_time'];
+    }
+}
+
+// Remove booked times
+$times = array_filter($raw_times, function($t) use ($booked_times) {
+    return !in_array(trim($t), $booked_times);
+});
+
+        $availableDays = $days;
+
+        $dates = [];
+        $today = new DateTime();
+
+        for ($i = 0; $i < 30; $i++) {
+            $checkDate = clone $today;
+            $checkDate->modify("+$i day");
+            $dayName = $checkDate->format('l');  // Monday, Tuesday, etc.
+
+            if (in_array($dayName, $availableDays)) {
+                $dates[] = $checkDate->format('Y-m-d');
+            }
+        }
     }
 }
 
@@ -62,6 +94,7 @@ if (isset($_POST['final_submit'])) {
     $success = true;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
