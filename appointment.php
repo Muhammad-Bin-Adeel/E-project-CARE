@@ -2,7 +2,7 @@
 session_start();
 include("db.php");
 
-// Create table if not exists (Optional)
+// Create appointments table if not exists (optional)
 $conn->query("CREATE TABLE IF NOT EXISTS appointments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   patient_name VARCHAR(255),
@@ -14,16 +14,16 @@ $conn->query("CREATE TABLE IF NOT EXISTS appointments (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
-// Get values from previous submissions
+// Get values from form submission or empty default
 $specialization = $_POST['specialization'] ?? '';
 $doctor_id = $_POST['doctor_id'] ?? '';
 $appointment_date = $_POST['days'] ?? '';
 $appointment_time = $_POST['time'] ?? '';
 
-// Fetch specializations
+// Fetch specializations from doctors table
 $specializations = $conn->query("SELECT DISTINCT specialization FROM doctors");
 
-// Fetch doctors based on specialization
+// Fetch doctors based on selected specialization
 $doctors = [];
 if (!empty($specialization)) {
     $stmt = $conn->prepare("SELECT id, name FROM doctors WHERE specialization = ?");
@@ -32,49 +32,74 @@ if (!empty($specialization)) {
     $doctors = $stmt->get_result();
 }
 
-// Fetch selected doctor’s available days and timings
+// Initialize dates and times arrays
 $dates = [];
 $times = [];
+
 if (!empty($doctor_id)) {
+    // Fetch selected doctor's available days and timing string
     $stmt = $conn->prepare("SELECT days, timing FROM doctors WHERE id = ?");
     $stmt->bind_param("i", $doctor_id);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($row = $result->fetch_assoc()) {
-        $days = array_map('trim', explode(",", $row['days']));
-        $raw_times = explode(",", $row['timing']);
+        $days = array_map('trim', explode(",", $row['days'])); // e.g. ["Monday", "Wednesday"]
+        
+        // Parse timing string like "04:01 pm to 05:00 pm"
+        $time_str = strtolower(trim($row['timing']));
+        $parts = preg_split('/\s*to\s*/', $time_str);
 
-// Fetch already booked times for selected doctor and date
-$booked_times = [];
-if (!empty($appointment_date)) {
-    $stmt = $conn->prepare("SELECT appointment_time FROM appointments WHERE doctor_id = ? AND appointment_date = ?");
-    $stmt->bind_param("is", $doctor_id, $appointment_date);
-    $stmt->execute();
-    $result2 = $stmt->get_result();
-    while ($r = $result2->fetch_assoc()) {
-        $booked_times[] = $r['appointment_time'];
-    }
-}
+        if (count($parts) == 2) {
+            try {
+                $start_time = new DateTime($parts[0]);
+                $end_time = new DateTime($parts[1]);
+            } catch (Exception $e) {
+                // Default timing if parse fails
+                $start_time = new DateTime('09:00');
+                $end_time = new DateTime('11:00');
+            }
+        } else {
+            $start_time = new DateTime('09:00');
+            $end_time = new DateTime('11:00');
+        }
 
-// Remove booked times
-$times = array_filter($raw_times, function($t) use ($booked_times) {
-    return !in_array(trim($t), $booked_times);
-});
-
-        $availableDays = $days;
-
+        // Generate available dates for next 30 days based on doctor's available days
         $dates = [];
         $today = new DateTime();
-
         for ($i = 0; $i < 30; $i++) {
             $checkDate = clone $today;
             $checkDate->modify("+$i day");
-            $dayName = $checkDate->format('l');  // Monday, Tuesday, etc.
-
-            if (in_array($dayName, $availableDays)) {
+            $dayName = $checkDate->format('l'); // Full day name
+            if (in_array($dayName, $days)) {
                 $dates[] = $checkDate->format('Y-m-d');
             }
         }
+
+        // Fetch already booked appointment times for selected doctor and date
+        $booked_times = [];
+        if (!empty($appointment_date)) {
+            $stmt2 = $conn->prepare("SELECT appointment_time FROM appointments WHERE doctor_id = ? AND appointment_date = ?");
+            $stmt2->bind_param("is", $doctor_id, $appointment_date);
+            $stmt2->execute();
+            $result2 = $stmt2->get_result();
+            while ($r = $result2->fetch_assoc()) {
+                $booked_times[] = $r['appointment_time'];
+            }
+        }
+
+        // Generate 15-minute interval time slots between start_time and end_time
+        $interval_minutes = 15;
+        $available_times = [];
+        $current_time = clone $start_time;
+        while ($current_time < $end_time) {
+            $available_times[] = $current_time->format('H:i:s'); // 24-hour format for DB comparison
+            $current_time->modify("+{$interval_minutes} minutes");
+        }
+
+        // Remove booked times from available_times
+        $times = array_filter($available_times, function($t) use ($booked_times) {
+            return !in_array($t, $booked_times);
+        });
     }
 }
 
@@ -90,8 +115,11 @@ if (isset($_POST['final_submit'])) {
         $appointment_date,
         $appointment_time
     );
-    $stmt->execute();
-    $success = true;
+    if ($stmt->execute()) {
+        $success = true;
+    } else {
+        $error = "Appointment booking failed!";
+    }
 }
 ?>
 
@@ -249,50 +277,58 @@ if (isset($_POST['final_submit'])) {
             <div class="alert alert-success">Appointment booked successfully!</div>
           <?php endif; ?>
 
-          <form method="POST" action="">
-            <!-- Specialization -->
-            <select class="form-control mb-3" name="specialization" onchange="this.form.submit()">
-              <option value="">Select Specialist</option>
-              <?php while ($row = $specializations->fetch_assoc()): ?>
-                <option value="<?= $row['specialization'] ?>" <?= $specialization == $row['specialization'] ? 'selected' : '' ?>>
-                  <?= $row['specialization'] ?>
+          
+<form method="POST" action="">
+    <label>Name:</label><br />
+    <input type="text" name="patient_name" required /><br /><br />
+
+    <label>Email:</label><br />
+    <input type="email" name="email" required /><br /><br />
+
+    <label>Specialization:</label><br />
+    <select name="specialization" onchange="this.form.submit()">
+        <option value="">Select Specialization</option>
+        <?php while ($spec = $specializations->fetch_assoc()): ?>
+            <option value="<?= htmlspecialchars($spec['specialization']) ?>" <?= ($specialization == $spec['specialization']) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($spec['specialization']) ?>
+            </option>
+        <?php endwhile; ?>
+    </select><br /><br />
+
+    <label>Doctor:</label><br />
+    <select name="doctor_id" onchange="this.form.submit()">
+        <option value="">Select Doctor</option>
+        <?php if ($doctors): ?>
+            <?php while ($doc = $doctors->fetch_assoc()): ?>
+                <option value="<?= $doc['id'] ?>" <?= ($doctor_id == $doc['id']) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($doc['name']) ?>
                 </option>
-              <?php endwhile; ?>
-            </select>
+            <?php endwhile; ?>
+        <?php endif; ?>
+    </select><br /><br />
 
-            <!-- Doctor -->
-            <select class="form-control mb-3" name="doctor_id" onchange="this.form.submit()">
-              <option value="">Select Doctor</option>
-              <?php if (!empty($doctors)): ?>
-                <?php while ($row = $doctors->fetch_assoc()): ?>
-                  <option value="<?= $row['id'] ?>" <?= $doctor_id == $row['id'] ? 'selected' : '' ?>>
-                    <?= $row['name'] ?>
-                  </option>
-                <?php endwhile; ?>
-              <?php endif; ?>
-            </select>
+    <label>Date:</label><br />
+    <select name="days" onchange="this.form.submit()">
+        <option value="">Select Date</option>
+        <?php foreach ($dates as $date): ?>
+            <option value="<?= $date ?>" <?= ($appointment_date == $date) ? 'selected' : '' ?>>
+                <?= $date ?>
+            </option>
+        <?php endforeach; ?>
+    </select><br /><br />
 
-            <!-- Date -->
-            <select class="form-control mb-3" name="days" onchange="this.form.submit()">
-              <option value="">Select Date</option>
-              <?php foreach ($dates as $date): ?>
-                <option value="<?= $date ?>" <?= $appointment_date == $date ? 'selected' : '' ?>><?= $date ?></option>
-              <?php endforeach; ?>
-            </select>
+    <label>Time:</label><br />
+    <select name="time" required>
+        <option value="">Select Time</option>
+        <?php foreach ($times as $time): ?>
+            <option value="<?= $time ?>" <?= ($appointment_time == $time) ? 'selected' : '' ?>>
+                <?= date('h:i A', strtotime($time)) ?>
+            </option>
+        <?php endforeach; ?>
+    </select><br /><br />
 
-            <!-- Time -->
-            <select class="form-control mb-3" name="time">
-              <option value="">Select Time</option>
-              <?php foreach ($times as $time): ?>
-                <option value="<?= $time ?>" <?= $appointment_time == $time ? 'selected' : '' ?>><?= $time ?></option>
-              <?php endforeach; ?>
-            </select>
-
-            <!-- Patient Info -->
-            <input class="form-control mb-3" type="text" name="patient_name" placeholder="Patient Name" required>
-            <input class="form-control mb-3" type="email" name="email" placeholder="Email" required>
-            <button type="submit" name="final_submit" class="btn btn-primary w-100">Make Appointment</button>
-          </form>
+    <button type="submit" name="final_submit">Book Appointment</button>
+</form>
         </div>
       </div>
     </div>
