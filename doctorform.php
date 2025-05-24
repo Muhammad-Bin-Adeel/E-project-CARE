@@ -25,10 +25,6 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
 )");
 
 
-if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
-    exit;
-}
 
 // Add or update doctor
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -347,9 +343,19 @@ h4.text-primary i {
 </div>
     
     <div class="form-group">
-      <label class="form-label">City:</label>
-      <input type="text" name="city" class="form-control" value="<?= $edit['city'] ?? '' ?>" required>
-    </div>
+  <label class="form-label">City:</label>
+  <select name="city" class="form-control" required>
+    <option value="">-- Select City --</option>
+    <?php
+      include 'db.php'; // your DB connection file
+      $city_query = mysqli_query($conn, "SELECT * FROM city");
+      while ($row = mysqli_fetch_assoc($city_query)) {
+        $selected = (isset($edit['city']) && $edit['city'] == $row['city_name']) ? 'selected' : '';
+        echo "<option value='{$row['city_name']}' $selected>{$row['city_name']}</option>";
+      }
+    ?>
+  </select>
+</div> 
     
 
     <div class="form-group">

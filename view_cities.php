@@ -7,9 +7,30 @@ if (!isset($_SESSION['admin'])) {
     header("Location: admin_login.php");
     exit;
 } 
+// Handle city deletion
+if (isset($_GET['delete_id'])) {
+    $cityId = intval($_GET['delete_id']);
+
+    // 1. Get city name by id
+    $res = $conn->query("SELECT city_name FROM city WHERE id = $cityId");
+    if ($res && $res->num_rows > 0) {
+        $cityName = $res->fetch_assoc()['city_name'];
+
+        // 2. Update doctors linked to this city name to pending
+        $cityNameEscaped = $conn->real_escape_string($cityName);
+        $conn->query("UPDATE doctors SET status = 'pending' WHERE city = '$cityNameEscaped'");
+
+        // 3. Delete the city itself
+        $conn->query("DELETE FROM city WHERE id = $cityId");
+    }
+
+    // Redirect to avoid resubmission
+    header("Location: view_cities.php");
+    exit();
+}
 
 // Fetch only approved doctors
-$result = $conn->query("SELECT * FROM city ORDER BY id DESC");
+$result = $conn->query("SELECT * FROM city ORDER BY id ASC");
 ?>
 
 <!DOCTYPE html>
@@ -381,22 +402,31 @@ $result = $conn->query("SELECT * FROM city ORDER BY id DESC");
 
 <table class="table table-bordered">
     <thead>
-        <tr>
-            <th>ID</th>
-            <th>City Name</th>
-            <th>province</th>
-            <th>Created At</th>
-        </tr>
-    </thead>
+    <tr>
+        <th>ID</th>
+        <th>City Name</th>
+        <th>Province</th>
+        <th>Created At</th>
+        <th>Action</th> <!-- New -->
+    </tr>
+</thead>
     <tbody>
         <?php if ($result && $result->num_rows > 0): ?>
             <?php while ($row = $result->fetch_assoc()): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($row['id']); ?></td>
-                    <td><?php echo htmlspecialchars($row['city_name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['province']); ?></td>
-                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                </tr>
+    <td><?php echo htmlspecialchars($row['id']); ?></td>
+    <td><?php echo htmlspecialchars($row['city_name']); ?></td>
+    <td><?php echo htmlspecialchars($row['province']); ?></td>
+    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+    <td>
+        <a href="view_cities.php?delete_id=<?php echo $row['id']; ?>" 
+           onclick="return confirm('Are you sure you want to delete this city?');"
+           class="btn btn-danger btn-sm">
+           Delete
+        </a>
+    </td>
+</tr>
+                
             <?php endwhile; ?>
         <?php else: ?>
             <tr>

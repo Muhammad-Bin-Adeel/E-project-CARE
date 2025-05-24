@@ -9,8 +9,29 @@ if (!isset($_SESSION['admin'])) {
 
 // Approve
 if (isset($_GET['approve'])) {
-    $conn->query("UPDATE doctors SET status='approved' WHERE id=" . intval($_GET['approve']));
-    $_SESSION['message'] = "Doctor approved successfully!";
+    $doctorId = intval($_GET['approve']);
+
+    // Before approving, check if doctor's city still exists
+    $doctorRes = $conn->query("SELECT city FROM doctors WHERE id = $doctorId");
+    if ($doctorRes && $doctorRes->num_rows > 0) {
+        $doctor = $doctorRes->fetch_assoc();
+
+        // Check city exists
+        $city = $doctor['city'];
+        $cityRes = $conn->query("SELECT id FROM city WHERE city_name = '".$conn->real_escape_string($city)."'");
+        
+        if ($cityRes && $cityRes->num_rows > 0) {
+            // City exists, allow approval
+            $conn->query("UPDATE doctors SET status='approved' WHERE id=$doctorId");
+            $_SESSION['message'] = "Doctor approved successfully!";
+        } else {
+            // City not found - cannot approve
+            $_SESSION['message'] = "Cannot approve doctor because city no longer exists.";
+        }
+    } else {
+        $_SESSION['message'] = "Doctor not found.";
+    }
+
     header("Location: view_doctors.php");
     exit;
 }
