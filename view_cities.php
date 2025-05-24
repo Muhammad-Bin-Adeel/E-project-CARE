@@ -205,6 +205,60 @@ $result = $conn->query("SELECT * FROM city ORDER BY id ASC");
         .content-wrapper {
             padding: 20px;
         }
+
+        .city-table-container {
+    max-width: 1000px;
+    margin: 0 auto 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.city-table-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--secondary);
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.table thead th {
+    background-color: var(--primary);
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table tbody td {
+    text-align: center;
+    vertical-align: middle;
+    background-color: #fafafa;
+    border-top: 1px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+.btn-danger.btn-sm {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
+
+.table tbody td[colspan="3"] {
+    text-align: center;
+    font-style: italic;
+    color: #6c757d;
+}
         
         /* Dropdown Animation */
         .collapse:not(.show) {
@@ -398,43 +452,44 @@ $result = $conn->query("SELECT * FROM city ORDER BY id ASC");
         </div>
         
         <!-- Content Area - Empty now -->
-        <h2 style="text-align: center;">City List</h2>
+        <div class="city-table-container">
+    <h2 class="city-table-title">City List</h2>
 
-<table class="table table-bordered">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>City Name</th>
-        <th>Province</th>
-        <th>Created At</th>
-        <th>Action</th> <!-- New -->
-    </tr>
-</thead>
-    <tbody>
-        <?php if ($result && $result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <tr>
-    <td><?php echo htmlspecialchars($row['id']); ?></td>
-    <td><?php echo htmlspecialchars($row['city_name']); ?></td>
-    <td><?php echo htmlspecialchars($row['province']); ?></td>
-    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-    <td>
-        <a href="view_cities.php?delete_id=<?php echo $row['id']; ?>" 
-           onclick="return confirm('Are you sure you want to delete this city?');"
-           class="btn btn-danger btn-sm">
-           Delete
-        </a>
-    </td>
-</tr>
-                
-            <?php endwhile; ?>
-        <?php else: ?>
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td colspan="3">No cities found.</td>
+                <th>ID</th>
+                <th>City Name</th>
+                <th>Province</th>
+                <th>Created At</th>
+                <th>Action</th>
             </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <?php if ($result && $result->num_rows > 0): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['id']); ?></td>
+                        <td><?php echo htmlspecialchars($row['city_name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['province']); ?></td>
+                        <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                        <td>
+                            <a href="view_cities.php?delete_id=<?php echo $row['id']; ?>"
+                               onclick="return confirm('Are you sure you want to delete this city?');"
+                               class="btn btn-danger btn-sm">
+                               Delete
+                            </a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="5">No cities found.</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
             <!-- Content will be added here as needed -->
         </div>
     </div>

@@ -199,6 +199,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
             padding: 20px;
         }
         
+        .custom-form-container {
+        max-width: 400px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-form-container .form-label {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .custom-form-container .form-control {
+        border-radius: 8px;
+        padding: 10px 12px;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .custom-form-container .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .custom-form-container .btn {
+        width: 100%;
+        padding: 10px;
+        font-weight: 600;
+        border-radius: 10px;
+    }
         /* Dropdown Animation */
         .collapse:not(.show) {
             display: none;
@@ -390,19 +422,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
             </div>
         </div>
         
-        <!-- Content Area - Empty now --> <div class="main-content">
+        <!-- Content Area - Empty now --> 
+         <div class="main-content">
                 <!-- Add city Form -->
-                <form method="POST" action="">
-    <div class="mb-3">
-        <label for="city_name" class="form-label">City Name</label>
-        <input type="text" class="form-control" id="city_name" name="city_name" required>
-    </div>
-    <div class="mb-3">
-        <label for="province" class="form-label">Province (optional)</label>
-        <input type="text" class="form-control" id="province" name="province">
-    </div>
-    <button type="submit" name="add_city" class="btn btn-primary">Add City</button>
-</form>
+                <div class="custom-form-container">
+    <form method="POST" action="">
+        <div class="mb-3">
+            <label for="city_name" class="form-label">City Name</label>
+            <input type="text" class="form-control" id="city_name" name="city_name" required>
+        </div>
+        <div class="mb-3">
+            <label for="province" class="form-label">Province (optional)</label>
+            <input type="text" class="form-control" id="province" name="province">
+        </div>
+        <button type="submit" name="add_city" class="btn btn-primary">Add City</button>
+    </form>
+</div>
             <!-- Content will be added here as needed -->
         </div>
             <!-- Content will be added here as needed -->

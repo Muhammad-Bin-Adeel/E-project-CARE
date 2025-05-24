@@ -1,3 +1,64 @@
+<?php
+session_start();
+include("db.php");
+
+
+
+// Total Doctors
+$total_doctors = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS count FROM doctors"))['count'];
+
+// Approved Doctors
+$approved_doctors = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS count FROM doctors WHERE status = 'approved'"))['count'];
+
+// Pending Doctors
+$pending_doctors = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS count FROM doctors WHERE status = 'pending'"))['count'];
+
+// Cities
+$total_cities = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS count FROM city"))['count'];
+
+// Patients
+$total_patients = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS count FROM patients"))['count'];
+
+// Appointments
+$total_appointments = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS count FROM appointments"))['count'];
+
+// === Handle notification click ===
+if (isset($_GET['notify']) && isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+    $notify = $_GET['notify'];
+
+    if ($notify == 'doctor_request') {
+        mysqli_query($conn, "UPDATE doctors SET is_notified = 1 WHERE id = $id");
+        header("Location: manage_doctors.php?page=view_doctor_requests");
+        exit;
+    } elseif ($notify == 'appointment') {
+        mysqli_query($conn, "UPDATE appointments SET is_notified = 1 WHERE id = $id");
+        header("Location: view_appointments.php?page=view_appointments");
+        exit;
+    } elseif ($notify == 'doctor_update') {
+        mysqli_query($conn, "UPDATE doctors SET is_notified = 1 WHERE id = $id");
+        header("Location: view_doctors.php?page=view_doctor_requests&highlight=$id");
+        exit;
+    }
+}
+// Doctor Registration Requests
+$pending_doctor_query = mysqli_query($conn, "SELECT * FROM doctors WHERE status = 'pending' AND is_notified = 0");
+$pending_doctor_count = mysqli_num_rows($pending_doctor_query);
+
+// New Appointments (in last 1 hour)
+$appointment_query = mysqli_query($conn, "SELECT * FROM appointments WHERE is_notified = 0");
+$appointment_count = mysqli_num_rows($appointment_query);
+
+// Doctor Profile Changes (flag-based OR updated recently)
+$changed_profile_query = mysqli_query($conn, "SELECT * FROM doctors WHERE changes_pending = 1 AND is_notified = 0");
+$changed_profile_count = mysqli_num_rows($changed_profile_query);
+
+// Total notifications
+$total_notifications = $pending_doctor_count + $appointment_count + $changed_profile_count;
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -344,8 +405,50 @@
                 </div>
                 
                 <div class="notification-bell">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
+                    <div class="dropdown">
+  <button class="btn position-relative" data-bs-toggle="dropdown">
+    <i class="fas fa-bell"></i>
+    <?php if($total_notifications > 0): ?>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        <?= $total_notifications ?>
+      </span>
+    <?php endif; ?>
+  </button>
+
+ <ul class="dropdown-menu dropdown-menu-end">
+
+  <!-- Doctor Requests -->
+  <?php while($row = mysqli_fetch_assoc($pending_doctor_query)): ?>
+    <li>
+      <a class="dropdown-item text-primary" 
+         href="admin_dashboard.php?notify=doctor_request&id=<?= $row['id'] ?>">
+        🩺 Dr. <?= $row['name'] ?> requested approval
+      </a>
+    </li>
+  <?php endwhile; ?>
+
+  <!-- Appointments -->
+  <?php while($row = mysqli_fetch_assoc($appointment_query)): ?>
+    <li>
+      <a class="dropdown-item text-success"
+         href="admin_dashboard.php?notify=appointment&id=<?= $row['id'] ?>">
+        📅 New appointment by <?= $row['patient_name'] ?>
+      </a>
+    </li>
+  <?php endwhile; ?>
+
+  <!-- Profile Updates -->
+  <?php while($row = mysqli_fetch_assoc($changed_profile_query)): ?>
+    <li>
+      <a class="dropdown-item text-warning"
+         href="admin_dashboard.php?notify=doctor_update&id=<?= $row['id'] ?>">
+        ✏️ Dr. <?= $row['name'] ?> updated profile
+      </a>
+    </li>
+  <?php endwhile; ?>
+
+</ul>
+</div>
                 </div>
                 
                 <div class="user-menu dropdown">
@@ -365,7 +468,14 @@
         
         <!-- Content Area - Empty now -->
         <div class="content-wrapper">
-            <!-- Content will be added here as needed -->
+            <div class="row">
+  <div class="col-md-3"><div class="card"><div class="card-body">Total Doctors: <?= $total_doctors ?></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">Approved Doctors: <?= $approved_doctors ?></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">Pending Doctors: <?= $pending_doctors ?></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">Cities: <?= $total_cities ?></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">Patients: <?= $total_patients ?></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">Appointments: <?= $total_appointments ?></div></div></div>
+</div>
         </div>
     </div>
 </div>

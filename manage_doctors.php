@@ -7,6 +7,7 @@ if (!isset($_SESSION['admin'])) {
     exit;
 }
 
+
 // Approve
 if (isset($_GET['approve'])) {
     $doctorId = intval($_GET['approve']);
