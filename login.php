@@ -1,14 +1,16 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 include("db.php");
 
-$error = ""; // initialize error message
+$error = ""; // Initialize error variable
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Admin login
+    // Check for admin (hardcoded)
     if ($email === 'admin' && $password === 'admin123') {
         $_SESSION['role'] = 'admin';
         $_SESSION['email'] = $email;
@@ -16,15 +18,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Doctor login
+    // Check in doctors table
     $query = "SELECT * FROM doctors WHERE email='$email' AND status='approved'";
     $result = mysqli_query($conn, $query);
+
     if (mysqli_num_rows($result) == 1) {
         $doctor = mysqli_fetch_assoc($result);
-        if ($doctor['password'] == $password) {
+
+        if ($doctor['password'] == $password) { // Plain text match
             $_SESSION['role'] = 'doctor';
             $_SESSION['doctor_email'] = $email;
-            header("Location: doctor_dashboard.php");
+
+            // Redirect to doctor profile with doctor ID
+            $doctor_id = $doctor['id'];
+            header("Location: doctor_profile.php?id=$doctor_id");
             exit();
         }
     }
@@ -38,12 +45,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['patient_id'] = mysqli_fetch_assoc($result)['id'];
         header("Location: appointment.php");
         exit();
-    } else {
-        $error = "Invalid email or password.";
     }
+
+    $error = "Invalid email or password.";
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -182,14 +188,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Login</title>
 </head>
 
-
 <body>
     <div class="login-box">
         <h2>Login</h2>
         <?php if (!empty($error)): ?>
             <div class="error"><?php echo $error; ?></div>
         <?php endif; ?>
-
         <form method="POST" action="">
             <label>Email:</label>
             <input type="text" name="email" required>
