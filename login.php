@@ -25,15 +25,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (mysqli_num_rows($result) == 1) {
         $doctor = mysqli_fetch_assoc($result);
 
-        if ($doctor['password'] == $password) { // Plain text match
-            $_SESSION['role'] = 'doctor';
-            $_SESSION['doctor_email'] = $email;
+       if ($doctor['password'] == $password) { // Plain text match
+    $_SESSION['role'] = 'doctor';
+    $_SESSION['doctor_email'] = $email;
+    $_SESSION['doctor_id'] = $doctor['id']; // ✅ Add this line
 
-            // Redirect to doctor profile with doctor ID
-            $doctor_id = $doctor['id'];
-            header("Location: doctor_profile.php?id=$doctor_id");
-            exit();
-        }
+    // Redirect to doctor profile with doctor ID
+    $doctor_id = $doctor['id'];
+    header("Location: doctor_profile.php?id=$doctor_id");
+    exit();
+}
     }
 
     // Patient login

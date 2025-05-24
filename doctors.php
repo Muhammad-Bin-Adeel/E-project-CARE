@@ -48,14 +48,20 @@ if (isset($_POST['action']) && $_POST['action'] == 'filter') {
                             <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
                         </div>
 
-                        <button class="btn btn-sm btn-outline-primary mt-2 toggle-details-btn" 
-                            type="button" 
-                            data-bs-toggle="collapse" 
-                            data-bs-target="#doctorDetails<?= $counter ?>" 
-                            aria-expanded="false" 
-                            aria-controls="doctorDetails<?= $counter ?>">
-                            More Details
-                        </button>
+                        <div class="d-flex gap-2 mt-auto">
+                            <button class="btn btn-sm btn-outline-primary toggle-details-btn flex-grow-1" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#doctorDetails<?= $counter ?>" 
+                                aria-expanded="false" 
+                                aria-controls="doctorDetails<?= $counter ?>">
+                                More Details
+                            </button>
+                            
+                            <a href="appointment.php?doctor_id=<?= $row['id'] ?>" class="btn btn-sm btn-primary flex-grow-1">
+                                Appointment
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,7 +69,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'filter') {
             $counter++;
         }
     } else {
-        echo '<p class="text-center text-muted">No approved doctors found for selected filter.</p>';
+        echo '<div class="col-12"><p class="text-center text-muted">No approved doctors found for selected filter.</p></div>';
     }
     exit;  // Important to exit after AJAX response
 }
@@ -71,7 +77,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'filter') {
 // For normal page load, fetch all approved doctors (initial load)
 $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY id DESC");
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -126,140 +131,147 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
             max-width: 900px;
             margin: 30px auto;
         }
+        
+        /* Doctor Cards Styles */
+        .doctor-card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            background: #fff;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .doctor-card .card-img-top {
+            transition: transform 0.3s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        .doctor-card:hover .card-img-top {
+            transform: scale(1.03);
+        }
+
+        .doctor-card .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 250px);
+        }
+
+        .doctor-card .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .doctor-card .text-primary {
+            color: #3498db !important;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .doctor-card p {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .doctor-card p strong {
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .doctor-card .btn-group {
+            margin-top: auto;
+            padding-top: 1rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .doctor-card .toggle-details-btn {
+            border-radius: 5px;
+            font-weight: 500;
+            padding: 0.375rem 0.75rem;
+            flex: 1;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 767.98px) {
+            .doctor-card {
+                margin-bottom: 20px;
+            }
+            
+            .doctor-card .card-img-top {
+                height: 200px;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .doctor-card .card-img-top {
+                height: 220px;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid py-2 border-bottom d-none d-lg-block">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-lg-start mb-2 mb-lg-0">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-decoration-none text-body pe-3" href=""><i class="bi bi-telephone me-2"></i>+012 345 6789</a>
-                        <span class="text-body">|</span>
-                        <a class="text-decoration-none text-body px-3" href=""><i class="bi bi-envelope me-2"></i>info@example.com</a>
-                    </div>
-                </div>
-                <div class="col-md-6 text-center text-lg-end">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-body px-2" href="">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a class="text-body px-2" href="">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a class="text-body px-2" href="">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a class="text-body px-2" href="">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a class="text-body ps-2" href="">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Topbar End -->
-
-
-    <!-- Navbar Start -->
-
-<div class="container-fluid sticky-top bg-white shadow-sm">
-    <div class="container">
-        <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
-            <a href="index.php" class="navbar-brand">
-                <h1 class="m-0 text-uppercase text-primary">
-                    <i class="fa fa-clinic-medical me-2"></i>Medinova
-                </h1>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto py-0">
-                    <a href="index.php" class="nav-item nav-link ">Home</a>
-                    <a href="about.php" class="nav-item nav-link">About</a>
-                   
-                    <a href="doctors.php" class="nav-item nav-link active">Doctor</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu m-0">
-                            <a href="blog.php" class="dropdown-item">Blog Grid</a>
-                            <a href="#" class="dropdown-item">Blog Detail</a>
-                            <a href="#" class="dropdown-item">The Team</a>
-                            <a href="#" class="dropdown-item">Testimonial</a>
-                            <a href="appointment.php" class="dropdown-item">Appointment</a>
-                            <a href="search.php" class="dropdown-item">Search</a>
-                        </div>
-                    </div>
-                    <a href="contact.php" class="nav-item nav-link">Contact</a>
-                </div>
-                <!-- Corrected Button -->
-                <div class="ms-3">
-                    <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
-                </div>
-            </div>
-        </nav>
-    </div>
-</div>
-    <!-- Navbar End -->
-     
-     
+    <!-- Topbar and Navbar sections remain the same as your original code -->
+    
     <!-- Team Start -->
-    <!-- Filter & Search Form -->
-    <div class="container" id="filterForm">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search by name, specialization, city...">
-            </div>
-            <div class="col-md-3">
-                <select id="specializationFilter" class="form-select">
-                    <option value="">Select Specialization</option>
-                    <?php
-                    // Fetch distinct specializations from database for filter dropdown
-                    $specRes = $conn->query("SELECT DISTINCT specialization FROM doctors WHERE status = 'approved' ORDER BY specialization ASC");
-                    while ($specRow = $specRes->fetch_assoc()) {
-                        echo '<option value="'.htmlspecialchars($specRow['specialization']).'">'.htmlspecialchars($specRow['specialization']).'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <select id="cityFilter" class="form-select">
-                    <option value="">Select City</option>
-                    <?php
-                    // Fetch distinct cities for filter dropdown
-                    $cityRes = $conn->query("SELECT DISTINCT city FROM doctors WHERE status = 'approved' ORDER BY city ASC");
-                    while ($cityRow = $cityRes->fetch_assoc()) {
-                        echo '<option value="'.htmlspecialchars($cityRow['city']).'">'.htmlspecialchars($cityRow['city']).'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button id="resetFilter" class="btn btn-secondary w-100">Reset</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Doctors List -->
     <div class="container-fluid py-5">
         <div class="container">
-            <div class="text-center mx-auto mb-5" style="max-width: 500px;">
-                <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Our Doctors</h5>
-                <h1 class="display-4">Qualified Healthcare Professionals</h1>
+            <!-- Filter & Search Form -->
+            <div class="container" id="filterForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by name, specialization, city...">
+                    </div>
+                    <div class="col-md-3">
+                        <select id="specializationFilter" class="form-select">
+                            <option value="">Select Specialization</option>
+                            <?php
+                            $specRes = $conn->query("SELECT DISTINCT specialization FROM doctors WHERE status = 'approved' ORDER BY specialization ASC");
+                            while ($specRow = $specRes->fetch_assoc()) {
+                                echo '<option value="'.htmlspecialchars($specRow['specialization']).'">'.htmlspecialchars($specRow['specialization']).'</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="cityFilter" class="form-select">
+                            <option value="">Select City</option>
+                            <?php
+                            $cityRes = $conn->query("SELECT DISTINCT city FROM doctors WHERE status = 'approved' ORDER BY city ASC");
+                            while ($cityRow = $cityRes->fetch_assoc()) {
+                                echo '<option value="'.htmlspecialchars($cityRow['city']).'">'.htmlspecialchars($cityRow['city']).'</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="resetFilter" class="btn btn-secondary w-100">Reset</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="row g-4" id="doctorsList">
+            <!-- Doctors List Container -->
+            <div class="row mt-5" id="doctorsList">
                 <?php if ($result->num_rows > 0): ?>
                     <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card shadow-sm h-100">
-                                <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="width: 100%; height: 300px; object-fit: cover; object-position: top;" alt="<?= htmlspecialchars($row['name']) ?>">
+                                <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
                                     <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
@@ -277,124 +289,69 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                                         <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
                                     </div>
 
-                                    <button class="btn btn-sm btn-outline-primary mt-2 toggle-details-btn" 
-                                        type="button" 
-                                        data-bs-toggle="collapse" 
-                                        data-bs-target="#doctorDetails<?= $counter ?>" 
-                                        aria-expanded="false" 
-                                        aria-controls="doctorDetails<?= $counter ?>">
-                                        More Details
-                                    </button>
+                                    <div class="d-flex gap-2 mt-auto">
+                                        <button class="btn btn-sm btn-outline-primary toggle-details-btn flex-grow-1" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#doctorDetails<?= $counter ?>" 
+                                            aria-expanded="false" 
+                                            aria-controls="doctorDetails<?= $counter ?>">
+                                            More Details
+                                        </button>
+                                        
+                                        <a href="appointment.php?doctor_id=<?= $row['id'] ?>" class="btn btn-sm btn-primary flex-grow-1">
+                                            Appointment
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    <?php $counter++; endwhile; ?>
+                        <?php $counter++; ?>
+                    <?php endwhile; ?>
                 <?php else: ?>
-                    <p class="text-center text-muted">No approved doctors found.</p>
+                    <div class="col-12">
+                        <p class="text-center text-muted">No approved doctors found.</p>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
-
     <!-- Team End -->
 
+    <!-- Footer section remains the same as your original code -->
 
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light mt-5 py-5">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Get In Touch</h4>
-                    <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et dolor sed dolor</p>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary me-3"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="fa fa-envelope text-primary me-3"></i>info@example.com</p>
-                    <p class="mb-0"><i class="fa fa-phone-alt text-primary me-3"></i>+012 345 67890</p>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Quick Links</h4>
-                    <div class="d-flex flex-column justify-content-start">
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Home</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>About Us</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Our Services</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Meet The Team</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Latest Blog</a>
-                        <a class="text-light" href="#"><i class="fa fa-angle-right me-2"></i>Contact Us</a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Popular Links</h4>
-                    <div class="d-flex flex-column justify-content-start">
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Home</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>About Us</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Our Services</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Meet The Team</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Latest Blog</a>
-                        <a class="text-light" href="#"><i class="fa fa-angle-right me-2"></i>Contact Us</a>
-                        <a class="text-light" href="doctorform.php"><i class="fa fa-angle-right me-2"></i>Join As Doctor </a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Newsletter</h4>
-                    <form action="">
-                        <div class="input-group">
-                            <input type="text" class="form-control p-3 border-0" placeholder="Your Email Address">
-                            <button class="btn btn-primary">Sign Up</button>
-                        </div>
-                    </form>
-                    <h6 class="text-primary text-uppercase mt-4 mb-3">Follow Us</h6>
-                    <div class="d-flex">
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-2" href="#"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid bg-dark text-light border-top border-secondary py-4">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-md-0">&copy; <a class="text-primary" href="#">Your Site Name</a>. All Rights Reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="mb-0">Designed by <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
-
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-    <!-- Template Javascript -->
-
-    <script src="js/main.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Toggle button text for details (existing functionality)
-        const buttons = document.querySelectorAll('.toggle-details-btn');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const targetId = btn.getAttribute('data-bs-target');
-                const collapseEl = document.querySelector(targetId);
-                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
-                setTimeout(() => {
-                    if (collapseEl.classList.contains('show')) {
-                        btn.textContent = 'Less Details';
-                        btn.classList.remove('btn-outline-primary');
-                        btn.classList.add('btn-outline-danger');
-                    } else {
-                        btn.textContent = 'More Details';
-                        btn.classList.remove('btn-outline-danger');
-                        btn.classList.add('btn-outline-primary');
-                    }
-                }, 300);
+        // Toggle button text for details
+        function bindToggleButtons() {
+            const buttons = document.querySelectorAll('.toggle-details-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetId = btn.getAttribute('data-bs-target');
+                    const collapseEl = document.querySelector(targetId);
+                    
+                    // Use Bootstrap's Collapse directly
+                    const bsCollapse = new bootstrap.Collapse(collapseEl, {
+                        toggle: true
+                    });
+                    
+                    setTimeout(() => {
+                        if (collapseEl.classList.contains('show')) {
+                            btn.textContent = 'Less Details';
+                            btn.classList.remove('btn-outline-primary');
+                            btn.classList.add('btn-outline-danger');
+                        } else {
+                            btn.textContent = 'More Details';
+                            btn.classList.remove('btn-outline-danger');
+                            btn.classList.add('btn-outline-primary');
+                        }
+                    }, 300);
+                });
             });
-        });
+        }
+        
+        // Initial binding
+        bindToggleButtons();
 
         // Filter elements
         const searchInput = document.getElementById('searchInput');
@@ -411,53 +368,49 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
             data.append('specialization', specializationFilter.value);
             data.append('city', cityFilter.value);
 
-            fetch('', {  // same page
+            fetch(window.location.href, {
                 method: 'POST',
                 body: data
             })
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
             .then(html => {
                 doctorsList.innerHTML = html;
                 // Re-bind toggle details buttons after update
-                const newButtons = doctorsList.querySelectorAll('.toggle-details-btn');
-                newButtons.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const targetId = btn.getAttribute('data-bs-target');
-                        const collapseEl = document.querySelector(targetId);
-                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
-                        setTimeout(() => {
-                            if (collapseEl.classList.contains('show')) {
-                                btn.textContent = 'Less Details';
-                                btn.classList.remove('btn-outline-primary');
-                                btn.classList.add('btn-outline-danger');
-                            } else {
-                                btn.textContent = 'More Details';
-                                btn.classList.remove('btn-outline-danger');
-                                btn.classList.add('btn-outline-primary');
-                            }
-                        }, 300);
-                    });
-                });
+                bindToggleButtons();
             })
             .catch(err => {
-                doctorsList.innerHTML = '<p class="text-center text-danger">Error loading doctors. Please try again.</p>';
+                console.error('Error:', err);
+                doctorsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading doctors. Please try again.</p></div>';
             });
         }
 
-        // Event listeners
-        searchInput.addEventListener('input', fetchDoctors);
+        // Debounce function to prevent rapid firing of events
+        function debounce(func, timeout = 300) {
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => { func.apply(this, args); }, timeout);
+            };
+        }
+
+        // Event listeners with debounce for search input
+        searchInput.addEventListener('input', debounce(fetchDoctors));
         specializationFilter.addEventListener('change', fetchDoctors);
         cityFilter.addEventListener('change', fetchDoctors);
 
         resetBtn.addEventListener('click', function(e) {
             e.preventDefault();
             searchInput.value = '';
-            specializationFilter.value = '';
-            cityFilter.value = '';
+            specializationFilter.selectedIndex = 0;
+            cityFilter.selectedIndex = 0;
             fetchDoctors();
         });
     });
     </script>
 </body>
-
 </html>

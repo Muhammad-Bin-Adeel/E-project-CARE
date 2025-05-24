@@ -2,10 +2,15 @@
 session_start();
 include("db.php");
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if (!isset($_SESSION['doctor_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$doctor_id = $_SESSION['doctor_id'];
 
 $stmt = $conn->prepare("SELECT * FROM doctors WHERE id = ? AND status = 'approved'");
-$stmt->bind_param("i", $id);
+$stmt->bind_param("i", $doctor_id);
 $stmt->execute();
 
 $result = $stmt->get_result();
@@ -16,7 +21,7 @@ if ($result->num_rows == 0) {
 }
 
 $doctor = $result->fetch_assoc();
-?>      
+?>
 
 <!DOCTYPE html>
 <html><head>
@@ -336,7 +341,7 @@ $doctor = $result->fetch_assoc();
                 </div>
                 
                 <!-- My Appointments -->
-                <a href="doctor_appointments.php" class="nav-link">
+                <a href="doctor_appointment.php" class="nav-link">
                     <i class="fas fa-calendar-check"></i>
                     <span>Appointments</span>
                 </a>

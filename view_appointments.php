@@ -1,3 +1,17 @@
+<?php
+session_start();
+include("db.php");
+
+// Show only APPROVED (Accepted) appointments in Admin Panel
+$sql = "SELECT a.id, a.patient_name, a.email, d.name AS doctor_name, a.specialization, a.appointment_date, a.appointment_time, a.status 
+        FROM appointments a 
+        JOIN doctors d ON a.doctor_id = d.id 
+        WHERE a.status = 'Accepted'
+        ORDER BY a.created_at DESC";
+
+// DEBUG: Check if query fails
+$result = $conn->query($sql) or die("Query failed: " . $conn->error);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -206,6 +220,16 @@
                 margin-right: 10px;
             }
         }
+       body { font-family: Arial; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background: #f2f2f2; }
+        .pending { color: orange; font-weight: bold; }
+        .accepted { color: green; font-weight: bold; }
+        .declined { color: red; font-weight: bold; }
+        .btn { padding: 6px 12px; border: none; cursor: pointer; border-radius: 4px; }
+        .accept { background-color: #4CAF50; color: white; }
+        .decline { background-color: #f44336; color: white; }
     </style>
 </head>
 <body>
@@ -363,9 +387,47 @@
         </div>
         
         <!-- Content Area - Empty now -->
-        <div class="content-wrapper">
-            <!-- Content will be added here as needed -->
-        </div>
+        
+<h2>Appointment Requests</h2>
+
+<table>
+    <tr>
+        <th>#</th>
+        <th>Patient Name</th>
+        <th>Email</th>
+        <th>Doctor</th>
+        <th>Specialization</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    <?php if ($result->num_rows > 0): $i = 1; while ($row = $result->fetch_assoc()): ?>
+        <tr>
+            <td><?= $i++ ?></td>
+            <td><?= htmlspecialchars($row['patient_name']) ?></td>
+            <td><?= htmlspecialchars($row['email']) ?></td>
+            <td><?= htmlspecialchars($row['doctor_name']) ?></td>
+            <td><?= htmlspecialchars($row['specialization']) ?></td>
+            <td><?= $row['appointment_date'] ?></td>
+            <td><?= $row['appointment_time'] ?></td>
+            <td class="<?= strtolower($row['status']) ?>">
+                <?= $row['status'] ?>
+            </td>
+            <td>
+                <?php if ($row['status'] == 'Pending'): ?>
+                    <a href="?action=accept&id=<?= $row['id'] ?>" class="btn accept">Accept</a>
+                    <a href="?action=decline&id=<?= $row['id'] ?>" class="btn decline">Decline</a>
+                <?php else: ?>
+                    -
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endwhile; else: ?>
+        <tr><td colspan="9">No appointments found.</td></tr>
+    <?php endif; ?>
+</table>
+
     </div>
 </div>
 

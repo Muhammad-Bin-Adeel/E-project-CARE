@@ -13,7 +13,7 @@ $conn->query($table);
 
 // Redirect if not logged in
 if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
+    header("Location: login.php");
     exit;
 }
 
@@ -440,7 +440,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_city'])) {
 </div>
             <!-- Content will be added here as needed -->
         </div>
-            <!-- Content will be added here as needed -->
+           
         </div>
     </div>
 </div>
