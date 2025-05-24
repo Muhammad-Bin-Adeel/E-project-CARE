@@ -54,6 +54,142 @@ $appointments = $stmt->get_result();
         .btn { padding: 5px 10px; border: none; border-radius: 3px; text-decoration: none; }
         .accept { background-color: green; color: white; }
         .decline { background-color: red; color: white; }
+        <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7fa;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin-left: 260px; /* Sidebar width */
+        padding: 30px;
+    }
+
+    h2 {
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: none;
+    }
+
+    .card-header {
+        font-size: 18px;
+        font-weight: 500;
+        padding: 15px 20px;
+        border-radius: 12px 12px 0 0;
+    }
+
+    table.table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    table th {
+        background-color: #2c3e50 !important;
+        color: #fff !important;
+        font-weight: 500;
+    }
+
+    table td, table th {
+        vertical-align: middle;
+    }
+
+    .badge {
+        font-size: 14px;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    /* Sidebar styling */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 240px;
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .brand-title {
+        font-size: 22px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .sidebar-section .section-title {
+        font-size: 14px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        color: #bdc3c7;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        color: #ecf0f1;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background 0.3s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+        background-color: #34495e;
+    }
+
+    .nav-link i {
+        margin-right: 10px;
+    }
+
+    .collapse {
+        padding-left: 10px;
+    }
+
+    .ps-4 {
+        padding-left: 1.5rem !important;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .container {
+            margin-left: 0;
+            padding: 15px;
+        }
+
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+        }
+    }
+</style>
     </style>
 </head>
 <body>
@@ -66,7 +202,7 @@ $appointments = $stmt->get_result();
             <!-- Dashboard Section -->
             <div class="sidebar-section">
                 <div class="section-title">Dashboard</div>
-                <a href="doctor_profile.php" class="nav-link active">
+                <a href="doctor_profile.php" class="nav-link">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
@@ -94,7 +230,7 @@ $appointments = $stmt->get_result();
                 </div>
                 
                 <!-- My Appointments -->
-                <a href="doctor_appointments.php" class="nav-link">
+                <a href="doctor_appointment.php" class="nav-link active">
                     <i class="fas fa-calendar-check"></i>
                     <span>Appointments</span>
                 </a>

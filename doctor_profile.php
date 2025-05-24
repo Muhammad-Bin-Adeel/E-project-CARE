@@ -31,274 +31,281 @@ $doctor = $result->fetch_assoc();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #13C5DD;
-            --secondary: #354F8E;
-            --light: #EFF5F9;
-            --dark: #1D2A4D;
-            --success: #28a745;
-            --danger: #dc3545;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background: #eef2f7;
-            padding: 40px;
-        }
-        .dashboard {
-            max-width: 600px;
-            margin: auto;
-            background: #fff;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        .profile-header img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ccc;
-        }
-        .profile-header h2 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
-        }
-        .info p {
-            margin: 8px 0;
-            color: #555;
-        }
-        .label {
-            font-weight: bold;
-            color: #222;
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            height: 100vh;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e6ed;
-            position: fixed;
-            width: 250px;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-        
-        .brand-title {
-            color: var(--primary);
-            font-size: 1.5rem;
-            font-weight: bold;
-            padding: 20px 0;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 10px;
-        }
-        
-        .sidebar-menu {
-            padding: 0 15px;
-        }
-        
-        .sidebar-section {
-            margin-bottom: 25px;
-        }
-        
-        .section-title {
-            color: var(--secondary);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 10px 5px;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        
-        .nav-link {
-            color: var(--dark);
-            border-radius: 5px;
-            margin-bottom: 5px;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            background-color: var(--primary);
-            color: white !important;
-        }
-        
-        .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Main Content Styles */
-        .main-content {
-            margin-left: 250px;
-            transition: all 0.3s;
-        }
-        
-        .topbar {
-            background-color: var(--primary);
-            padding: 12px 20px;
-            border-bottom: 1px solid #e0e6ed;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            color: white;
-        }
-        
-        .page-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 0;
-        }
-        
-        .user-menu img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        /* Search Bar */
-        .search-bar {
-            position: relative;
-            width: 220px;
-            margin: 0 15px;
-        }
-        
-        .search-bar input {
-            background-color: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 6px 12px 6px 35px;
-            border-radius: 20px;
-            width: 100%;
-            font-size: 0.9rem;
-        }
-        
-        .search-bar input::placeholder {
-            color: rgba(255,255,255,0.7);
-        }
-        
-        .search-bar i {
-            position: absolute;
-            left: 12px;
-            top: 8px;
-            font-size: 0.9rem;
-        }
-        
-        /* Notification Bell */
-        .notification-bell {
-            position: relative;
-            margin-right: 15px;
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--danger);
-            color: white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            font-size: 0.6rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Content Area */
-        .content-wrapper {
-            padding: 20px;
-        }
-        
-        /* Dropdown Animation */
-        .collapse:not(.show) {
-            display: none;
-        }
-        
-        .collapsing {
-            height: 0;
-            overflow: hidden;
-            transition: height 0.35s ease;
-        }
-        
-        /* Responsive Styles */
-        @media (max-width: 991.98px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .search-bar {
-                width: 180px;
-            }
-        }
-        
-        @media (max-width: 767.98px) {
-            .search-bar {
-                display: none;
-            }
-            .notification-bell {
-                margin-right: 10px;
-            }
-        }
-           .header {
-            background: #0cc5db;
-            padding: 20px;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .profile-card {
-            max-width: 700px;
-            margin: 50px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-        }
-        .profile-card img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #ddd;
-            margin-right: 20px;
-        }
-        .profile-info h2 {
-            margin: 0 0 10px;
-            font-size: 26px;
-        }
-        .profile-info p {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-        .label {
-            font-weight: bold;
-        }
+     :root {
+    --primary: #13C5DD;
+    --secondary: #354F8E;
+    --light: #EFF5F9;
+    --dark: #1D2A4D;
+    --success: #28a745;
+    --danger: #dc3545;
+    --dashboard-bg: #f1f9f2; /* light greenish background */
+    --card-border: #28a745; /* green for dashboard highlights */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--dashboard-bg);
+    padding: 40px;
+}
+
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #e0e6ed;
+    position: fixed;
+    width: 250px;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.brand-title {
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+}
+
+.sidebar-menu {
+    padding: 0 15px;
+}
+
+.sidebar-section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    color: var(--secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 5px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.nav-link {
+    color: var(--dark);
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: var(--primary);
+    color: white !important;
+}
+
+.nav-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 250px;
+    transition: all 0.3s;
+}
+
+.topbar {
+    background-color: var(--primary);
+    padding: 12px 20px;
+    border-bottom: 1px solid #e0e6ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    color: white;
+}
+
+.page-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Dashboard Green Styling */
+.dashboard-wrapper {
+    padding: 30px;
+    background-color: var(--dashboard-bg);
+}
+
+.dashboard-wrapper h2 {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--success);
+    margin-bottom: 20px;
+}
+
+.dashboard-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.dashboard-card {
+    background-color: #fff;
+    border-left: 5px solid var(--card-border);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-card h4 {
+    font-size: 18px;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.dashboard-card p {
+    font-size: 16px;
+    color: #555;
+}
+
+/* Search Bar */
+.search-bar {
+    position: relative;
+    width: 220px;
+    margin: 0 15px;
+}
+
+.search-bar input {
+    background-color: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 6px 12px 6px 35px;
+    border-radius: 20px;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.search-bar input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+.search-bar i {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    font-size: 0.9rem;
+}
+
+/* Notification Bell */
+.notification-bell {
+    position: relative;
+    margin-right: 15px;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--danger);
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dropdown Animation */
+.collapse:not(.show) {
+    display: none;
+}
+
+.collapsing {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s ease;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+    }
+    .search-bar {
+        width: 180px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .search-bar {
+        display: none;
+    }
+    .notification-bell {
+        margin-right: 10px;
+    }
+}
+
+/* Profile Card */
+.header {
+    background: var(--primary);
+    padding: 20px;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.profile-card {
+    max-width: 700px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+}
+
+.profile-card img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    margin-right: 20px;
+}
+
+.profile-info h2 {
+    margin: 0 0 10px;
+    font-size: 26px;
+}
+
+.profile-info p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.label {
+    font-weight: bold;
+}
+
+/* Doctor Detail Card */
+.card-header.bg-primary {
+    background-color: var(--primary) !important;
+}
     </style>
 </head>
 <body>
