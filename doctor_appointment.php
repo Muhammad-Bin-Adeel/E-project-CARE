@@ -248,28 +248,19 @@ $appointments = $stmt->get_result();
                         <span>Modify Patients</span>
                     </a>
                 </div>
-                <!-- Doctors Management -->
-                <div class="nav-link" onclick="toggleCollapse('doctorsCollapse')">
-                    <i class="fas fa-user-md"></i>
-                    <span>Doctors</span>
-                    <i class="fas fa-angle-down ms-auto" id="doctorsCollapseIcon"></i>
                 
-                    <a href="modefied_doctor.php" class="nav-link ps-4">
-                        <i class="fas fa-edit"></i>
-                        <span>Modify Doctors</span>
-                    </a>
-                </div>
                 <!-- My Appointments -->
                 <a href="doctor_appointment.php" class="nav-link active">
                     <i class="fas fa-calendar-check"></i>
                     <span>Appointments</span>
                 </a>
             </div>
+           
             
             <!-- Account Section -->
             <div class="sidebar-section">
                 <div class="section-title">Account</div>
-                <a href="profile.php" class="nav-link">
+                <a href="modefied_doctor.php" class="nav-link">
                     <i class="fas fa-user-cog"></i>
                     <span>Profile Settings</span>
                 </a>
