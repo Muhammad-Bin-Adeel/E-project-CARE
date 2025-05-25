@@ -150,6 +150,26 @@ $appointments = $stmt->get_result();
         color: #bdc3c7;
     }
 
+        .nav-link {
+            color: var(--dark);
+            border-radius: 5px;
+            margin-bottom: 5px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary);
+            color: white !important;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
     .nav-link {
         display: flex;
         align-items: center;
@@ -190,7 +210,7 @@ $appointments = $stmt->get_result();
         }
     }
 </style>
-    </style>
+  
 </head>
 <body>
  <nav class="sidebar">
@@ -223,12 +243,22 @@ $appointments = $stmt->get_result();
                         <i class="fas fa-list"></i>
                         <span>View Patients</span>
                     </a>
-                    <a href="manage_patients.php" class="nav-link ps-4">
+                    <a href="modefied_doctor.php" class="nav-link ps-4">
                         <i class="fas fa-edit"></i>
                         <span>Modify Patients</span>
                     </a>
                 </div>
+                <!-- Doctors Management -->
+                <div class="nav-link" onclick="toggleCollapse('doctorsCollapse')">
+                    <i class="fas fa-user-md"></i>
+                    <span>Doctors</span>
+                    <i class="fas fa-angle-down ms-auto" id="doctorsCollapseIcon"></i>
                 
+                    <a href="modefied_doctor.php" class="nav-link ps-4">
+                        <i class="fas fa-edit"></i>
+                        <span>Modify Doctors</span>
+                    </a>
+                </div>
                 <!-- My Appointments -->
                 <a href="doctor_appointment.php" class="nav-link active">
                     <i class="fas fa-calendar-check"></i>
