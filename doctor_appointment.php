@@ -195,7 +195,7 @@ $appointments = $stmt->get_result();
 <body>
  <nav class="sidebar">
         <div class="brand-title">
-            <i class="fas fa-clinic-medical me-2"></i>MEDINOVA
+            <i class="fas fa-clinic-medical me-2"></i>CARE
         </div>
         
         <div class="sidebar-menu">
