@@ -171,7 +171,6 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
         </div>
     </div>
     <!-- Topbar End -->
-
 <!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
   <div class="container">
@@ -187,12 +186,10 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto py-0">
-          <a href="index.php" class="nav-item nav-link active ">Home</a>
+          <a href="index.php" class="nav-item nav-link active">Home</a>
           <a href="about.php" class="nav-item nav-link">About</a>
           <a href="doctors.php" class="nav-item nav-link">Doctors</a>
-           <a href="Disease.php" class="nav-item nav-link ">Disease</a>
-
-          
+          <a href="Disease.php" class="nav-item nav-link">Disease</a>
 
           <div class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
@@ -213,9 +210,20 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
         <div class="ms-3">
           <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
         </div>
-        <div class="button-container ms-2">
-          <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
-        </div>
+
+        <?php if (isset($_SESSION['patient_id'])): ?>
+          <div class="button-container ms-2">
+            <a href="patient_dashboard.php" class="btn btn-outline-success btn-sm">Dashboard</a>
+          </div>
+          <div class="button-container ms-2">
+            <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
+          </div>
+        <?php else: ?>
+          <div class="button-container ms-2">
+            <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
+          </div>
+        <?php endif; ?>
+
       </div>
     </nav>
   </div>
