@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <meta charset="utf-8">
-    <title>MEDINOVA</title>
+    <title>CARE</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -264,7 +264,7 @@ body {
     <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
       <a href="index.php" class="navbar-brand">
         <h1 class="m-0 text-uppercase text-primary">
-          <i class="fa fa-clinic-medical me-2"></i>Medinova
+          <i class="fa fa-clinic-medical me-2"></i>CARE
         </h1>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">

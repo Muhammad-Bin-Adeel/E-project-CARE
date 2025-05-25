@@ -11,7 +11,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
 <head>
     <meta charset="utf-8">
-    <title>MEDINOVA</title>
+    <title>CARE</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -178,7 +178,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
     <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
       <a href="index.php" class="navbar-brand">
         <h1 class="m-0 text-uppercase text-primary">
-          <i class="fa fa-clinic-medical me-2"></i>Medinova
+          <i class="fa fa-clinic-medical me-2"></i>CARE
         </h1>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -227,7 +227,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
         <div class="container py-5">
             <div class="row justify-content-start">
                 <div class="col-lg-8 text-center text-lg-start">
-                    <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5" style="border-color: rgba(256, 256, 256, .3) !important;">Welcome To Medinova</h5>
+                    <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5" style="border-color: rgba(256, 256, 256, .3) !important;">Welcome To CARE</h5>
                     <h1 class="display-1 text-white mb-md-4">Best Healthcare Solution In Your City</h1>
                     <div class="pt-2">
                         <a href="doctors.php" class="btn btn-light rounded-pill py-md-3 px-md-5 mx-2">Find Doctor</a>

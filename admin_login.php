@@ -19,10 +19,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Login - Medinova</title>
+    <title>Admin Login - CARE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Medinova CSS & Bootstrap -->
+    <!-- CARE CSS & Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 

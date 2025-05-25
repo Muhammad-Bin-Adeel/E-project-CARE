@@ -60,7 +60,7 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Medinova</title>
+    <title>Admin Dashboard - CARE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Include DataTables CSS -->
@@ -357,7 +357,7 @@ $doctors = $conn->query("SELECT * FROM doctors ORDER BY status DESC, id DESC");
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="brand-title">
-            <i class="fas fa-clinic-medical me-2"></i>MEDINOVA
+            <i class="fas fa-clinic-medical me-2"></i>CARE
         </div>
         
         <div class="sidebar-menu">
