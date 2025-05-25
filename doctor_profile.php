@@ -30,111 +30,87 @@ $doctor = $result->fetch_assoc();
     <title>Doctor Dashboard - CARE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-     :root {
+   <style>
+:root {
     --primary: #13C5DD;
     --secondary: #354F8E;
     --light: #EFF5F9;
     --dark: #1D2A4D;
     --success: #28a745;
     --danger: #dc3545;
-    --dashboard-bg: #f1f9f2; /* light greenish background */
-    --card-border: #28a745; /* green for dashboard highlights */
+    --dashboard-bg: #f1f9f2;
+    --card-border: #28a745;
 }
 
+/* Base */
 body {
     font-family: Arial, sans-serif;
     background: var(--dashboard-bg);
-    padding: 40px;
+    margin: 0;
+    padding: 0;
 }
 
 /* Sidebar */
 .sidebar {
-    height: 100vh;
-    background-color: #ffffff;
-    border-right: 1px solid #e0e6ed;
     position: fixed;
-    width: 250px;
-    transition: all 0.3s;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 240px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    overflow-y: auto;
     z-index: 1000;
 }
 
 .brand-title {
-    color: var(--primary);
-    font-size: 1.5rem;
-    font-weight: bold;
-    padding: 20px 0;
+    font-size: 22px;
+    font-weight: 600;
     text-align: center;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
 }
 
 .sidebar-menu {
-    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.sidebar-section {
-    margin-bottom: 25px;
-}
-
-.section-title {
-    color: var(--secondary);
-    font-size: 0.8rem;
+.sidebar-section .section-title {
+    font-size: 14px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 10px 5px;
-    margin-bottom: 5px;
-    font-weight: 600;
+    margin-bottom: 10px;
+    color: #bdc3c7;
 }
 
 .nav-link {
-    color: var(--dark);
-    border-radius: 5px;
-    margin-bottom: 5px;
-    padding: 10px 15px;
     display: flex;
     align-items: center;
-    cursor: pointer;
+    padding: 10px 15px;
+    color: #ecf0f1;
     text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s;
 }
 
 .nav-link:hover, .nav-link.active {
-    background-color: var(--primary);
-    color: white !important;
+    background-color: #34495e;
 }
 
 .nav-link i {
     margin-right: 10px;
-    width: 20px;
-    text-align: center;
 }
 
-/* Main Content */
+/* Main content */
 .main-content {
-    margin-left: 250px;
+    margin-left: 240px;
+    padding: 40px;
     transition: all 0.3s;
+    background-color: var(--dashboard-bg);
+    min-height: 100vh;
 }
 
-.topbar {
-    background-color: var(--primary);
-    padding: 12px 20px;
-    border-bottom: 1px solid #e0e6ed;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    color: white;
-}
-
-.page-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-/* Dashboard Green Styling */
 .dashboard-wrapper {
     padding: 30px;
     background-color: var(--dashboard-bg);
@@ -223,42 +199,6 @@ body {
     justify-content: center;
 }
 
-/* Dropdown Animation */
-.collapse:not(.show) {
-    display: none;
-}
-
-.collapsing {
-    height: 0;
-    overflow: hidden;
-    transition: height 0.35s ease;
-}
-
-/* Responsive */
-@media (max-width: 991.98px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    .sidebar.show {
-        transform: translateX(0);
-    }
-    .main-content {
-        margin-left: 0;
-    }
-    .search-bar {
-        width: 180px;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .search-bar {
-        display: none;
-    }
-    .notification-bell {
-        margin-right: 10px;
-    }
-}
-
 /* Profile Card */
 .header {
     background: var(--primary);
@@ -306,7 +246,53 @@ body {
 .card-header.bg-primary {
     background-color: var(--primary) !important;
 }
-    </style>
+
+/* Collapsible animation */
+.collapse:not(.show) {
+    display: none;
+}
+
+.collapsing {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .search-bar {
+        width: 180px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .search-bar {
+        display: none;
+    }
+
+    .notification-bell {
+        margin-right: 10px;
+    }
+
+    .dashboard-wrapper {
+        padding: 15px;
+    }
+}
+</style>
+
 </head>
 <body>
     <div class="wrapper">
