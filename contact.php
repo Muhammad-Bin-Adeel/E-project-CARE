@@ -7,15 +7,17 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Correct table creation query
-$conn->query("CREATE TABLE IF NOT EXISTS feedback (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    subject VARCHAR(150),
-    message TEXT,
-    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)");
+// Allow only logged-in users
+if (!isset($_SESSION['patient_id'])) {
+    // User not logged in
+    echo "<script>alert('Please log in to submit or view feedback.'); window.location.href='login.php';</script>";
+    exit();
+}
+
+$patient_id = $_SESSION['patient_id'];
+
+// Fetch only current patient's feedback
+$result = $conn->query("SELECT * FROM feedback WHERE patient_id = $patient_id ORDER BY submitted_at DESC");
 
 // Check if form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -25,9 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $subject = $conn->real_escape_string($_POST['subject']);
     $message = $conn->real_escape_string($_POST['message']);
 
-    // Insert query
-    $sql = "INSERT INTO feedback (name, email, subject, message)
-            VALUES ('$name', '$email', '$subject', '$message')";
+    // Insert feedback
+    $sql = "INSERT INTO feedback (patient_id, name, email, subject, message)
+            VALUES ('$patient_id', '$name', '$email', '$subject', '$message')";
 
     if ($conn->query($sql) === TRUE) {
         echo "<script>alert('Feedback submitted successfully!'); window.location.href = document.referrer;</script>";
@@ -35,9 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
-// Fetch all feedbacks
-$result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
