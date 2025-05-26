@@ -3,7 +3,16 @@ session_start();
 include("db.php");
 
 
+if (isset($_POST['clear_notifications'])) {
+    // Mark all doctor requests as notified
+    mysqli_query($conn, "UPDATE doctors SET is_notified = 1 WHERE status = 'pending'");
 
+    // Mark all changed profiles as notified
+    mysqli_query($conn, "UPDATE doctors SET is_notified = 1 WHERE changes_pending = 1");
+
+    // Mark all new accepted appointments as notified
+    mysqli_query($conn, "UPDATE appointments SET is_notified_admin = 1 WHERE status = 'accepted'");
+}
 // Total Doctors
 $total_doctors = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS count FROM doctors"))['count'];
 
@@ -32,9 +41,9 @@ if (isset($_GET['notify']) && isset($_GET['id'])) {
         header("Location: manage_doctors.php?page=view_doctor_requests");
         exit;
     } elseif ($notify == 'appointment') {
-        mysqli_query($conn, "UPDATE appointments SET is_notified = 1 WHERE id = $id");
-        header("Location: view_appointments.php?page=view_appointments");
-        exit;
+    mysqli_query($conn, "UPDATE appointments SET is_notified_admin = 1 WHERE id = $id");
+    header("Location: view_appointments.php?page=view_appointments");
+    exit;
     } elseif ($notify == 'doctor_update') {
         mysqli_query($conn, "UPDATE doctors SET is_notified = 1 WHERE id = $id");
         header("Location: view_doctors.php?page=view_doctor_requests&highlight=$id");
@@ -46,7 +55,7 @@ $pending_doctor_query = mysqli_query($conn, "SELECT * FROM doctors WHERE status 
 $pending_doctor_count = mysqli_num_rows($pending_doctor_query);
 
 // New Appointments (in last 1 hour)
-$appointment_query = mysqli_query($conn, "SELECT * FROM appointments WHERE is_notified = 0");
+$appointment_query = mysqli_query($conn, "SELECT * FROM appointments WHERE is_notified_admin = 0 AND status = 'accepted'");
 $appointment_count = mysqli_num_rows($appointment_query);
 
 // Doctor Profile Changes (flag-based OR updated recently)
@@ -405,51 +414,62 @@ $total_notifications = $pending_doctor_count + $appointment_count + $changed_pro
                 </div>
                 
                 <div class="notification-bell">
-                    <div class="dropdown">
-  <button class="btn position-relative" data-bs-toggle="dropdown">
-    <i class="fas fa-bell"></i>
-    <?php if($total_notifications > 0): ?>
-      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        <?= $total_notifications ?>
-      </span>
-    <?php endif; ?>
-  </button>
+  <div class="dropdown">
+    <button class="btn position-relative" data-bs-toggle="dropdown">
+      <i class="fas fa-bell"></i>
+      <?php if($total_notifications > 0): ?>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          <?= $total_notifications ?>
+        </span>
+      <?php endif; ?>
+    </button>
 
- <ul class="dropdown-menu dropdown-menu-end">
+    <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
 
-  <!-- Doctor Requests -->
-  <?php while($row = mysqli_fetch_assoc($pending_doctor_query)): ?>
-    <li>
-      <a class="dropdown-item text-primary" 
-         href="admin_dashboard.php?notify=doctor_request&id=<?= $row['id'] ?>">
-        🩺 Dr. <?= $row['name'] ?> requested approval
-      </a>
-    </li>
-  <?php endwhile; ?>
+      <!-- Doctor Requests -->
+      <?php while($row = mysqli_fetch_assoc($pending_doctor_query)): ?>
+        <li>
+          <a class="dropdown-item text-primary" 
+             href="admin_dashboard.php?notify=doctor_request&id=<?= $row['id'] ?>">
+            🩺 Dr. <?= $row['name'] ?> requested approval
+          </a>
+        </li>
+      <?php endwhile; ?>
 
-  <!-- Appointments -->
-  <?php while($row = mysqli_fetch_assoc($appointment_query)): ?>
-    <li>
-      <a class="dropdown-item text-success"
-         href="admin_dashboard.php?notify=appointment&id=<?= $row['id'] ?>">
-        📅 New appointment by <?= $row['patient_name'] ?>
-      </a>
-    </li>
-  <?php endwhile; ?>
+      <!-- Appointments -->
+      <?php while($row = mysqli_fetch_assoc($appointment_query)): ?>
+        <li>
+          <a class="dropdown-item text-success"
+             href="admin_dashboard.php?notify=appointment&id=<?= $row['id'] ?>">
+            📅 New appointment by <?= $row['patient_name'] ?>
+          </a>
+        </li>
+      <?php endwhile; ?>
 
-  <!-- Profile Updates -->
-  <?php while($row = mysqli_fetch_assoc($changed_profile_query)): ?>
-    <li>
-      <a class="dropdown-item text-warning"
-         href="admin_dashboard.php?notify=doctor_update&id=<?= $row['id'] ?>">
-        ✏️ Dr. <?= $row['name'] ?> updated profile
-      </a>
-    </li>
-  <?php endwhile; ?>
+      <!-- Profile Updates -->
+      <?php while($row = mysqli_fetch_assoc($changed_profile_query)): ?>
+        <li>
+          <a class="dropdown-item text-warning"
+             href="admin_dashboard.php?notify=doctor_update&id=<?= $row['id'] ?>">
+            ✏️ Dr. <?= $row['name'] ?> updated profile
+          </a>
+        </li>
+      <?php endwhile; ?>
 
-</ul>
+      <?php if ($total_notifications > 0): ?>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <form method="post" class="d-flex justify-content-center">
+            <button type="submit" name="clear_notifications" class="btn btn-sm btn-danger w-100 mx-2 mb-1">
+              See All
+            </button>
+          </form>
+        </li>
+      <?php endif; ?>
+
+    </ul>
+  </div>
 </div>
-                </div>
                 
                 <div class="user-menu dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown">

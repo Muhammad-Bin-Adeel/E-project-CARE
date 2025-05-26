@@ -10,6 +10,7 @@ if (!isset($_SESSION['patient_id'])) {
 // Create appointments table if not exists (optional)
 $conn->query("CREATE TABLE IF NOT EXISTS appointments (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  patient_id INT,
   patient_name VARCHAR(255),
   email VARCHAR(255),
   specialization VARCHAR(255),
@@ -110,16 +111,17 @@ if (!empty($doctor_id)) {
 
 // Handle final appointment submission
 if (isset($_POST['final_submit'])) {
-    $stmt = $conn->prepare("INSERT INTO appointments (patient_name, email, specialization, doctor_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param(
-        "sssiss",
-        $_POST['patient_name'],
-        $_POST['email'],
-        $specialization,
-        $doctor_id,
-        $appointment_date,
-        $appointment_time
-    );
+    $stmt = $conn->prepare("INSERT INTO appointments (patient_id, patient_name, email, specialization, doctor_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param(
+    "isssiss",
+    $_POST['patient_id'],
+    $_POST['patient_name'],
+    $_POST['email'],
+    $specialization,
+    $doctor_id,
+    $appointment_date,
+    $appointment_time
+);
     if ($stmt->execute()) {
         $success = true;
     } else {
@@ -353,7 +355,11 @@ form button[type="submit"]:hover {
           
 <form method="POST" action="">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6"></div>
+        <label for="patient_id">Patient ID:</label>
+<input type="text" id="patient_id" name="patient_id" value="<?php echo htmlspecialchars($_SESSION['patient_id']); ?>" readonly>
+        </div>
+<div class="col-md-6">
             <label>Name:</label>
             <input type="text" name="patient_name" required />
         </div>

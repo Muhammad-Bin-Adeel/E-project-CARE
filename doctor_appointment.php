@@ -54,7 +54,7 @@ $appointments = $stmt->get_result();
         .btn { padding: 5px 10px; border: none; border-radius: 3px; text-decoration: none; }
         .accept { background-color: green; color: white; }
         .decline { background-color: red; color: white; }
-        <style>
+       
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background-color: #f4f7fa;

@@ -11,6 +11,22 @@
       left: 100%;
       margin-top: -1px;
     }
+    .join-doctor-btn {
+    padding: 8px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    border-radius: 30px;
+    background-color: #0d6efd; /* Bootstrap primary */
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.join-doctor-btn:hover {
+    background-color: #0b5ed7;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
 </style>
 <head>
     <meta charset="utf-8">
@@ -42,94 +58,55 @@
 </head>
 
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid py-2 border-bottom d-none d-lg-block">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-lg-start mb-2 mb-lg-0">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-decoration-none text-body pe-3" href=""><i class="bi bi-telephone me-2"></i>+012 345 6789</a>
-                        <span class="text-body">|</span>
-                        <a class="text-decoration-none text-body px-3" href=""><i class="bi bi-envelope me-2"></i>info@example.com</a>
-                    </div>
-                </div>
-                <div class="col-md-6 text-center text-lg-end">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-body px-2" href="">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a class="text-body px-2" href="">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a class="text-body px-2" href="">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a class="text-body px-2" href="">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a class="text-body ps-2" href="">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
+    <!-- Navbar Start -->
+<div class="container-fluid sticky-top bg-white shadow-sm">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
+      <a href="index.php" class="navbar-brand">
+        <h1 class="m-0 text-uppercase text-primary">
+          <i class="fa fa-clinic-medical me-2"></i>CARE
+        </h1>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0">
+          <a href="index.php" class="nav-item nav-link active ">Home</a>
+          <a href="about.php" class="nav-item nav-link">About</a>
+          <a href="doctors.php" class="nav-item nav-link">Doctors</a>
+           <a href="Disease.php" class="nav-item nav-link ">Disease</a>
+
+          
+
+          <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+            <div class="dropdown-menu m-0">
+              <a href="blog.php" class="dropdown-item">Blog Grid</a>
+              <a href="#" class="dropdown-item">Blog Detail</a>
+              <a href="#" class="dropdown-item">The Team</a>
+              <a href="#" class="dropdown-item">Testimonial</a>
+              <a href="appointment.php" class="dropdown-item">Appointment</a>
+              <a href="search.php" class="dropdown-item">Search</a>
             </div>
+          </div>
+
+          <a href="contact.php" class="nav-item nav-link">Contact</a>
         </div>
-    </div>
-    <!-- Topbar End -->
 
-
-      <!-- Navbar Start -->
-      <div class="container-fluid sticky-top bg-white shadow-sm mb-5">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
-                <a href="index.php" class="navbar-brand">
-                    <h1 class="m-0 text-uppercase text-primary"><i class="fa fa-clinic-medical me-2"></i>care</h1>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto py-0">
-                        <a href="index.php" class="nav-item nav-link">Home</a>
-                        <a href="about.php" class="nav-item nav-link active">About</a>
-                        <a href="doctors.php" class="nav-item nav-link">Doctor</a>
-                   
-
-                       <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Service</a>
-                            <!-- <a class="dropdown-item dropdown-toggle" href="#">Find doctor by speciality</a> -->
-                            <div class="dropdown-menu m-0">
-
-                                 <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Dermatologist</a>
-                             <ul class="dropdown-menu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Dermatologist in lahore </a>
-                             </ul>
-                             </li>
-
-                                  <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Gynecologistt</a>
-                             <ul class="dropdown-menu">
-                             <li><a class="dropdown-item" href="#">Gynecologist in karachi </a></li>
-                             </ul>
-                             </li>
-
-                                <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Urologist</a>
-                             <ul class="dropdown-menu">
-                             <li><a class="dropdown-item" href="#">Urologistin Islamabad </a></li>
-                             </ul>
-                             </li>
-
-                            </div>
-                        </div>
-                        <a href="contact.php" class="nav-item nav-link">Contact</a>
-                    </div>
-                </div>
-            </nav>
+        <!-- Buttons -->
+        <div class="ms-3">
+          <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
         </div>
-    </div>
-    <!-- Navbar End -->
+        <div class="button-container ms-2">
+          <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+<!-- Navbar End -->
 
 
     <!-- About Start -->
