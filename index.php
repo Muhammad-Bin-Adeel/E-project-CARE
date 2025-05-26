@@ -137,6 +137,9 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
 <body>
 
+<<<<<<< HEAD
+
+=======
     <!-- Topbar Start -->
     <div class="container-fluid py-2 border-bottom d-none d-lg-block">
         <div class="container">
@@ -171,6 +174,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
         </div>
     </div>
     <!-- Topbar End -->
+>>>>>>> 4d0f262251bd1d1dcc32872207fdf1058d6aa2ba
 <!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
   <div class="container">
