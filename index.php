@@ -137,7 +137,44 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
 <body>
 
+<<<<<<< HEAD
 
+=======
+    <!-- Topbar Start -->
+    <div class="container-fluid py-2 border-bottom d-none d-lg-block">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-lg-start mb-2 mb-lg-0">
+                    <div class="d-inline-flex align-items-center">
+                        <a class="text-decoration-none text-body pe-3" href=""><i class="bi bi-telephone me-2"></i>+012 345 6789</a>
+                        <span class="text-body">|</span>
+                        <a class="text-decoration-none text-body px-3" href=""><i class="bi bi-envelope me-2"></i>info@example.com</a>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center text-lg-end">
+                    <div class="d-inline-flex align-items-center">
+                        <a class="text-body px-2" href="">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a class="text-body px-2" href="">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a class="text-body px-2" href="">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a class="text-body px-2" href="">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a class="text-body ps-2" href="">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+>>>>>>> 4d0f262251bd1d1dcc32872207fdf1058d6aa2ba
 <!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
   <div class="container">
@@ -153,12 +190,10 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto py-0">
-          <a href="index.php" class="nav-item nav-link active ">Home</a>
+          <a href="index.php" class="nav-item nav-link active">Home</a>
           <a href="about.php" class="nav-item nav-link">About</a>
           <a href="doctors.php" class="nav-item nav-link">Doctors</a>
-           <a href="Disease.php" class="nav-item nav-link ">Disease</a>
-
-          
+          <a href="Disease.php" class="nav-item nav-link">Disease</a>
 
           <div class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
@@ -179,9 +214,20 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
         <div class="ms-3">
           <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
         </div>
-        <div class="button-container ms-2">
-          <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
-        </div>
+
+        <?php if (isset($_SESSION['patient_id'])): ?>
+          <div class="button-container ms-2">
+            <a href="patient_dashboard.php" class="btn btn-outline-success btn-sm">Dashboard</a>
+          </div>
+          <div class="button-container ms-2">
+            <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
+          </div>
+        <?php else: ?>
+          <div class="button-container ms-2">
+            <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
+          </div>
+        <?php endif; ?>
+
       </div>
     </nav>
   </div>
