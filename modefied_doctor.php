@@ -27,77 +27,199 @@ $doctor = $result->fetch_assoc();
 <head>
     <title>Doctor Profile</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f6fa;
-            padding: 40px;
-        }
+      /* Reset & Base Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+}
 
-        .profile-container {
-            max-width: 800px;
-            margin: auto;
-            background: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            padding: 30px;
-        }
+a {
+    text-decoration: none;
+}
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
+img {
+    max-width: 100%;
+    height: auto;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background-color: #1e1e2f;
+    padding: 20px 15px;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
 
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-        }
+.brand-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
 
-        th {
-            background-color: #f0f0f0;
-            color: #333;
-            width: 200px;
-        }
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+}
 
-        td img {
-            border-radius: 8px;
-        }
+.sidebar-section {
+    margin-bottom: 25px;
+}
 
-        .edit-btn {
-            display: block;
-            text-align: center;
-            margin-top: 25px;
-        }
+.section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #aaa;
+    margin-bottom: 10px;
+}
 
-        .edit-btn a {
-            background-color: #3498db;
-            color: #fff;
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 6px;
+    color: #ccc;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
 
-        .edit-btn a:hover {
-            background-color: #2980b9;
-        }
+.nav-link:hover,
+.nav-link.active {
+    background-color: #333;
+    color: #fff;
+}
 
-        .alert {
-            background: #ffe5e5;
-            color: #b30000;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px;
-            text-align: center;
-        }
+.nav-link i {
+    margin-right: 10px;
+}
+
+.ms-auto {
+    margin-left: auto;
+}
+
+.ps-4 {
+    padding-left: 1.5rem !important;
+}
+
+/* Collapse Panel */
+.collapse {
+    display: none;
+    flex-direction: column;
+}
+
+.collapse.show {
+    display: flex;
+}
+/* Profile Container */
+.profile-container {
+    margin-left: 270px;
+    padding: 30px;
+    max-width: 900px;
+}
+
+/* Heading */
+.profile-container h2 {
+    margin-bottom: 20px;
+    font-size: 26px;
+    color: #2c3e50;
+}
+
+/* Table Wrapper */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #f8f9fa; /* Light grey */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Table Hover Animation */
+table:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Table Rows */
+th, td {
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.3s ease;
+}
+
+th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #444;
+}
+
+td {
+    color: #333;
+}
+
+/* Row hover effect */
+tr:hover td {
+    background-color: #f1f1f1;
+}
+
+/* Edit Button */
+.edit-btn {
+    margin-top: 20px;
+}
+
+.edit-btn a {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 5px;
+    display: inline-block;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.edit-btn a:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+
+/* Responsive */
+@media (max-width: 991px) {
+    .sidebar {
+        position: absolute;
+        left: -250px;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar.show {
+        left: 0;
+    }
+
+    .profile-container {
+        margin-left: 0;
+        padding: 20px;
+    }
+}
+.profile-container {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
     </style>
 </head>
 <body>
@@ -191,6 +313,21 @@ $doctor = $result->fetch_assoc();
         <a href="edit_profile.php?id=<?= $doctor['id'] ?>">Edit Profile</a>
     </div>
 </div>
+<script>
+function toggleCollapse(id) {
+    const collapse = document.getElementById(id);
+    const icon = document.getElementById(id + 'Icon');
+    if (collapse.classList.contains('show')) {
+        collapse.classList.remove('show');
+        icon.classList.remove('fa-angle-up');
+        icon.classList.add('fa-angle-down');
+    } else {
+        collapse.classList.add('show');
+        icon.classList.remove('fa-angle-down');
+        icon.classList.add('fa-angle-up');
+    }
+}
+</script>
 
 </body>
 </html>
