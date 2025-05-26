@@ -7,29 +7,35 @@ if (!isset($_SESSION['patient_id'])) {
     exit();
 }
 
-// Create appointments table if not exists (optional)
-$conn->query("CREATE TABLE IF NOT EXISTS appointments (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  patient_id INT,
-  patient_name VARCHAR(255),
-  email VARCHAR(255),
-  specialization VARCHAR(255),
-  doctor_id INT,
-  appointment_date DATE,
-  appointment_time TIME,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+$patient_id = $_SESSION['patient_id'];
+
+// Create appointments table with status column if not exists (optional)
+$conn->query("
+CREATE TABLE IF NOT EXISTS appointments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    patient_name VARCHAR(255),
+    email VARCHAR(255),
+    specialization VARCHAR(255),
+    doctor_id INT NOT NULL,
+    appointment_date DATE,
+    appointment_time TIME,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
-// Get values from form submission or empty default
+// Fetch distinct specializations from doctors
+$specializations = $conn->query("SELECT DISTINCT specialization FROM doctors");
+
+// Initialize variables for form input
 $specialization = $_POST['specialization'] ?? '';
 $doctor_id = $_POST['doctor_id'] ?? '';
 $appointment_date = $_POST['days'] ?? '';
 $appointment_time = $_POST['time'] ?? '';
+$patient_name = $_POST['patient_name'] ?? '';
+$email = $_POST['email'] ?? '';
 
-// Fetch specializations from doctors table
-$specializations = $conn->query("SELECT DISTINCT specialization FROM doctors");
-
-// Fetch doctors based on selected specialization
+// Fetch doctors list based on selected specialization
 $doctors = [];
 if (!empty($specialization)) {
     $stmt = $conn->prepare("SELECT id, name FROM doctors WHERE specialization = ?");
@@ -38,20 +44,17 @@ if (!empty($specialization)) {
     $doctors = $stmt->get_result();
 }
 
-// Initialize dates and times arrays
+// Prepare available dates and times arrays
 $dates = [];
 $times = [];
 
 if (!empty($doctor_id)) {
-    // Fetch selected doctor's available days and timing string
     $stmt = $conn->prepare("SELECT days, timing FROM doctors WHERE id = ?");
     $stmt->bind_param("i", $doctor_id);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($row = $result->fetch_assoc()) {
-        $days = array_map('trim', explode(",", $row['days'])); // e.g. ["Monday", "Wednesday"]
-        
-        // Parse timing string like "04:01 pm to 05:00 pm"
+        $days = array_map('trim', explode(",", $row['days']));
         $time_str = strtolower(trim($row['timing']));
         $parts = preg_split('/\s*to\s*/', $time_str);
 
@@ -60,7 +63,6 @@ if (!empty($doctor_id)) {
                 $start_time = new DateTime($parts[0]);
                 $end_time = new DateTime($parts[1]);
             } catch (Exception $e) {
-                // Default timing if parse fails
                 $start_time = new DateTime('09:00');
                 $end_time = new DateTime('11:00');
             }
@@ -69,19 +71,16 @@ if (!empty($doctor_id)) {
             $end_time = new DateTime('11:00');
         }
 
-        // Generate available dates for next 30 days based on doctor's available days
-        $dates = [];
         $today = new DateTime();
         for ($i = 0; $i < 30; $i++) {
             $checkDate = clone $today;
             $checkDate->modify("+$i day");
-            $dayName = $checkDate->format('l'); // Full day name
-            if (in_array($dayName, $days)) {
+            if (in_array($checkDate->format('l'), $days)) {
                 $dates[] = $checkDate->format('Y-m-d');
             }
         }
 
-        // Fetch already booked appointment times for selected doctor and date
+        // Get already booked times for this doctor and date
         $booked_times = [];
         if (!empty($appointment_date)) {
             $stmt2 = $conn->prepare("SELECT appointment_time FROM appointments WHERE doctor_id = ? AND appointment_date = ?");
@@ -93,16 +92,15 @@ if (!empty($doctor_id)) {
             }
         }
 
-        // Generate 15-minute interval time slots between start_time and end_time
         $interval_minutes = 15;
         $available_times = [];
         $current_time = clone $start_time;
         while ($current_time < $end_time) {
-            $available_times[] = $current_time->format('H:i:s'); // 24-hour format for DB comparison
+            $available_times[] = $current_time->format('H:i:s');
             $current_time->modify("+{$interval_minutes} minutes");
         }
 
-        // Remove booked times from available_times
+        // Filter out booked times
         $times = array_filter($available_times, function($t) use ($booked_times) {
             return !in_array($t, $booked_times);
         });
@@ -111,21 +109,27 @@ if (!empty($doctor_id)) {
 
 // Handle final appointment submission
 if (isset($_POST['final_submit'])) {
-    $stmt = $conn->prepare("INSERT INTO appointments (patient_id, patient_name, email, specialization, doctor_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param(
-    "isssiss",
-    $_POST['patient_id'],
-    $_POST['patient_name'],
-    $_POST['email'],
-    $specialization,
-    $doctor_id,
-    $appointment_date,
-    $appointment_time
-);
-    if ($stmt->execute()) {
-        $success = true;
+    if (empty($patient_name) || empty($email) || empty($specialization) || empty($doctor_id) || empty($appointment_date) || empty($appointment_time)) {
+        $error = "Please fill all required fields.";
     } else {
-        $error = "Appointment booking failed!";
+        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, patient_name, email, specialization, doctor_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt->bind_param(
+            "isssiss",
+            $patient_id,
+            $patient_name,
+            $email,
+            $specialization,
+            $doctor_id,
+            $appointment_date,
+            $appointment_time
+        );
+        if ($stmt->execute()) {
+            $success = "Appointment booked successfully and is pending approval.";
+            // Clear form values after successful booking
+            $specialization = $doctor_id = $appointment_date = $appointment_time = $patient_name = $email = '';
+        } else {
+            $error = "Failed to book appointment.";
+        }
     }
 }
 ?>
@@ -344,33 +348,28 @@ form button[type="submit"]:hover {
         <p class="mb-5">Book a consultation with our specialists.</p>
         <a href="doctors.php" class="btn btn-primary rounded-pill py-3 px-5 me-3">Find Doctor</a>
       </div>
-      <div class="col-lg-6">
-        <div class="bg-light text-center rounded p-5">
-          <h1 class="mb-4">Book An Appointment</h1>
+     <div class="col-lg-6">
+    <div class="bg-light text-center rounded p-5">
+        <h1 class="mb-4">Book An Appointment</h1>
 
-          <?php if (!empty($success)): ?>
-            <div class="alert alert-success">Appointment booked successfully!</div>
-          <?php endif; ?>
+        <?php if (!empty($success)): ?>
+    <div class="alert alert-success">Appointment booked successfully!</div>
+<?php endif; ?>
 
-          
-<form method="POST" action="">
-    <div class="row">
-        <div class="col-md-6"></div>
-        <label for="patient_id">Patient ID:</label>
-<input type="text" id="patient_id" name="patient_id" value="<?php echo htmlspecialchars($_SESSION['patient_id']); ?>" readonly>
-        </div>
-<div class="col-md-6">
+<?php if (!empty($error)): ?>
+    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+<?php endif; ?>
+
+        <form method="POST" action="">
+            <label for="patient_id">Patient ID:</label>
+            <input type="text" id="patient_id" name="patient_id" value="<?= htmlspecialchars($patient_id) ?>" readonly />
+
             <label>Name:</label>
-            <input type="text" name="patient_name" required />
-        </div>
-        <div class="col-md-6">
-            <label>Email:</label>
-            <input type="email" name="email" required />
-        </div>
-    </div>
+<input type="text" name="patient_name" value="<?= htmlspecialchars($patient_name) ?>" required />
 
-    <div class="row">
-        <div class="col-md-6">
+            <label>Email:</label>
+            <input type="email" name="email" value="<?= htmlspecialchars($email) ?>" required />
+
             <label>Medical Concern:</label>
             <select name="specialization" onchange="this.form.submit()">
                 <option value="">Select Medical Concern</option>
@@ -380,8 +379,7 @@ form button[type="submit"]:hover {
                     </option>
                 <?php endwhile; ?>
             </select>
-        </div>
-        <div class="col-md-6">
+
             <label>Doctor:</label>
             <select name="doctor_id" onchange="this.form.submit()">
                 <option value="">Select Doctor</option>
@@ -393,11 +391,7 @@ form button[type="submit"]:hover {
                     <?php endwhile; ?>
                 <?php endif; ?>
             </select>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-6">
             <label>Date:</label>
             <select name="days" onchange="this.form.submit()">
                 <option value="">Select Date</option>
@@ -407,8 +401,7 @@ form button[type="submit"]:hover {
                     </option>
                 <?php endforeach; ?>
             </select>
-        </div>
-        <div class="col-md-6">
+
             <label>Time:</label>
             <select name="time" required>
                 <option value="">Select Time</option>
@@ -418,13 +411,11 @@ form button[type="submit"]:hover {
                     </option>
                 <?php endforeach; ?>
             </select>
-        </div>
-    </div>
 
-    <button type="submit" name="final_submit">Book Appointment</button>
-</form>
-        </div>
-      </div>
+            <button type="submit" name="final_submit">Book Appointment</button>
+        </form>
+    </div>
+</div>
     </div>
   </div>
 </div>
