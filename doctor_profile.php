@@ -311,7 +311,7 @@ body, html {
             <!-- Account Section -->
             <div class="sidebar-section">
                 <div class="section-title">Account</div>
-                <a href="profile.php" class="nav-link">
+                <a href="modefied_doctor.php" class="nav-link">
                     <i class="fas fa-user-cog"></i>
                     <span>Profile Settings</span>
                 </a>
@@ -377,7 +377,7 @@ body, html {
            
         </div>
     </div>
-    <a href="view_doctor.php" class="btn btn-secondary mt-3">Back</a>
+    <a href="modefied_doctor.php" class="btn btn-secondary mt-3">More Details</a>
 </div>
 <script>
 document.getElementById("sidebarToggle").addEventListener("click", function () {

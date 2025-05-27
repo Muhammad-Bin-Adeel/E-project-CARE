@@ -168,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
  
-
 <!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
   <div class="container">
@@ -186,58 +185,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="navbar-nav ms-auto py-0">
           <a href="index.php" class="nav-item nav-link ">Home</a>
           <a href="about.php" class="nav-item nav-link">About</a>
-           <a href="Disease.php" class="nav-item nav-link active ">Disease</a>
-
-          <!-- Doctors Dropdown Start -->
-          
-        <div class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                Doctors
-            </a>
-            <div class="dropdown-menu p-4" style="min-width: 300px;">
-                <form method="post" action="">
-                    <div class="mb-2">
-                        <label for="specialist-select" class="form-label">Specialist</label>
-                        <select name="specialist" id="specialist-select" class="form-select" required>
-                            <option value="">-- Select Specialist --</option>
-                            <?php while ($row = $specialists_result->fetch_assoc()): ?>
-                                <option value="<?= htmlspecialchars($row['specialization']) ?>" <?= ($selected_specialist == $row['specialization']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($row['specialization']) ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-2">
-                        <label for="city-select" class="form-label">City</label>
-                        <select name="city" id="city-select" class="form-select" required>
-                            <option value="">-- Select City --</option>
-                            <?php while ($row = $cities_result->fetch_assoc()): ?>
-                                <option value="<?= htmlspecialchars($row['city']) ?>" <?= ($selected_city == $row['city']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($row['city']) ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Find Doctors</button>
-                </form>
-                <?php if ($error): ?>
-                    <p class="text-danger mt-2"><?= htmlspecialchars($error) ?></p>
-                <?php endif; ?>
-            </div>
-        </div>
-          <!-- Doctors Dropdown End -->
+          <a href="doctors.php" class="nav-item nav-link active">Doctors</a>
+          <a href="appointment.php" class="nav-item nav-link">Appoiontment</a>
 
           <div class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Medical Info</a>
             <div class="dropdown-menu m-0">
-              <a href="blog.php" class="dropdown-item">Blog Grid</a>
-              <a href="#" class="dropdown-item">Blog Detail</a>
-              <a href="#" class="dropdown-item">The Team</a>
-              <a href="#" class="dropdown-item">Testimonial</a>
-              <a href="appointment.php" class="dropdown-item">Appointment</a>
-              <a href="search.php" class="dropdown-item">Search</a>
+              <a href="blog.php" class="dropdown-item">Medical News</a>
+              <a href="Disease.php" class="dropdown-item">Diseas Info</a>
+    
             </div>
           </div>
 
@@ -248,15 +204,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="ms-3">
           <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
         </div>
-        <div class="button-container ms-2">
-          <a href="patient_singup.php" class="btn btn-outline-primary btn-sm">Sign Up</a>
-          <a href="loginn.php" class="btn btn-outline-secondary btn-sm">Sign in</a>
-        </div>
+
+        <?php if (isset($_SESSION['patient_id'])): ?>
+          <div class="button-container ms-2">
+            <a href="my_appointments.php" class="btn btn-outline-success btn-sm">Dashboard</a>
+          </div>
+          <div class="button-container ms-2">
+            <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
+          </div>
+        <?php else: ?>
+          <div class="button-container ms-2">
+            <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
+          </div>
+        <?php endif; ?>
+
       </div>
     </nav>
   </div>
 </div>
 <!-- Navbar End -->
+
 
 
    <!-- main content start-->
