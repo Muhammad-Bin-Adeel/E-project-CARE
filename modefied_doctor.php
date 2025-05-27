@@ -240,24 +240,7 @@ tr:hover td {
             
             <!-- My Panel Section -->
             <div class="sidebar-section">
-                <div class="section-title">My Panel</div>
                 
-                <!-- My Patients -->
-                <div class="nav-link" onclick="toggleCollapse('patientsCollapse')">
-                    <i class="fas fa-procedures"></i>
-                    <span>Patients</span>
-                    <i class="fas fa-angle-down ms-auto" id="patientsCollapseIcon"></i>
-                </div>
-                <div class="collapse" id="patientsCollapse">
-                    <a href="view_patients.php" class="nav-link ps-4">
-                        <i class="fas fa-list"></i>
-                        <span>View Patients</span>
-                    </a>
-                    <a href="modefied_doctor.php" class="nav-link ps-4">
-                        <i class="fas fa-edit"></i>
-                        <span>Modify Patients</span>
-                    </a>
-                </div>
                 
                 <!-- My Appointments -->
                 <a href="doctor_appointment.php" class="nav-link ">

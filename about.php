@@ -74,8 +74,8 @@
 
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto py-0">
-          <a href="index.php" class="nav-item nav-link active">Home</a>
-          <a href="about.php" class="nav-item nav-link">About</a>
+          <a href="index.php" class="nav-item nav-link ">Home</a>
+          <a href="about.php" class="nav-item nav-link active">About</a>
           <a href="doctors.php" class="nav-item nav-link">Doctors</a>
           <a href="appointment.php" class="nav-item nav-link">Appoiontment</a>
 
@@ -98,7 +98,7 @@
 
         <?php if (isset($_SESSION['patient_id'])): ?>
           <div class="button-container ms-2">
-            <a href="my_appointments.php" class="btn btn-outline-success btn-sm">Dashboard</a>
+            <a href="my_appointments.php" class="btn btn-outline-success btn-sm"></a>
           </div>
           <div class="button-container ms-2">
             <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
