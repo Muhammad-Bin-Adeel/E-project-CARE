@@ -253,10 +253,10 @@ form button[type="submit"]:hover {
 
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto py-0">
-          <a href="index.php" class="nav-item nav-link active">Home</a>
+          <a href="index.php" class="nav-item nav-link ">Home</a>
           <a href="about.php" class="nav-item nav-link">About</a>
           <a href="doctors.php" class="nav-item nav-link">Doctors</a>
-          <a href="appointment.php" class="nav-item nav-link">Appoiontment</a>
+          <a href="appointment.php" class="nav-item nav-link active">Appoiontment</a>
 
           <div class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Medical Info</a>
@@ -279,13 +279,9 @@ form button[type="submit"]:hover {
           <div class="button-container ms-2">
             <a href="my_appointments.php" class="btn btn-outline-success btn-sm">Dashboard</a>
           </div>
-          <div class="button-container ms-2">
-            <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
-          </div>
+         
         <?php else: ?>
-          <div class="button-container ms-2">
-            <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
-          </div>
+         
         <?php endif; ?>
 
       </div>

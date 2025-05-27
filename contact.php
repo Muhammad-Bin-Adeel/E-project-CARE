@@ -246,58 +246,60 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     <!-- Topbar End -->
 
-   <!-- Navbar Start -->
-<div class="container-fluid sticky-top bg-white shadow-sm mb-5">
-    <div class="container">
-        <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
-            <a href="index.php" class="navbar-brand">
-                <h1 class="m-0 text-uppercase text-primary">
-                    <i class="fa fa-clinic-medical me-2"></i>Care
-                </h1>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-                    <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
-                    <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="doctors.php" class="nav-link">Doctor</a></li>
+  
+<!-- Navbar Start -->
+<div class="container-fluid sticky-top bg-white shadow-sm">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
+      <a href="index.php" class="navbar-brand">
+        <h1 class="m-0 text-uppercase text-primary">
+          <i class="fa fa-clinic-medical me-2"></i>CARE
+        </h1>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Service</a>
-                        <ul class="dropdown-menu">
-                            <li class="dropdown-submenu position-relative">
-                                <a class="dropdown-item dropdown-toggle" href="#">Dermatologist</a>
-                                <ul class="dropdown-menu sub-menu">
-                                    <li><a class="dropdown-item" href="#">Dermatologist in Lahore</a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu position-relative">
-                                <a class="dropdown-item dropdown-toggle" href="#">Gynecologist</a>
-                                <ul class="dropdown-menu sub-menu">
-                                    <li><a class="dropdown-item" href="#">Gynecologist in Karachi</a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu position-relative">
-                                <a class="dropdown-item dropdown-toggle" href="#">Urologist</a>
-                                <ul class="dropdown-menu sub-menu">
-                                    <li><a class="dropdown-item" href="#">Urologist in Islamabad</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0">
+          <a href="index.php" class="nav-item nav-link ">Home</a>
+          <a href="about.php" class="nav-item nav-link">About</a>
+          <a href="doctors.php" class="nav-item nav-link">Doctors</a>
+          <a href="appointment.php" class="nav-item nav-link">Appoiontment</a>
 
-                    <li class="nav-item"><a href="contact.php" class="nav-link active">Contact</a></li>
-                    <li class="nav-item ms-lg-3">
-                        <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
-                    </li>
-                </ul>
+          <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Medical Info</a>
+            <div class="dropdown-menu m-0">
+              <a href="blog.php" class="dropdown-item">Medical News</a>
+              <a href="Disease.php" class="dropdown-item">Diseas Info</a>
+    
             </div>
-        </nav>
-    </div>
+          </div>
+
+          <a href="contact.php" class="nav-item nav-link active">Contact</a>
+        </div>
+
+        <!-- Buttons -->
+        <div class="ms-3">
+          <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
+        </div>
+
+        <?php if (isset($_SESSION['patient_id'])): ?>
+          <div class="button-container ms-2">
+            
+          </div>
+         
+        <?php else: ?>
+          <div class="button-container ms-2">
+            <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
+          </div>
+        <?php endif; ?>
+
+      </div>
+    </nav>
+  </div>
 </div>
-    <!-- Navbar End -->
+<!-- Navbar End -->
 
 
     <!-- Contact Start -->

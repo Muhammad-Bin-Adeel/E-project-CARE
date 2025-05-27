@@ -149,11 +149,8 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
         <?php if (isset($_SESSION['patient_id'])): ?>
           <div class="button-container ms-2">
-            <a href="my_appointments.php" class="btn btn-outline-success btn-sm"></a>
-          </div>
-          <div class="button-container ms-2">
-            <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
-          </div>
+            
+        
         <?php else: ?>
           <div class="button-container ms-2">
             <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>

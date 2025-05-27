@@ -166,8 +166,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-
- 
 <!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
   <div class="container">
@@ -185,14 +183,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="navbar-nav ms-auto py-0">
           <a href="index.php" class="nav-item nav-link ">Home</a>
           <a href="about.php" class="nav-item nav-link">About</a>
-          <a href="doctors.php" class="nav-item nav-link active">Doctors</a>
+          <a href="doctors.php" class="nav-item nav-link">Doctors</a>
           <a href="appointment.php" class="nav-item nav-link">Appoiontment</a>
 
           <div class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Medical Info</a>
+            <a href="#" class="nav-link active dropdown-toggle" data-bs-toggle="dropdown">Medical Info</a>
             <div class="dropdown-menu m-0">
               <a href="blog.php" class="dropdown-item">Medical News</a>
-              <a href="Disease.php" class="dropdown-item">Diseas Info</a>
+              <a href="Disease.php" class="dropdown-item active">Diseas Info</a>
     
             </div>
           </div>
@@ -200,30 +198,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <a href="contact.php" class="nav-item nav-link">Contact</a>
         </div>
 
-        <!-- Buttons -->
-        <div class="ms-3">
-          <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
-        </div>
-
-        <?php if (isset($_SESSION['patient_id'])): ?>
-          <div class="button-container ms-2">
-            <a href="my_appointments.php" class="btn btn-outline-success btn-sm">Dashboard</a>
-          </div>
-          <div class="button-container ms-2">
-            <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
-          </div>
-        <?php else: ?>
-          <div class="button-container ms-2">
-            <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
-          </div>
-        <?php endif; ?>
 
       </div>
     </nav>
   </div>
 </div>
 <!-- Navbar End -->
-
 
 
    <!-- main content start-->

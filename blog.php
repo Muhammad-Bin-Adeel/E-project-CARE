@@ -166,58 +166,44 @@ $result = $conn->query($query);
     </div>
     <!-- Topbar End -->
 
+<!-- Navbar Start -->
+<div class="container-fluid sticky-top bg-white shadow-sm">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
+      <a href="index.php" class="navbar-brand">
+        <h1 class="m-0 text-uppercase text-primary">
+          <i class="fa fa-clinic-medical me-2"></i>CARE
+        </h1>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-   <!-- Navbar Start -->
-   <div class="container-fluid sticky-top bg-white shadow-sm mb-5">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
-                <a href="index.php" class="navbar-brand">
-                    <h1 class="m-0 text-uppercase text-primary"><i class="fa fa-clinic-medical me-2"></i>care</h1>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto py-0">
-                        <a href="index.php" class="nav-item nav-link">Home</a>
-                        <a href="about.php" class="nav-item nav-link">About</a>
-                        <a href="doctors.php" class="nav-item nav-link">Doctor</a>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0">
+          <a href="index.php" class="nav-item nav-link ">Home</a>
+          <a href="about.php" class="nav-item nav-link">About</a>
+          <a href="doctors.php" class="nav-item nav-link">Doctors</a>
+          <a href="appointment.php" class="nav-item nav-link">Appoiontment</a>
 
-                       <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Service</a>
-                            <!-- <a class="dropdown-item dropdown-toggle" href="#">Find doctor by speciality</a> -->
-                            <div class="dropdown-menu m-0">
+          <div class="nav-item dropdown">
+            <a href="#" class="nav-link active dropdown-toggle" data-bs-toggle="dropdown">Medical Info</a>
+            <div class="dropdown-menu m-0">
+              <a href="blog.php" class="dropdown-item active">Medical News</a>
+              <a href="Disease.php" class="dropdown-item">Diseas Info</a>
+    
+            </div>
+          </div>
 
-                                 <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Dermatologist</a>
-                             <ul class="dropdown-menu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Dermatologist in lahore </a>
-                             </ul>
-                             </li>
-
-                                  <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Gynecologistt</a>
-                             <ul class="dropdown-menu">
-                             <li><a class="dropdown-item" href="#">Gynecologist in karachi </a></li>
-                             </ul>
-                             </li>
-
-                                <li class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">Urologist</a>
-                             <ul class="dropdown-menu">
-                             <li><a class="dropdown-item" href="#">Urologistin Islamabad </a></li>
-                             </ul>
-                             </li>
-
-                            </div>
-                        </div>
-                        <a href="contact.php" class="nav-item nav-link">Contact</a>
-                    </div>
-                </div>
-            </nav>
+          <a href="contact.php" class="nav-item nav-link">Contact</a>
         </div>
-    </div>
-    <!-- Navbar End -->
+
+        
+      </div>
+    </nav>
+  </div>
+</div>
+<!-- Navbar End -->
 
 
     <!-- Blog Start -->
