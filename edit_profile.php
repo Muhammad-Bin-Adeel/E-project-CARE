@@ -87,291 +87,298 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-<style>
-     :root {
-            --primary: #13C5DD;
-            --secondary: #354F8E;
-            --light: #EFF5F9;
-            --dark: #1D2A4D;
-            --success: #28a745;
-            --danger: #dc3545;
-        }
-        
-        body {
-            background-color: var(--light);
-            font-family: 'Segoe UI', sans-serif;
-            overflow-x: hidden;
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            height: 100vh;
-    overflow-y: auto; /* ✅ Enable vertical scroll */
-    background-color: #ffffff;
-    border-right: 1px solid #e0e6ed;
-    position: fixed;
-    width: 250px;
-    transition: all 0.3s;
-    z-index: 1000;
-        }
-        
-        .brand-title {
-            color: var(--primary);
-            font-size: 1.5rem;
-            font-weight: bold;
-            padding: 20px 0;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 10px;
-        }
-        
-        .sidebar-menu {
-            padding: 0 15px;
-        }
-        
-        .sidebar-section {
-            margin-bottom: 25px;
-        }
-        
-        .section-title {
-            color: var(--secondary);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 10px 5px;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        
-        .nav-link {
-            color: var(--dark);
-            border-radius: 5px;
-            margin-bottom: 5px;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            background-color: var(--primary);
-            color: white !important;
-        }
-        
-        .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Main Content Styles */
-        .main-content {
-            margin-left: 250px;
-            transition: all 0.3s;
-        }
-        
-        .topbar {
-            background-color: var(--primary);
-            padding: 12px 20px;
-            border-bottom: 1px solid #e0e6ed;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            color: white;
-        }
-        
-        .page-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 0;
-        }
-        
-        .user-menu img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        /* Search Bar */
-         .search-bar {
-            position: relative;
-            width: 220px;
-            margin: 0 15px;
-        }
-        
-        .search-bar input {
-            background-color: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 6px 12px 6px 35px;
-            border-radius: 20px;
-            width: 100%;
-            font-size: 0.9rem;
-        }
-        
-        .search-bar input::placeholder {
-            color: rgba(255,255,255,0.7);
-        }
-        
-        .search-bar i {
-            position: absolute;
-            left: 12px;
-            top: 8px;
-            font-size: 0.9rem;
-        }
-        
-        /* Notification Bell */
-        .notification-bell {
-            position: relative;
-            margin-right: 15px;
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--danger);
-            color: white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            font-size: 0.6rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Content Area */
-       
-        .card {
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    background-color: var(--light);
-  font-family: "Segoe UI", sans-serif;
-  color: var(--dark);
+<style>/* Base Styles */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2980b9;
+  --light-grey-bg: #f5f7fa;
+  --light-grey-text: #333;
+  --light-grey-border: #e0e0e0;
+  --light-grey-card: #ffffff;
   
+  --dark-grey-bg: #2c3e50;
+  --dark-grey-text: #ecf0f1;
+  --dark-grey-border: #34495e;
+  --dark-grey-card: #34495e;
 }
 
-.text-primary {
-  color: var(--primary);
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
 }
 
+/* Light Grey Theme (Default) */
+body.light-theme {
+  background-color: var(--light-grey-bg);
+  color: var(--light-grey-text);
+}
+
+/* Dark Grey Theme */
+body.dark-theme {
+  background-color: var(--dark-grey-bg);
+  color: var(--dark-grey-text);
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: linear-gradient(180deg, #2c3e50 0%, #1a2530 100%);
+  color: white;
+  transition: all 0.3s;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.brand-title {
+  padding: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu {
+  padding: 15px 0;
+}
+
+.sidebar-section {
+  margin-bottom: 15px;
+}
+
+.section-title {
+  padding: 10px 20px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-left: 3px solid var(--primary-color);
+}
+
+.nav-link i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-link span {
+  flex-grow: 1;
+}
+
+.collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.collapse.show {
+  max-height: 500px;
+  transition: max-height 0.5s ease-in;
+}
+
+/* Content Area Styles */
+.content-wrapper {
+  margin-left: 250px;
+  padding: 20px;
+  transition: all 0.3s;
+}
+
+/* Card Styles */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  border: none;
+}
+
+.light-theme .card {
+  background-color: var(--light-grey-card);
+  border: 1px solid var(--light-grey-border);
+}
+
+.dark-theme .card {
+  background-color: var(--dark-grey-card);
+  border: 1px solid var(--dark-grey-border);
+}
+
+/* Form Styles */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 20px;
 }
 
-.full-width {
+.form-group.full-width {
   grid-column: 1 / -1;
 }
 
 .form-label {
-  font-weight: 600;
-  margin-bottom: 5px;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.light-theme .form-label {
+  color: #555;
+}
+
+.dark-theme .form-label {
+  color: #ecf0f1;
 }
 
 .form-control {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 15px;
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  transition: all 0.3s;
 }
 
-.form-actions {
-  text-align: right;
+.light-theme .form-control {
+  background-color: white;
+  border-color: var(--light-grey-border);
+  color: var(--light-grey-text);
 }
 
-.form-actions button {
-  background-color: var(--primary);
-  border: none;
-  padding: 10px 25px;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 16px;
+.dark-theme .form-control {
+  background-color: #3d5166;
+  border-color: var(--dark-grey-border);
+  color: var(--dark-grey-text);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+  outline: none;
+}
+
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Button Styles */
+.btn {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s;
+  border: none;
 }
 
-.form-actions button:hover {
-  background-color: var(--secondary);
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
 }
 
-/* Responsive tweaks */
-@media (max-width: 768px) {
-  .form-actions {
-    text-align: center;
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Checkbox Styles */
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .sidebar {
+    left: -250px;
+  }
+  
+  .sidebar.show {
+    left: 0;
+  }
+  
+  .content-wrapper {
+    margin-left: 0;
   }
 }
-    
-/* Alert Box */
-.alert {
-    padding: 20px;
-    background-color: var(--primary);
-    color: white;
-    border-radius: 5px;
-    margin: 20px 0;
+
+/* Theme Toggle Switch */
+.theme-switch {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 
-.alert button {
-    background: none;
-    color: white;
-    border: none;
-    font-size: 1.5em;
-    cursor: pointer;
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
 }
-        
-        
-        
-        
-        /* Dropdown Animation */
-        .collapse:not(.show) {
-            display: none;
-        }
-        
-        .collapsing {
-            height: 0;
-            overflow: hidden;
-            transition: height 0.35s ease;
-        }
-        
-        /* Responsive Styles */
-        @media (max-width: 991.98px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .search-bar {
-                width: 180px;
-            }
-        }
-        
-        @media (max-width: 767.98px) {
-            .search-bar {
-                display: none;
-            }
-            .notification-bell {
-                margin-right: 10px;
-            }
-        }
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
 
 </style>
 </head>
@@ -432,6 +439,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span>Logout</span>
                 </a>
             </div>
+        
+<div class="theme-switch">
+  <label class="switch">
+    <input type="checkbox" id="theme-toggle">
+    <span class="slider"></span>
+  </label>
+</div>
+
+
         </div>
     </nav>
      <!-- Content Area -->
@@ -723,6 +739,27 @@ window.onload = function () {
     const degreeSelect = document.getElementById('degree');
     toggleOtherDegree(degreeSelect);
 };
+
+/* Add this JavaScript to handle theme switching */
+document.getElementById('theme-toggle').addEventListener('change', function() {
+  if (this.checked) {
+    document.body.classList.add('dark-theme');
+    document.body.classList.remove('light-theme');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.classList.add('light-theme');
+    document.body.classList.remove('dark-theme');
+    localStorage.setItem('theme', 'light');
+  }
+});
+
+// Check for saved theme preference
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark-theme');
+  document.getElementById('theme-toggle').checked = true;
+} else {
+  document.body.classList.add('light-theme');
+}
 </script>
 </body>
 </html>

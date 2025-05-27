@@ -226,7 +226,8 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 </head>
 
 <body>
-    <!-- Navbar Start -->
+    
+<!-- Navbar Start -->
 <div class="container-fluid sticky-top bg-white shadow-sm">
   <div class="container">
     <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0">
@@ -241,22 +242,17 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto py-0">
-          <a href="index.php" class="nav-item nav-link active ">Home</a>
+          <a href="index.php" class="nav-item nav-link active">Home</a>
           <a href="about.php" class="nav-item nav-link">About</a>
           <a href="doctors.php" class="nav-item nav-link">Doctors</a>
-           <a href="Disease.php" class="nav-item nav-link ">Disease</a>
-
-          
+          <a href="appointment.php" class="nav-item nav-link">Appoiontment</a>
 
           <div class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Medical Info</a>
             <div class="dropdown-menu m-0">
-              <a href="blog.php" class="dropdown-item">Blog Grid</a>
-              <a href="#" class="dropdown-item">Blog Detail</a>
-              <a href="#" class="dropdown-item">The Team</a>
-              <a href="#" class="dropdown-item">Testimonial</a>
-              <a href="appointment.php" class="dropdown-item">Appointment</a>
-              <a href="search.php" class="dropdown-item">Search</a>
+              <a href="blog.php" class="dropdown-item">Medical News</a>
+              <a href="Disease.php" class="dropdown-item">Diseas Info</a>
+    
             </div>
           </div>
 
@@ -267,15 +263,26 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
         <div class="ms-3">
           <a href="doctorform.php" class="btn btn-primary join-doctor-btn">Join As Doctor</a>
         </div>
-        <div class="button-container ms-2">
-          <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
-        </div>
+
+        <?php if (isset($_SESSION['patient_id'])): ?>
+          <div class="button-container ms-2">
+            <a href="my_appointments.php" class="btn btn-outline-success btn-sm">Dashboard</a>
+          </div>
+          <div class="button-container ms-2">
+            <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
+          </div>
+        <?php else: ?>
+          <div class="button-container ms-2">
+            <a href="login.php" class="btn btn-outline-secondary btn-sm">Login</a>
+          </div>
+        <?php endif; ?>
+
       </div>
     </nav>
   </div>
 </div>
 <!-- Navbar End -->
-    
+
     <!-- Team Start -->
     <div class="container-fluid py-5">
         <div class="container">
