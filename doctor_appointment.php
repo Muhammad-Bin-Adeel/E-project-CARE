@@ -4,18 +4,18 @@ include("db.php");
 
 if (!isset($_SESSION['doctor_id'])) {
     header("Location: login.php");
-    exit;
+    exit();
 }
 
 $doctor_id = $_SESSION['doctor_id'];
 
-// Doctor info
+// Doctor info fetch karna
 $stmtDoctor = $conn->prepare("SELECT name FROM doctors WHERE id = ?");
 $stmtDoctor->bind_param("i", $doctor_id);
 $stmtDoctor->execute();
 $doctor = $stmtDoctor->get_result()->fetch_assoc();
 
-// Accept/Decline handler
+// Accept/Decline action handle karna
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $action = $_GET['action'];
     $appointment_id = intval($_GET['id']);
@@ -25,9 +25,16 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     $stmtUpdate->bind_param("sii", $status, $appointment_id, $doctor_id);
     $stmtUpdate->execute();
 
+    // Redirect to avoid resubmission on refresh
     header("Location: doctor_appointment.php");
-    exit;
+    exit();
 }
+
+// Doctor ke appointments fetch karo
+$stmt = $conn->prepare("SELECT id, name, email, appointment_date, appointment_time, status FROM appointments WHERE doctor_id = ? ORDER BY created_at DESC");
+$stmt->bind_param("i", $doctor_id);
+$stmt->execute();
+$appointments = $stmt->get_result();
 
 // Fetch appointments
 $stmt = $conn->prepare("SELECT * FROM appointments WHERE doctor_id = ? ORDER BY created_at DESC");
@@ -43,174 +50,193 @@ $appointments = $stmt->get_result();
     <title>Doctor Appointments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-         body { font-family: Arial, sans-serif; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-        th { background: #f4f4f4; }
-        .pending { color: orange; font-weight: bold; }
-        .accepted { color: green; font-weight: bold; }
-        .declined { color: red; font-weight: bold; }
-        .btn { padding: 5px 10px; border: none; border-radius: 3px; text-decoration: none; }
-        .accept { background-color: green; color: white; }
-        .decline { background-color: red; color: white; }
-       
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f4f7fa;
-        margin: 0;
-        padding: 0;
-    }
+   <style>
+    /* Reset & Base */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
 
-    .container {
-        margin-left: 260px; /* Sidebar width */
-        padding: 30px;
-    }
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    background: #1f1f1f;
+    color: #fff;
+    padding: 20px 15px;
+    overflow-y: auto;
+}
 
-    h2 {
-        font-size: 28px;
-        font-weight: 600;
-        color: #333;
-    }
+.brand-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
 
-    .card {
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        border: none;
-    }
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+}
 
-    .card-header {
-        font-size: 18px;
-        font-weight: 500;
-        padding: 15px 20px;
-        border-radius: 12px 12px 0 0;
-    }
+.sidebar-section {
+    margin-bottom: 20px;
+}
 
-    table.table {
-        border-radius: 10px;
-        overflow: hidden;
-    }
+.section-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #aaa;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
 
-    table th {
-        background-color: #2c3e50 !important;
-        color: #fff !important;
-        font-weight: 500;
-    }
+/* Nav Links */
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    color: #ccc;
+    text-decoration: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
 
-    table td, table th {
-        vertical-align: middle;
-    }
+.nav-link:hover,
+.nav-link.active {
+    background-color: #333;
+    color: #fff;
+}
 
-    .badge {
-        font-size: 14px;
-        padding: 6px 12px;
-        border-radius: 20px;
-    }
+.nav-link i {
+    margin-right: 10px;
+}
 
-    .btn {
-        font-size: 14px;
-        padding: 6px 12px;
-        border-radius: 6px;
-    }
+.nav-link .ms-auto {
+    margin-left: auto;
+}
 
-    .text-muted {
-        color: #6c757d !important;
-    }
+/* Collapse menu */
+.collapse {
+    display: none;
+    flex-direction: column;
+}
 
-    /* Sidebar styling */
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 240px;
-        background-color: #2c3e50;
-        color: #ecf0f1;
-        padding: 20px;
-        overflow-y: auto;
-    }
+.collapse.show {
+    display: flex;
+}
 
-    .brand-title {
-        font-size: 22px;
-        font-weight: 600;
-        text-align: center;
-        margin-bottom: 30px;
-    }
+.ps-4 {
+    padding-left: 2rem !important;
+}
 
-    .sidebar-menu {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
+/* Content */
+.container {
+    margin-left: 270px;
+    padding: 20px;
+}
 
-    .sidebar-section .section-title {
-        font-size: 14px;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-        color: #bdc3c7;
-    }
+/* Card */
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
 
-        .nav-link {
-            color: var(--dark);
-            border-radius: 5px;
-            margin-bottom: 5px;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            background-color: var(--primary);
-            color: white !important;
-        }
-        
-        .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-    .nav-link {
-        display: flex;
-        align-items: center;
-        padding: 10px 15px;
-        color: #ecf0f1;
-        text-decoration: none;
-        border-radius: 6px;
-        transition: background 0.3s;
-    }
+.card-header {
+    font-weight: bold;
+    background-color: #2e3b4e;
+    color: #fff;
+    padding: 15px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
 
-    .nav-link:hover, .nav-link.active {
-        background-color: #34495e;
-    }
+.card-body {
+    padding: 20px;
+}
 
-    .nav-link i {
-        margin-right: 10px;
-    }
+/* Table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-    .collapse {
-        padding-left: 10px;
-    }
+.table th,
+.table td {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+}
 
-    .ps-4 {
-        padding-left: 1.5rem !important;
-    }
+.table th {
+    background-color: #3a3a3a;
+    color: #fff;
+}
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .container {
-            margin-left: 0;
-            padding: 15px;
-        }
+.table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
 
-        .sidebar {
-            width: 100%;
-            height: auto;
-            position: relative;
-        }
-    }
+/* Badges */
+.badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+/* Buttons */
+.btn {
+    padding: 5px 10px;
+    font-size: 13px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Scrollbar for sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
+}
 </style>
-  
 </head>
 <body>
  <nav class="sidebar">
@@ -273,7 +299,6 @@ $appointments = $stmt->get_result();
     </nav>
      <!-- Content Area  -->
         
-
 <div class="container mt-5">
     <h2>Welcome, Dr. <?= htmlspecialchars($doctor['name']) ?></h2>
     <div class="card mt-4">
@@ -297,21 +322,26 @@ $appointments = $stmt->get_result();
                         <?php $i = 1; while ($row = $appointments->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $i++ ?></td>
-                                <td><?= htmlspecialchars($row['patient_name']) ?></td>
+                                <td><?= htmlspecialchars($row['name']) ?></td>
                                 <td><?= htmlspecialchars($row['email']) ?></td>
                                 <td><?= $row['appointment_date'] ?></td>
-                                <td><?= $row['appointment_time'] ?></td>
+                                <td><?= date('h:i A', strtotime($row['appointment_time'])) ?></td>
                                 <td>
-                                    <?php if ($row['status'] == 'Pending'): ?>
+                                    <?php
+                                        $status = strtolower($row['status']);
+                                        if ($status === 'pending'):
+                                    ?>
                                         <span class="badge bg-warning text-dark">Pending</span>
-                                    <?php elseif ($row['status'] == 'Accepted'): ?>
+                                    <?php elseif ($status === 'accepted' || $status === 'approved'): ?>
                                         <span class="badge bg-success">Accepted</span>
-                                    <?php else: ?>
+                                    <?php elseif ($status === 'declined' || $status === 'rejected'): ?>
                                         <span class="badge bg-danger">Declined</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">Unknown</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if ($row['status'] == 'Pending'): ?>
+                                    <?php if ($status === 'pending'): ?>
                                         <a href="?action=accept&id=<?= $row['id'] ?>" class="btn btn-success btn-sm">Accept</a>
                                         <a href="?action=decline&id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">Decline</a>
                                     <?php else: ?>
@@ -329,5 +359,20 @@ $appointments = $stmt->get_result();
         </div>
     </div>
 </div>
+<script>
+function toggleCollapse(id) {
+    const collapse = document.getElementById(id);
+    const icon = document.getElementById(id + 'Icon');
+    if (collapse.classList.contains('show')) {
+        collapse.classList.remove('show');
+        icon.classList.remove('fa-angle-up');
+        icon.classList.add('fa-angle-down');
+    } else {
+        collapse.classList.add('show');
+        icon.classList.remove('fa-angle-down');
+        icon.classList.add('fa-angle-up');
+    }
+}
+</script>
 </body>
 </html>

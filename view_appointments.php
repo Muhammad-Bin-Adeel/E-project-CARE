@@ -3,7 +3,7 @@ session_start();
 include("db.php");
 
 // Show only APPROVED (Accepted) appointments in Admin Panel
-$sql = "SELECT a.id, a.patient_name, a.email, d.name AS doctor_name, a.specialization, a.appointment_date, a.appointment_time, a.status 
+$sql = "SELECT a.id, a.name, a.email, d.name AS doctor_name, a.specialization, a.appointment_date, a.appointment_time, a.status 
         FROM appointments a 
         JOIN doctors d ON a.doctor_id = d.id 
         WHERE a.status = 'Accepted'
@@ -405,7 +405,7 @@ $result = $conn->query($sql) or die("Query failed: " . $conn->error);
     <?php if ($result->num_rows > 0): $i = 1; while ($row = $result->fetch_assoc()): ?>
         <tr>
             <td><?= $i++ ?></td>
-            <td><?= htmlspecialchars($row['patient_name']) ?></td>
+            <td><?= htmlspecialchars($row['name']) ?></td>
             <td><?= htmlspecialchars($row['email']) ?></td>
             <td><?= htmlspecialchars($row['doctor_name']) ?></td>
             <td><?= htmlspecialchars($row['specialization']) ?></td>

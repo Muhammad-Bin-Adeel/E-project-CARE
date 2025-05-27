@@ -10,11 +10,10 @@ if (!isset($_SESSION['patient_id'])) {
 $patient_id = $_SESSION['patient_id'];
 
 // Create appointments table with status column if not exists (optional)
-$conn->query("
-CREATE TABLE IF NOT EXISTS appointments (
+$conn->query("CREATE TABLE IF NOT EXISTS appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     patient_id INT NOT NULL,
-    patient_name VARCHAR(255),
+    name VARCHAR(255),
     email VARCHAR(255),
     specialization VARCHAR(255),
     doctor_id INT NOT NULL,
@@ -32,7 +31,7 @@ $specialization = $_POST['specialization'] ?? '';
 $doctor_id = $_POST['doctor_id'] ?? '';
 $appointment_date = $_POST['days'] ?? '';
 $appointment_time = $_POST['time'] ?? '';
-$patient_name = $_POST['patient_name'] ?? '';
+$name = $_POST['name'] ?? '';
 $email = $_POST['email'] ?? '';
 
 // Fetch doctors list based on selected specialization
@@ -109,14 +108,14 @@ if (!empty($doctor_id)) {
 
 // Handle final appointment submission
 if (isset($_POST['final_submit'])) {
-    if (empty($patient_name) || empty($email) || empty($specialization) || empty($doctor_id) || empty($appointment_date) || empty($appointment_time)) {
+    if (empty($name) || empty($email) || empty($specialization) || empty($doctor_id) || empty($appointment_date) || empty($appointment_time)) {
         $error = "Please fill all required fields.";
     } else {
-        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, patient_name, email, specialization, doctor_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, name, email, specialization, doctor_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
         $stmt->bind_param(
             "isssiss",
             $patient_id,
-            $patient_name,
+            $name,
             $email,
             $specialization,
             $doctor_id,
@@ -126,7 +125,7 @@ if (isset($_POST['final_submit'])) {
         if ($stmt->execute()) {
             $success = "Appointment booked successfully and is pending approval.";
             // Clear form values after successful booking
-            $specialization = $doctor_id = $appointment_date = $appointment_time = $patient_name = $email = '';
+            $specialization = $doctor_id = $appointment_date = $appointment_time = $name = $email = '';
         } else {
             $error = "Failed to book appointment.";
         }
@@ -147,74 +146,66 @@ if (isset($_POST['final_submit'])) {
       left: 100%;
       margin-top: -1px;
     }
-    /* Form container background */
-.bg-light.text-center.rounded.p-5 {
-    background-color: #EFF5F9 !important;
-    border-radius: 12px;
-    padding: 40px;
-    text-align: center;
-}
-
-/* Headings */
-h1.display-4 {
-    font-weight: 700;
-    color: #1D2A4D;
-}
-
-h1.mb-4 {
-    font-weight: 700;
-    color: #1D2A4D;
-}
-
-/* Labels */
-form label {
-    display: block;
-    font-weight: 600;
-    color: #1D2A4D;
-    text-align: left;
-    margin-bottom: 5px;
-}
-
-/* Inputs and selects */
+ /* General Input Styling */
 form input[type="text"],
 form input[type="email"],
 form select {
-    width: 100%;
-    padding: 10px 15px;
+    color: #1D2A4D; /* Dark readable text */
+    font-size: 16px;
+    font-weight: 500;
     border: 1px solid #ccc;
     border-radius: 8px;
-    font-size: 16px;
-    margin-bottom: 20px;
+    padding: 10px 14px;
+    transition: all 0.3s ease;
     background-color: #fff;
 }
 
-/* Submit button */
+/* On Focus - Add subtle glow */
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form select:focus {
+    border-color: #13C5DD;
+    box-shadow: 0 0 8px rgba(19, 197, 221, 0.3);
+    outline: none;
+    background-color: #EFF5F9;
+}
+
+/* Label Styling */
+form label {
+    font-weight: 600;
+    color: #354F8E;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Center Patient ID Text */
+#patient_id {
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Button Styling */
 form button[type="submit"] {
     background-color: #13C5DD;
     border: none;
-    padding: 12px 24px;
     color: #fff;
-    font-weight: 600;
+    font-weight: bold;
     font-size: 16px;
-    border-radius: 30px;
-    transition: 0.3s ease;
-    cursor: pointer;
+    padding: 12px 20px;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 15px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 form button[type="submit"]:hover {
-    background-color: #0fb3c7;
+    background-color: #0fb2c5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(19, 197, 221, 0.4);
 }
 
-/* Success alert */
-.alert.alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 20px;
-    font-weight: 500;
-}
+
 </style>
 
 <head>
@@ -361,17 +352,27 @@ form button[type="submit"]:hover {
 <?php endif; ?>
 
         <form method="POST" action="">
-            <label for="patient_id">Patient ID:</label>
-            <input type="text" id="patient_id" name="patient_id" value="<?= htmlspecialchars($patient_id) ?>" readonly />
+    <div class="form-group text-center mb-4">
+        <label for="patient_id" class="form-label">Patient ID:</label>
+        <input type="text" id="patient_id" name="patient_id" class="form-control w-50 mx-auto"
+            value="<?= htmlspecialchars($patient_id) ?>" readonly />
+    </div>
 
+    <div class="row">
+        <div class="form-group col-md-6">
             <label>Name:</label>
-<input type="text" name="patient_name" value="<?= htmlspecialchars($patient_name) ?>" required />
-
+            <input type="text" name="name" value="<?= htmlspecialchars($name) ?>" class="form-control" required />
+        </div>
+        <div class="form-group col-md-6">
             <label>Email:</label>
-            <input type="email" name="email" value="<?= htmlspecialchars($email) ?>" required />
+            <input type="email" name="email" value="<?= htmlspecialchars($email) ?>" class="form-control" required />
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="form-group col-md-6">
             <label>Medical Concern:</label>
-            <select name="specialization" onchange="this.form.submit()">
+            <select name="specialization" class="form-select" onchange="this.form.submit()">
                 <option value="">Select Medical Concern</option>
                 <?php while ($spec = $specializations->fetch_assoc()): ?>
                     <option value="<?= htmlspecialchars($spec['specialization']) ?>" <?= ($specialization == $spec['specialization']) ? 'selected' : '' ?>>
@@ -379,9 +380,10 @@ form button[type="submit"]:hover {
                     </option>
                 <?php endwhile; ?>
             </select>
-
+        </div>
+        <div class="form-group col-md-6">
             <label>Doctor:</label>
-            <select name="doctor_id" onchange="this.form.submit()">
+            <select name="doctor_id" class="form-select" onchange="this.form.submit()">
                 <option value="">Select Doctor</option>
                 <?php if ($doctors): ?>
                     <?php while ($doc = $doctors->fetch_assoc()): ?>
@@ -391,9 +393,13 @@ form button[type="submit"]:hover {
                     <?php endwhile; ?>
                 <?php endif; ?>
             </select>
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="form-group col-md-6">
             <label>Date:</label>
-            <select name="days" onchange="this.form.submit()">
+            <select name="days" class="form-select" onchange="this.form.submit()">
                 <option value="">Select Date</option>
                 <?php foreach ($dates as $date): ?>
                     <option value="<?= $date ?>" <?= ($appointment_date == $date) ? 'selected' : '' ?>>
@@ -401,9 +407,10 @@ form button[type="submit"]:hover {
                     </option>
                 <?php endforeach; ?>
             </select>
-
+        </div>
+        <div class="form-group col-md-6">
             <label>Time:</label>
-            <select name="time" required>
+            <select name="time" class="form-select" required>
                 <option value="">Select Time</option>
                 <?php foreach ($times as $time): ?>
                     <option value="<?= $time ?>" <?= ($appointment_time == $time) ? 'selected' : '' ?>>
@@ -411,9 +418,13 @@ form button[type="submit"]:hover {
                     </option>
                 <?php endforeach; ?>
             </select>
+        </div>
+    </div>
 
-            <button type="submit" name="final_submit">Book Appointment</button>
-        </form>
+    <div class="form-group">
+        <button type="submit" name="final_submit">Make An Appointment</button>
+    </div>
+</form>
     </div>
 </div>
     </div>

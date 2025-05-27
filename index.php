@@ -33,76 +33,49 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+   <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
     <style>
         
 
-        .feedback-card {
-            background: #ffffff;
-            border-left: 5px solid #007bff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-        }
+        .testimonial-section {
+    max-width: 700px;
+    margin: auto;
+    padding: 40px 20px;
+    text-align: center;
+}
 
-        .feedback-card:hover {
-            transform: scale(1.01);
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.12);
-        }
+.testimonial-card {
+    background-color: #EFF5F9;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
 
-        .feedback-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+.quote-icon {
+    font-size: 40px;
+    color: #13C5DD;
+    margin-bottom: 15px;
+}
 
-        .feedback-name {
-            font-weight: bold;
-            font-size: 18px;
-            color: #333;
-        }
+.testimonial-text {
+    color: #6c757d;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
 
-        .feedback-email {
-            font-size: 14px;
-            color: #666;
-        }
+.testimonial-name {
+    font-size: 20px;
+    color: #1D2A4D;
+    font-weight: bold;
+}
 
-        .feedback-subject {
-            font-weight: 600;
-            color: #007bff;
-            margin-bottom: 8px;
-        }
-
-        .feedback-message {
-            font-size: 15px;
-            color: #444;
-            line-height: 1.6;
-        }
-
-        .feedback-time {
-            text-align: right;
-            font-size: 13px;
-            color: #888;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 600px) {
-            .feedback-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .feedback-time {
-                text-align: left;
-            }
-        }
-        .dropdown-submenu {
-  position: relative;
+.testimonial-role {
+    font-size: 14px;
+    color: #13C5DD;
 }
 
 .dropdown-submenu .dropdown-menu {
@@ -155,17 +128,14 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
           <a href="index.php" class="nav-item nav-link active">Home</a>
           <a href="about.php" class="nav-item nav-link">About</a>
           <a href="doctors.php" class="nav-item nav-link">Doctors</a>
-          <a href="Disease.php" class="nav-item nav-link">Disease</a>
+          <a href="appointment.php" class="nav-item nav-link">Appoiontment</a>
 
           <div class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Medical Info</a>
             <div class="dropdown-menu m-0">
-              <a href="blog.php" class="dropdown-item">Blog Grid</a>
-              <a href="#" class="dropdown-item">Blog Detail</a>
-              <a href="#" class="dropdown-item">The Team</a>
-              <a href="#" class="dropdown-item">Testimonial</a>
-              <a href="appointment.php" class="dropdown-item">Appointment</a>
-              <a href="search.php" class="dropdown-item">Search</a>
+              <a href="blog.php" class="dropdown-item">Medical News</a>
+              <a href="Disease.php" class="dropdown-item">Diseas Info</a>
+    
             </div>
           </div>
 
@@ -179,7 +149,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
         <?php if (isset($_SESSION['patient_id'])): ?>
           <div class="button-container ms-2">
-            <a href="patient_dashboard.php" class="btn btn-outline-success btn-sm">Dashboard</a>
+            <a href="my_appointments.php" class="btn btn-outline-success btn-sm">Dashboard</a>
           </div>
           <div class="button-container ms-2">
             <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout (<?= htmlspecialchars($_SESSION['patient_id']) ?>)</a>
@@ -262,91 +232,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
     <!-- About End -->
     
 
-    <!-- Services Start -->
-    <div class="container-fluid py-5">
-        <div class="container">
-            <div class="text-center mx-auto mb-5" style="max-width: 500px;">
-                <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Services</h5>
-                <h1 class="display-4">Excellent Medical Services</h1>
-            </div>
-            <div class="row g-5">
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-item bg-light rounded d-flex flex-column align-items-center justify-content-center text-center">
-                        <div class="service-icon mb-4">
-                            <i class="fa fa-2x fa-user-md text-white"></i>
-                        </div>
-                        <h4 class="mb-3">Emergency Care</h4>
-                        <p class="m-0">Kasd dolor no lorem nonumy sit labore tempor at justo rebum rebum stet, justo elitr dolor amet sit</p>
-                        <a class="btn btn-lg btn-primary rounded-pill" href="">
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-item bg-light rounded d-flex flex-column align-items-center justify-content-center text-center">
-                        <div class="service-icon mb-4">
-                            <i class="fa fa-2x fa-procedures text-white"></i>
-                        </div>
-                        <h4 class="mb-3">Operation & Surgery</h4>
-                        <p class="m-0">Kasd dolor no lorem nonumy sit labore tempor at justo rebum rebum stet, justo elitr dolor amet sit</p>
-                        <a class="btn btn-lg btn-primary rounded-pill" href="">
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-item bg-light rounded d-flex flex-column align-items-center justify-content-center text-center">
-                        <div class="service-icon mb-4">
-                            <i class="fa fa-2x fa-stethoscope text-white"></i>
-                        </div>
-                        <h4 class="mb-3">Outdoor Checkup</h4>
-                        <p class="m-0">Kasd dolor no lorem nonumy sit labore tempor at justo rebum rebum stet, justo elitr dolor amet sit</p>
-                        <a class="btn btn-lg btn-primary rounded-pill" href="">
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-item bg-light rounded d-flex flex-column align-items-center justify-content-center text-center">
-                        <div class="service-icon mb-4">
-                            <i class="fa fa-2x fa-ambulance text-white"></i>
-                        </div>
-                        <h4 class="mb-3">Ambulance Service</h4>
-                        <p class="m-0">Kasd dolor no lorem nonumy sit labore tempor at justo rebum rebum stet, justo elitr dolor amet sit</p>
-                        <a class="btn btn-lg btn-primary rounded-pill" href="">
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-item bg-light rounded d-flex flex-column align-items-center justify-content-center text-center">
-                        <div class="service-icon mb-4">
-                            <i class="fa fa-2x fa-pills text-white"></i>
-                        </div>
-                        <h4 class="mb-3">Medicine & Pharmacy</h4>
-                        <p class="m-0">Kasd dolor no lorem nonumy sit labore tempor at justo rebum rebum stet, justo elitr dolor amet sit</p>
-                        <a class="btn btn-lg btn-primary rounded-pill" href="">
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-item bg-light rounded d-flex flex-column align-items-center justify-content-center text-center">
-                        <div class="service-icon mb-4">
-                            <i class="fa fa-2x fa-microscope text-white"></i>
-                        </div>
-                        <h4 class="mb-3">Blood Testing</h4>
-                        <p class="m-0">Kasd dolor no lorem nonumy sit labore tempor at justo rebum rebum stet, justo elitr dolor amet sit</p>
-                        <a class="btn btn-lg btn-primary rounded-pill" href="">
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Services End -->
-
+    
 
     <!-- Appointment Start -->
     <div class="container-fluid bg-primary my-5 py-5">
@@ -415,90 +301,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
     <!-- Appointment End -->
 
 
-    <!-- Pricing Plan Start -->
-    <div class="container-fluid py-5">
-        <div class="container">
-            <div class="text-center mx-auto mb-5" style="max-width: 500px;">
-                <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Medical Packages</h5>
-                <h1 class="display-4">Awesome Medical Programs</h1>
-            </div>
-            <div class="owl-carousel price-carousel position-relative" style="padding: 0 45px 45px 45px;">
-                <div class="bg-light rounded text-center">
-                    <div class="position-relative">
-                        <img class="img-fluid rounded-top" src="img/price-1.jpg" alt="">
-                        <div class="position-absolute w-100 h-100 top-50 start-50 translate-middle rounded-top d-flex flex-column align-items-center justify-content-center" style="background: rgba(29, 42, 77, .8);">
-                            <h3 class="text-white">Pregnancy Care</h3>
-                            <h1 class="display-4 text-white mb-0">
-                                <small class="align-top fw-normal" style="font-size: 22px; line-height: 45px;">$</small>49<small class="align-bottom fw-normal" style="font-size: 16px; line-height: 40px;">/ Year</small>
-                            </h1>
-                        </div>
-                    </div>
-                    <div class="text-center py-5">
-                        <p>Emergency Medical Treatment</p>
-                        <p>Highly Experienced Doctors</p>
-                        <p>Highest Success Rate</p>
-                        <p>Telephone Service</p>
-                        <a href="" class="btn btn-primary rounded-pill py-3 px-5 my-2">Apply Now</a>
-                    </div>
-                </div>
-                <div class="bg-light rounded text-center">
-                    <div class="position-relative">
-                        <img class="img-fluid rounded-top" src="img/price-2.jpg" alt="">
-                        <div class="position-absolute w-100 h-100 top-50 start-50 translate-middle rounded-top d-flex flex-column align-items-center justify-content-center" style="background: rgba(29, 42, 77, .8);">
-                            <h3 class="text-white">Health Checkup</h3>
-                            <h1 class="display-4 text-white mb-0">
-                                <small class="align-top fw-normal" style="font-size: 22px; line-height: 45px;">$</small>99<small class="align-bottom fw-normal" style="font-size: 16px; line-height: 40px;">/ Year</small>
-                            </h1>
-                        </div>
-                    </div>
-                    <div class="text-center py-5">
-                        <p>Emergency Medical Treatment</p>
-                        <p>Highly Experienced Doctors</p>
-                        <p>Highest Success Rate</p>
-                        <p>Telephone Service</p>
-                        <a href="" class="btn btn-primary rounded-pill py-3 px-5 my-2">Apply Now</a>
-                    </div>
-                </div>
-                <div class="bg-light rounded text-center">
-                    <div class="position-relative">
-                        <img class="img-fluid rounded-top" src="img/price-3.jpg" alt="">
-                        <div class="position-absolute w-100 h-100 top-50 start-50 translate-middle rounded-top d-flex flex-column align-items-center justify-content-center" style="background: rgba(29, 42, 77, .8);">
-                            <h3 class="text-white">Dental Care</h3>
-                            <h1 class="display-4 text-white mb-0">
-                                <small class="align-top fw-normal" style="font-size: 22px; line-height: 45px;">$</small>149<small class="align-bottom fw-normal" style="font-size: 16px; line-height: 40px;">/ Year</small>
-                            </h1>
-                        </div>
-                    </div>
-                    <div class="text-center py-5">
-                        <p>Emergency Medical Treatment</p>
-                        <p>Highly Experienced Doctors</p>
-                        <p>Highest Success Rate</p>
-                        <p>Telephone Service</p>
-                        <a href="" class="btn btn-primary rounded-pill py-3 px-5 my-2">Apply Now</a>
-                    </div>
-                </div>
-                <div class="bg-light rounded text-center">
-                    <div class="position-relative">
-                        <img class="img-fluid rounded-top" src="img/price-4.jpg" alt="">
-                        <div class="position-absolute w-100 h-100 top-50 start-50 translate-middle rounded-top d-flex flex-column align-items-center justify-content-center" style="background: rgba(29, 42, 77, .8);">
-                            <h3 class="text-white">Operation & Surgery</h3>
-                            <h1 class="display-4 text-white mb-0">
-                                <small class="align-top fw-normal" style="font-size: 22px; line-height: 45px;">$</small>199<small class="align-bottom fw-normal" style="font-size: 16px; line-height: 40px;">/ Year</small>
-                            </h1>
-                        </div>
-                    </div>
-                    <div class="text-center py-5">
-                        <p>Emergency Medical Treatment</p>
-                        <p>Highly Experienced Doctors</p>
-                        <p>Highest Success Rate</p>
-                        <p>Telephone Service</p>
-                        <a href="" class="btn btn-primary rounded-pill py-3 px-5 my-2">Apply Now</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Pricing Plan End -->
+    
 
 
     <!-- Team Start -->
@@ -725,26 +528,37 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
     <!-- Blog End -->
     
     <!-- Contact -->
-     <center><h1>feedback</h1></center>
-<?php
+     <!-- Swiper container -->
+     <!-- Testimonial Section -->
+<div class="testimonial-section">
+    <h5 style="color: #13C5DD; text-align:center;">TESTIMONIAL</h5>
+    <h2 style="text-align:center; font-weight: 800;">Patients Say About<br>Our Services</h2>
 
-
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        echo '
-        <div class="feedback-card">
-            <h4>' . htmlspecialchars($row["name"]) . ' </h4>
-            <strong>Subject:</strong> ' . htmlspecialchars($row["subject"]) . '<br>
-            <p>' . nl2br(htmlspecialchars($row["message"])) . '</p>
-            <small>Submitted at: ' . $row["submitted_at"] . '</small>
-        </div>';
-    }
-} else {
-    echo "<p>No feedback submitted yet.</p>";
-}
-
-$conn->close();
-?>
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            <?php
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    echo '
+                    <div class="swiper-slide">
+                        <div class="testimonial-card">
+                            <div class="quote-icon">❝</div>
+                            <p class="testimonial-text">' . nl2br(htmlspecialchars($row["message"])) . '</p>
+                            <h4 class="testimonial-name">' . htmlspecialchars($row["name"]) . '</h4>
+                            <p class="testimonial-role">Profession</p>
+                        </div>
+                    </div>';
+                }
+            } else {
+                echo "<p>No feedback submitted yet.</p>";
+            }
+            $conn->close();
+            ?>
+        </div>
+        <!-- Pagination Dots -->
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
 
   <!-- Contact  -->
 
@@ -832,7 +646,21 @@ $conn->close();
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script>
+    var swiper = new Swiper(".mySwiper", {
+        loop: true,
+        autoplay: {
+            delay: 4000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+    });
+</script>
     
 </body>
 

@@ -7,15 +7,29 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Correct table creation query
-$conn->query("CREATE TABLE IF NOT EXISTS feedback (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    subject VARCHAR(150),
-    message TEXT,
-    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)");
+// Check if form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Check if user is logged in
+    if (isset($_SESSION['patient_id'])) {
+        // User is logged in, process the form
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $message = $_POST['message'];
+
+        // Example: save to database or send email here
+
+        echo "Thank you! Your message has been submitted.";
+    } else {
+        // User not logged in, redirect to login page
+        header("Location: login.php");
+        exit();
+    }
+}
+
+$patient_id = $_SESSION['patient_id'];
+
+// Fetch only current patient's feedback
+$result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 
 // Check if form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -25,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $subject = $conn->real_escape_string($_POST['subject']);
     $message = $conn->real_escape_string($_POST['message']);
 
-    // Insert query
+    // Insert feedback
     $sql = "INSERT INTO feedback (name, email, subject, message)
             VALUES ('$name', '$email', '$subject', '$message')";
 
@@ -35,9 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
-// Fetch all feedbacks
-$result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 

@@ -441,7 +441,7 @@ $total_notifications = $pending_doctor_count + $appointment_count + $changed_pro
         <li>
           <a class="dropdown-item text-success"
              href="admin_dashboard.php?notify=appointment&id=<?= $row['id'] ?>">
-            📅 New appointment by <?= $row['patient_name'] ?>
+            📅 New appointment by <?= $row['name'] ?>
           </a>
         </li>
       <?php endwhile; ?>

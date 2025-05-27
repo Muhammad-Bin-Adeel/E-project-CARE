@@ -31,266 +31,249 @@ $doctor = $result->fetch_assoc();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
    <style>
-:root {
-    --primary: #13C5DD;
-    --secondary: #354F8E;
-    --light: #EFF5F9;
-    --dark: #1D2A4D;
-    --success: #28a745;
-    --danger: #dc3545;
-    --dashboard-bg: #f1f9f2;
-    --card-border: #28a745;
-}
-
-/* Base */
-body {
-    font-family: Arial, sans-serif;
-    background: var(--dashboard-bg);
+/* Base Reset */
+body, html {
     margin: 0;
     padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.wrapper {
+    display: flex;
 }
 
 /* Sidebar */
 .sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background-color: #1e1e2f;
+    padding: 20px 15px;
+    color: #fff;
     position: fixed;
-    top: 0;
     left: 0;
-    height: 100vh;
-    width: 240px;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 20px;
+    top: 0;
     overflow-y: auto;
     z-index: 1000;
 }
 
 .brand-title {
-    font-size: 22px;
-    font-weight: 600;
-    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
     margin-bottom: 30px;
+    color: #fff;
+    display: flex;
+    align-items: center;
 }
 
 .sidebar-menu {
     display: flex;
     flex-direction: column;
-    gap: 20px;
 }
 
-.sidebar-section .section-title {
-    font-size: 14px;
+.sidebar-section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 13px;
     text-transform: uppercase;
+    font-weight: bold;
+    color: #aaa;
     margin-bottom: 10px;
-    color: #bdc3c7;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
-    color: #ecf0f1;
-    text-decoration: none;
+    padding: 10px 12px;
     border-radius: 6px;
-    transition: background 0.3s;
+    color: #ccc;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
 }
 
-.nav-link:hover, .nav-link.active {
-    background-color: #34495e;
+.nav-link:hover,
+.nav-link.active {
+    background-color: #333;
+    color: #fff;
 }
 
 .nav-link i {
     margin-right: 10px;
 }
 
-/* Main content */
+.ms-auto {
+    margin-left: auto;
+}
+
+.ps-4 {
+    padding-left: 1.5rem !important;
+}
+
+/* Collapse */
+.collapse {
+    display: none;
+    flex-direction: column;
+}
+
+.collapse.show {
+    display: flex;
+}
+
+/* Main Content */
 .main-content {
-    margin-left: 240px;
-    padding: 40px;
-    transition: all 0.3s;
-    background-color: var(--dashboard-bg);
+    margin-left: 250px;
+    width: 100%;
+    padding: 0;
+    background-color: #f0f2f5;
     min-height: 100vh;
 }
 
-.dashboard-wrapper {
-    padding: 30px;
-    background-color: var(--dashboard-bg);
+/* Topbar */
+.topbar {
+    background-color: #343a40;
+    color: #fff;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    border-bottom: 1px solid #444;
 }
 
-.dashboard-wrapper h2 {
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--success);
-    margin-bottom: 20px;
+.page-title {
+    margin: 0;
+    font-size: 20px;
 }
 
-.dashboard-panels {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.dashboard-card {
-    background-color: #fff;
-    border-left: 5px solid var(--card-border);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.dashboard-card h4 {
-    font-size: 18px;
-    color: var(--dark);
-    margin-bottom: 8px;
-}
-
-.dashboard-card p {
-    font-size: 16px;
-    color: #555;
-}
-
-/* Search Bar */
 .search-bar {
     position: relative;
-    width: 220px;
-    margin: 0 15px;
+    margin-right: 20px;
 }
 
 .search-bar input {
-    background-color: rgba(255,255,255,0.2);
+    padding: 5px 10px 5px 30px;
+    border-radius: 4px;
     border: none;
-    color: white;
-    padding: 6px 12px 6px 35px;
-    border-radius: 20px;
-    width: 100%;
-    font-size: 0.9rem;
-}
-
-.search-bar input::placeholder {
-    color: rgba(255,255,255,0.7);
+    outline: none;
 }
 
 .search-bar i {
     position: absolute;
-    left: 12px;
-    top: 8px;
-    font-size: 0.9rem;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    color: #555;
 }
 
-/* Notification Bell */
 .notification-bell {
     position: relative;
-    margin-right: 15px;
-    font-size: 1.1rem;
+    margin-right: 20px;
+    color: #fff;
     cursor: pointer;
 }
 
-.notification-badge {
+.notification-bell .notification-badge {
     position: absolute;
     top: -5px;
-    right: -5px;
-    background-color: var(--danger);
-    color: white;
+    right: -8px;
+    background-color: red;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
     border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    font-size: 0.6rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-/* Profile Card */
-.header {
-    background: var(--primary);
-    padding: 20px;
-    color: white;
-    font-size: 24px;
-    font-weight: bold;
+/* Dropdown menu */
+.user-menu img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
 }
 
-.profile-card {
-    max-width: 700px;
-    margin: 50px auto;
-    background: white;
+.dropdown-menu {
+    background-color: #fff;
+    color: #333;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+
+/* Container */
+.container {
     padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
 }
 
-.profile-card img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-    margin-right: 20px;
+/* Card */
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
 }
 
-.profile-info h2 {
-    margin: 0 0 10px;
-    font-size: 26px;
-}
-
-.profile-info p {
-    margin: 5px 0;
-    font-size: 16px;
-}
-
-.label {
+.card-header {
+    background-color: #2e3b4e;
+    color: #fff;
+    padding: 15px 20px;
     font-weight: bold;
 }
 
-/* Doctor Detail Card */
-.card-header.bg-primary {
-    background-color: var(--primary) !important;
+.card-body {
+    padding: 20px;
 }
 
-/* Collapsible animation */
-.collapse:not(.show) {
-    display: none;
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin-bottom: 15px;
 }
 
-.collapsing {
-    height: 0;
-    overflow: hidden;
-    transition: height 0.35s ease;
+/* Buttons */
+.btn {
+    padding: 8px 14px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
 }
 
-/* Responsive adjustments */
-@media (max-width: 991.98px) {
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
     .sidebar {
-        transform: translateX(-100%);
+        position: absolute;
+        left: -250px;
+        transition: all 0.3s ease;
     }
 
     .sidebar.show {
-        transform: translateX(0);
+        left: 0;
     }
 
     .main-content {
         margin-left: 0;
-        padding: 20px;
-    }
-
-    .search-bar {
-        width: 180px;
     }
 }
 
-@media (max-width: 767.98px) {
-    .search-bar {
-        display: none;
-    }
-
-    .notification-bell {
-        margin-right: 10px;
-    }
-
-    .dashboard-wrapper {
-        padding: 15px;
-    }
-}
 </style>
 
 </head>
@@ -316,22 +299,7 @@ body {
             <div class="sidebar-section">
                 <div class="section-title">My Panel</div>
                 
-                <!-- My Patients -->
-                <div class="nav-link" onclick="toggleCollapse('patientsCollapse')">
-                    <i class="fas fa-procedures"></i>
-                    <span>Patients</span>
-                    <i class="fas fa-angle-down ms-auto" id="patientsCollapseIcon"></i>
-                </div>
-                <div class="collapse" id="patientsCollapse">
-                    <a href="view_patients.php" class="nav-link ps-4">
-                        <i class="fas fa-list"></i>
-                        <span>View Patients</span>
-                    </a>
-                    <a href="manage_patients.php" class="nav-link ps-4">
-                        <i class="fas fa-edit"></i>
-                        <span>Modify Patients</span>
-                    </a>
-                </div>
+                
                 
                 <!-- My Appointments -->
                 <a href="doctor_appointment.php" class="nav-link">
@@ -411,5 +379,25 @@ body {
     </div>
     <a href="view_doctor.php" class="btn btn-secondary mt-3">Back</a>
 </div>
+<script>
+document.getElementById("sidebarToggle").addEventListener("click", function () {
+    document.querySelector(".sidebar").classList.toggle("show");
+});
+
+// Collapse toggle
+function toggleCollapse(id) {
+    const collapse = document.getElementById(id);
+    const icon = document.getElementById(id + 'Icon');
+    if (collapse.classList.contains('show')) {
+        collapse.classList.remove('show');
+        icon.classList.remove('fa-angle-up');
+        icon.classList.add('fa-angle-down');
+    } else {
+        collapse.classList.add('show');
+        icon.classList.remove('fa-angle-down');
+        icon.classList.add('fa-angle-up');
+    }
+}
+</script>
 </body>
 </html>
