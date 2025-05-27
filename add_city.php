@@ -13,7 +13,7 @@ $conn->query($table);
 
 // Redirect if not logged in
 if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
+    header("Location: admin_login.php");
     exit;
 }
 
