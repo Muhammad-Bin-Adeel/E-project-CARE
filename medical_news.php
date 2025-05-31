@@ -15,7 +15,7 @@ $conn->query("CREATE TABLE IF NOT EXISTS medical_news (
 )");
 
 if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
+    header("Location: login.php");
     exit;
 }
 

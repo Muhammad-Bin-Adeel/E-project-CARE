@@ -26,7 +26,7 @@ $conn->query("CREATE TABLE IF NOT EXISTS doctors (
 
 
 if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
+    header("Location: login.php");
     exit;
 }
 
