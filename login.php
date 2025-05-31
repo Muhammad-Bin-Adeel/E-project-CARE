@@ -5,7 +5,7 @@ session_start();
 include("db.php");
 
 $error = ""; // Initialize error variable
-
+ 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
