@@ -111,7 +111,8 @@ if (isset($_POST['final_submit'])) {
     if (empty($name) || empty($email) || empty($specialization) || empty($doctor_id) || empty($appointment_date) || empty($appointment_time)) {
         $error = "Please fill all required fields.";
     } else {
-        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, name, email, specialization, doctor_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, patient_name, email, specialization, doctor_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')");
+
         $stmt->bind_param(
             "isssiss",
             $patient_id,

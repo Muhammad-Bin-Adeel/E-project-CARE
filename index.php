@@ -40,6 +40,7 @@ $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
     <link href="css/style.css" rel="stylesheet">
     <style>
         
+        
 
         .testimonial-section {
     max-width: 700px;

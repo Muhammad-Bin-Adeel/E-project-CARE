@@ -31,7 +31,8 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 }
 
 // Doctor ke appointments fetch karo
-$stmt = $conn->prepare("SELECT id, name, email, appointment_date, appointment_time, status FROM appointments WHERE doctor_id = ? ORDER BY created_at DESC");
+$stmt = $conn->prepare("SELECT id, patient_name, email, appointment_date, appointment_time, status FROM appointments WHERE doctor_id = ? ORDER BY created_at DESC");
+
 $stmt->bind_param("i", $doctor_id);
 $stmt->execute();
 $appointments = $stmt->get_result();
@@ -322,7 +323,7 @@ body {
                         <?php $i = 1; while ($row = $appointments->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $i++ ?></td>
-                                <td><?= htmlspecialchars($row['name']) ?></td>
+                                <td><?= htmlspecialchars($row['patient_name']) ?></td>
                                 <td><?= htmlspecialchars($row['email']) ?></td>
                                 <td><?= $row['appointment_date'] ?></td>
                                 <td><?= date('h:i A', strtotime($row['appointment_time'])) ?></td>

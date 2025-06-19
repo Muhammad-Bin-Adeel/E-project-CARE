@@ -89,6 +89,6 @@ if (isset($_GET['appointment_id'])) {
         echo "<p style='color:red; text-align:center;'>Invalid or unauthorized appointment.</p>";
     }
 } else {
-    echo "<p style='color:red; text-align:center;'>Appointment ID is missing.</p>";
+    echo "<p +style='color:red; text-align:center;'>Appointment ID is missing.</p>";
 }
 ?>
