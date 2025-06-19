@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 28, 2025 at 11:36 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Jun 19, 2025 at 05:50 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -37,19 +37,21 @@ CREATE TABLE `appointments` (
   `appointment_time` time DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_notified` tinyint(1) NOT NULL DEFAULT 0,
-  `status` enum('Pending','Accepted','Declined') DEFAULT 'Pending'
+  `status` enum('Pending','Accepted','Declined') DEFAULT 'Pending',
+  `patient_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`id`, `patient_name`, `email`, `specialization`, `doctor_id`, `appointment_date`, `appointment_time`, `created_at`, `is_notified`, `status`) VALUES
-(1, 'wq', 'ejazsab50@gmail.com', 'otolaryngology', 15, '0000-00-00', '09:15:00', '2025-05-24 16:57:29', 1, 'Accepted'),
-(2, 'ad', 'mhammadadeel11@gmail.com', 'Psychiatry', 16, '0000-00-00', '10:30:00', '2025-05-24 18:02:04', 0, 'Pending'),
-(3, 'qw', 'admin@gmail', 'pediatricians', 21, '2025-05-26', '10:00:00', '2025-05-24 22:31:01', 0, 'Declined'),
-(4, 'as', 'admin@gmail', 'pediatricians', 21, '2025-05-26', '10:00:00', '2025-05-24 22:33:45', 0, 'Accepted'),
-(5, 'qw', 'admin@gmail', 'Immunology', 22, '2025-06-17', '10:15:00', '2025-05-25 13:02:05', 0, 'Accepted');
+INSERT INTO `appointments` (`id`, `patient_name`, `email`, `specialization`, `doctor_id`, `appointment_date`, `appointment_time`, `created_at`, `is_notified`, `status`, `patient_id`) VALUES
+(1, 'wq', 'ejazsab50@gmail.com', 'otolaryngology', 15, '0000-00-00', '09:15:00', '2025-05-24 16:57:29', 1, 'Accepted', 0),
+(2, 'ad', 'mhammadadeel11@gmail.com', 'Psychiatry', 16, '0000-00-00', '10:30:00', '2025-05-24 18:02:04', 0, 'Pending', 0),
+(3, 'qw', 'admin@gmail', 'pediatricians', 21, '2025-05-26', '10:00:00', '2025-05-24 22:31:01', 0, 'Declined', 0),
+(4, 'as', 'admin@gmail', 'pediatricians', 21, '2025-05-26', '10:00:00', '2025-05-24 22:33:45', 0, 'Accepted', 0),
+(5, 'qw', 'admin@gmail', 'Immunology', 22, '2025-06-17', '10:15:00', '2025-05-25 13:02:05', 0, 'Accepted', 0),
+(6, 'Student1655498', 'maharmainfarooq@gmail.com', 'pediatricians', 21, '2025-07-14', '10:15:00', '2025-06-19 14:59:08', 0, 'Accepted', 5);
 
 -- --------------------------------------------------------
 
@@ -266,7 +268,7 @@ ALTER TABLE `patients`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `city`
