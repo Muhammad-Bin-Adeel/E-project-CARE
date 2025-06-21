@@ -2,19 +2,21 @@
 session_start();
 include("db.php");
 
-if (!isset($_SESSION['patient_id'])) {
+// Check if email is set in session
+if (!isset($_SESSION['email'])) {
     header('Location: login.php');
     exit();
 }
 
-$patient_id = $_SESSION['patient_id'];
+$email = $_SESSION['email'];
 
+// Now query using email instead of patient_id
 $sql = "SELECT a.*, d.name AS doctor_name 
         FROM appointments a
         JOIN doctors d ON a.doctor_id = d.id
-        WHERE a.patient_id = ?";
+        WHERE a.email = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $patient_id);
+$stmt->bind_param("s", $email); // 's' = string type
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
