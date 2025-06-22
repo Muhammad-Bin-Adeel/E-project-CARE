@@ -38,15 +38,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Patient login
-    $query = "SELECT * FROM patients WHERE email='$email' AND password='$password'";
-    $result = mysqli_query($conn, $query);
-    if (mysqli_num_rows($result) == 1) {
-        $_SESSION['role'] = 'patient';
-        $_SESSION['email'] = $email;
-        $_SESSION['patient_id'] = mysqli_fetch_assoc($result)['id'];
-        header("Location: appointment.php");
-        exit();
-    }
+$query = "SELECT * FROM patients WHERE email='$email' AND password='$password'";
+$result = mysqli_query($conn, $query);
+if (mysqli_num_rows($result) == 1) {
+    $patient = mysqli_fetch_assoc($result); // ✅ Fetch once, reuse
+
+    $_SESSION['role'] = 'patient';
+    $_SESSION['email'] = $patient['email']; // ✅ Optional fallback
+    $_SESSION['patient_id'] = $patient['id'];
+    $_SESSION['patient_name'] = $patient['name']; // ✅ Required for avatar
+
+    header("Location: appointment.php");
+    exit();
+}
 
     $error = "Invalid email or password.";
 }
