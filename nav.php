@@ -103,9 +103,7 @@ $firstLetter = strtoupper(substr($nameOrEmail, 0, 1));
                   <small class="text-muted">Welcome</small><br>
                   <strong class="text-dark"><?php echo htmlspecialchars($nameOrEmail); ?></strong>
                 </li>
-                <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="profile.php">
-                  <i class="fas fa-user-circle text-primary"></i> Profile
-                </a></li>
+                
                 <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="my_appointments.php">
                   <i class="fas fa-calendar-check text-success"></i> My Appointments
                 </a></li>
