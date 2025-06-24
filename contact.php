@@ -26,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-$patient_id = $_SESSION['patient_id'];
 
 // Fetch only current patient's feedback
 $result = $conn->query("SELECT * FROM feedback ORDER BY submitted_at DESC");
