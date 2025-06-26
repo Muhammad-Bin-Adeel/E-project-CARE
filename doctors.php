@@ -25,51 +25,90 @@ if (isset($_POST['action']) && $_POST['action'] == 'filter') {
     $result = $conn->query($query);
 
     if ($result->num_rows > 0) {
-        $counter = 1;
         while ($row = $result->fetch_assoc()) {
             ?>
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow-sm h-100">
-                    <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
-                        <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
-                        <p><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
-                        <p><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
-                        <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
-
-                        <div class="collapse" id="doctorDetails<?= $counter ?>">
-                            <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
-                            <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
-                            <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
-                            <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
-                            <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
-                            <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
-                            <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
-                        </div>
-
-                        <div class="d-flex gap-2 mt-auto">
-                            <button class="btn btn-sm btn-outline-primary toggle-details-btn flex-grow-1" 
-                                type="button" 
-                                data-bs-toggle="collapse" 
-                                data-bs-target="#doctorDetails<?= $counter ?>" 
-                                aria-expanded="false" 
-                                aria-controls="doctorDetails<?= $counter ?>">
-                                More Details
-                            </button>
+            <div class="col-12 mb-3">
+                <div class="doctor-profile-card">
+                    <div class="doctor-image-container">
+                        <img src="<?= htmlspecialchars($row['image']) ?>" alt="<?= htmlspecialchars($row['name']) ?>">
+                    </div>
+                    <div class="doctor-content-container">
+                        <div class="doctor-main-info">
+                            <div class="basic-info">
+                                <h2 class="doctor-name"><?= htmlspecialchars($row['name']) ?></h2>
+                                <span class="specialization"><?= htmlspecialchars($row['specialization']) ?></span>
+                                
+                                <div class="doctor-meta-info">
+                                    <div class="meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <?= htmlspecialchars($row['city']) ?>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-phone-alt"></i>
+                                        <?= htmlspecialchars($row['phone']) ?>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-briefcase"></i>
+                                        <?= htmlspecialchars($row['experience']) ?> years experience
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <a href="appointment.php?doctor_id=<?= $row['id'] ?>" class="btn btn-sm btn-primary flex-grow-1">
-                                Appointment
+                            <div class="doctor-description">
+                                <h4 class="text-primary mb-2">About Dr. <?= explode(' ', htmlspecialchars($row['name']))[0] ?></h4>
+                                <div class="description-text">
+                                    <?= htmlspecialchars($row['description']) ?>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="doctor-buttons">
+                            <button class="btn-details toggle-details" data-doctor-id="<?= $row['id'] ?>">
+                                <i class="fas fa-info-circle"></i> Full Profile
+                            </button>
+                            <a href="appointment.php?doctor_id=<?= $row['id'] ?>" class="btn-appointment">
+                                <i class="fas fa-calendar-check"></i> Book Appointment
                             </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Details Panel (hidden by default) -->
+                <div class="doctor-details-panel" id="details-<?= $row['id'] ?>">
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <strong><i class="fas fa-hospital"></i> Hospital</strong>
+                            <span><?= htmlspecialchars($row['hospital_name']) ?></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong><i class="far fa-calendar-alt"></i> Available Days</strong>
+                            <span><?= htmlspecialchars($row['days']) ?></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong><i class="far fa-clock"></i> Timing</strong>
+                            <span><?= htmlspecialchars($row['timing']) ?></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong><i class="fas fa-graduation-cap"></i> Qualifications</strong>
+                            <span><?= htmlspecialchars($row['degree']) ?></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong><i class="fas fa-map-marker-alt"></i> Clinic Address</strong>
+                            <span><?= htmlspecialchars($row['address']) ?></span>
                         </div>
                     </div>
                 </div>
             </div>
             <?php
-            $counter++;
         }
     } else {
-        echo '<div class="col-12"><p class="text-center text-muted">No approved doctors found for selected filter.</p></div>';
+        echo '<div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle fa-2x mb-3"></i>
+                    <h4>No doctors found</h4>
+                    <p class="mb-0">Try adjusting your search filters</p>
+                </div>
+              </div>';
     }
     exit;  // Important to exit after AJAX response
 }
@@ -79,10 +118,9 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <title>CARE - Hospital .</title>
+    <title>CARE - Hospital</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -111,111 +149,263 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
     <link href="css/style.css" rel="stylesheet">
 
     <style>
-       
         /* Filter form styles */
         #filterForm {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 30px auto;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        /* Doctor Cards Styles */
-        .doctor-card {
+        /* Single Card Per Row Styling */
+        .doctor-profile-card {
             transition: all 0.3s ease;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
             border: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 15px;
             background: #fff;
+            display: flex;
+            flex-direction: row;
+            min-height: 250px;
         }
 
-        .doctor-card:hover {
+        .doctor-profile-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         }
 
-        .doctor-card .card-img-top {
-            transition: transform 0.3s ease;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            width: 100%;
+        .doctor-image-container {
+            width: 250px;
+            min-width: 250px;
             height: 250px;
-            object-fit: cover;
-            object-position: top;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
         }
 
-        .doctor-card:hover .card-img-top {
+        .doctor-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            transition: transform 0.5s ease;
+        }
+
+        .doctor-profile-card:hover .doctor-image-container img {
             transform: scale(1.03);
         }
 
-        .doctor-card .card-body {
+        .doctor-content-container {
+            flex-grow: 1;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            height: calc(100% - 250px);
         }
 
-        .doctor-card .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+        .doctor-main-info {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .basic-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .doctor-description {
+            flex: 2;
+            min-width: 300px;
+            padding: 0 1rem;
+        }
+
+        .doctor-name {
+            font-size: 1.5rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
             color: #2c3e50;
         }
 
-        .doctor-card .text-primary {
-            color: #3498db !important;
-            font-weight: 500;
+        .specialization {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
             margin-bottom: 1rem;
         }
 
-        .doctor-card p {
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            color: #7f8c8d;
-        }
-
-        .doctor-card p strong {
-            color: #34495e;
-            font-weight: 600;
-        }
-
-        .doctor-card .btn-group {
-            margin-top: auto;
-            padding-top: 1rem;
+        .doctor-meta-info {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 0.8rem;
         }
 
-        .doctor-card .toggle-details-btn {
-            border-radius: 5px;
-            font-weight: 500;
-            padding: 0.375rem 0.75rem;
-            flex: 1;
+        .meta-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .meta-item i {
+            margin-right: 8px;
+            color: #3498db;
+            width: 16px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .doctor-buttons {
+            margin-top: auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-details {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border: 2px solid #1976d2;
+            color: #1976d2;
+            background: transparent;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-details:hover {
+            background: #1976d2;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-appointment {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #1976d2, #2196f3);
+            border: none;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .btn-appointment:hover {
+            background: linear-gradient(135deg, #1565c0, #1976d2);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .description-text {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Doctor Details Section */
+        .doctor-details-panel {
+            width: 100%;
+            background: #f8f9fa;
+            border-radius: 0 0 10px 10px;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.3s ease;
+        }
+
+        .doctor-details-panel.show {
+            padding: 1.5rem;
+            max-height: 1000px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detail-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-item strong {
+            color: #2c3e50;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .detail-item span {
+            color: #555;
+            font-size: 0.9rem;
         }
 
         /* Responsive Adjustments */
-        @media (max-width: 767.98px) {
-            .doctor-card {
-                margin-bottom: 20px;
+        @media (max-width: 992px) {
+            .doctor-main-info {
+                flex-direction: column;
+                gap: 1rem;
             }
             
-            .doctor-card .card-img-top {
-                height: 200px;
+            .doctor-description {
+                padding: 0;
             }
         }
 
-        @media (min-width: 768px) and (max-width: 991.98px) {
-            .doctor-card .card-img-top {
-                height: 220px;
+        @media (max-width: 768px) {
+            .doctor-profile-card {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .doctor-image-container {
+                width: 100%;
+                height: 200px;
+            }
+            
+            .doctor-buttons {
+                margin-top: 1.5rem;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .doctor-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn-details, .btn-appointment {
+                width: 100%;
             }
         }
     </style>
 </head>
-
 <body>
     
-<!-- Navbar Start -->
-<?php include("nav.php"); ?>
-<!-- Navbar End -->
+    <!-- Navbar Start -->
+    <?php include("nav.php"); ?>
+    <!-- Navbar End -->
 
     <!-- Team Start -->
     <div class="container-fluid py-5">
@@ -254,71 +444,105 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
                 </div>
             </div>
 
-            <!-- Doctors List Container -->
+            <!-- Doctors List Container - Single card per row -->
             <div class="row mt-5" id="doctorsList">
                 <?php if ($result->num_rows > 0): ?>
-                    <?php $counter = 1; while ($row = $result->fetch_assoc()): ?>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow-sm h-100">
-                                <img src="<?= htmlspecialchars($row['image']) ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?= htmlspecialchars($row['name']) ?>">
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title"><?= htmlspecialchars($row['name']) ?></h5>
-                                    <h6 class="text-primary"><?= htmlspecialchars($row['specialization']) ?></h6>
-                                    <p><strong>City:</strong> <?= htmlspecialchars($row['city']) ?></p>
-                                    <p><strong>Phone:</strong> <?= htmlspecialchars($row['phone']) ?></p>
-                                    <p><strong>Experience:</strong> <?= htmlspecialchars($row['experience']) ?></p>
-
-                                    <div class="collapse" id="doctorDetails<?= $counter ?>">
-                                        <p><strong>Hospital:</strong> <?= htmlspecialchars($row['hospital_name']) ?></p>
-                                        <p><strong>Days:</strong> <?= htmlspecialchars($row['days']) ?></p>
-                                        <p><strong>Timing:</strong> <?= htmlspecialchars($row['timing']) ?></p>
-                                        <p><strong>Degree:</strong> <?= htmlspecialchars($row['degree']) ?></p>
-                                        <p><strong>Description:</strong> <?= htmlspecialchars($row['description']) ?></p>
-                                        <p><strong>Address:</strong> <?= htmlspecialchars($row['address']) ?></p>
-                                        <p><strong>Location:</strong> <?= htmlspecialchars($row['location']) ?></p>
-                                    </div>
-
-                                    <div class="d-flex gap-2 mt-auto">
-                                        <button class="btn btn-sm btn-outline-primary toggle-details-btn flex-grow-1" 
-                                            type="button" 
-                                            data-bs-toggle="collapse" 
-                                            data-bs-target="#doctorDetails<?= $counter ?>" 
-                                            aria-expanded="false" 
-                                            aria-controls="doctorDetails<?= $counter ?>">
-                                            More Details
-                                        </button>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <div class="col-12 mb-3">
+                            <div class="doctor-profile-card">
+                                <div class="doctor-image-container">
+                                    <img src="<?= htmlspecialchars($row['image']) ?>" alt="<?= htmlspecialchars($row['name']) ?>">
+                                </div>
+                                <div class="doctor-content-container">
+                                    <div class="doctor-main-info">
+                                        <div class="basic-info">
+                                            <h2 class="doctor-name"><?= htmlspecialchars($row['name']) ?></h2>
+                                            <span class="specialization"><?= htmlspecialchars($row['specialization']) ?></span>
+                                            
+                                            <div class="doctor-meta-info">
+                                                <div class="meta-item">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    <?= htmlspecialchars($row['city']) ?>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <i class="fas fa-phone-alt"></i>
+                                                    <?= htmlspecialchars($row['phone']) ?>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <i class="fas fa-briefcase"></i>
+                                                    <?= htmlspecialchars($row['experience']) ?> years experience
+                                                </div>
+                                            </div>
+                                        </div>
                                         
-                                        <a href="appointment.php?doctor_id=<?= $row['id'] ?>" class="btn btn-sm btn-primary flex-grow-1">
-                                            Appointment
+                                        <div class="doctor-description">
+                                            <h4 class="text-primary mb-2">About Dr. <?= explode(' ', htmlspecialchars($row['name']))[0] ?></h4>
+                                            <div class="description-text">
+                                                <?= htmlspecialchars($row['description']) ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="doctor-buttons">
+                                        <button class="btn-details toggle-details" data-doctor-id="<?= $row['id'] ?>">
+                                            <i class="fas fa-info-circle"></i> Full Profile
+                                        </button>
+                                        <a href="appointment.php?doctor_id=<?= $row['id'] ?>" class="btn-appointment">
+                                            <i class="fas fa-calendar-check"></i> Book Appointment
                                         </a>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Details Panel (hidden by default) -->
+                            <div class="doctor-details-panel" id="details-<?= $row['id'] ?>">
+                                <div class="details-grid">
+                                    <div class="detail-item">
+                                        <strong><i class="fas fa-hospital"></i> Hospital</strong>
+                                        <span><?= htmlspecialchars($row['hospital_name']) ?></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <strong><i class="far fa-calendar-alt"></i> Available Days</strong>
+                                        <span><?= htmlspecialchars($row['days']) ?></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <strong><i class="far fa-clock"></i> Timing</strong>
+                                        <span><?= htmlspecialchars($row['timing']) ?></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <strong><i class="fas fa-graduation-cap"></i> Qualifications</strong>
+                                        <span><?= htmlspecialchars($row['degree']) ?></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <strong><i class="fas fa-map-marker-alt"></i> Clinic Address</strong>
+                                        <span><?= htmlspecialchars($row['address']) ?></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <?php $counter++; ?>
                     <?php endwhile; ?>
                 <?php else: ?>
                     <div class="col-12">
-                        <p class="text-center text-muted">No approved doctors found.</p>
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle fa-2x mb-3"></i>
+                            <h4>No doctors found</h4>
+                            <p class="mb-0">Try adjusting your search filters</p>
+                        </div>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
-    <!-- Team End -->
 
-      <!-- Footer Start -->
+    <!-- Footer Start -->
     <?php include("footer.php"); ?>
     <!-- Footer End -->
-
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-   
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
@@ -331,30 +555,22 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Toggle button text for details
+        // Function to bind toggle buttons
         function bindToggleButtons() {
-            const buttons = document.querySelectorAll('.toggle-details-btn');
-            buttons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const targetId = btn.getAttribute('data-bs-target');
-                    const collapseEl = document.querySelector(targetId);
+            document.querySelectorAll('.toggle-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const doctorId = this.getAttribute('data-doctor-id');
+                    const detailsPanel = document.getElementById(`details-${doctorId}`);
                     
-                    // Use Bootstrap's Collapse directly
-                    const bsCollapse = new bootstrap.Collapse(collapseEl, {
-                        toggle: true
-                    });
+                    // Toggle the show class
+                    detailsPanel.classList.toggle('show');
                     
-                    setTimeout(() => {
-                        if (collapseEl.classList.contains('show')) {
-                            btn.textContent = 'Less Details';
-                            btn.classList.remove('btn-outline-primary');
-                            btn.classList.add('btn-outline-danger');
-                        } else {
-                            btn.textContent = 'More Details';
-                            btn.classList.remove('btn-outline-danger');
-                            btn.classList.add('btn-outline-primary');
-                        }
-                    }, 300);
+                    // Update button text
+                    if (detailsPanel.classList.contains('show')) {
+                        this.innerHTML = '<i class="fas fa-times"></i> Close Profile';
+                    } else {
+                        this.innerHTML = '<i class="fas fa-info-circle"></i> Full Profile';
+                    }
                 });
             });
         }
@@ -394,7 +610,7 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
             })
             .catch(err => {
                 console.error('Error:', err);
-                doctorsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading doctors. Please try again.</p></div>';
+                doctorsList.innerHTML = '<div class="col-12"><div class="alert alert-danger text-center">Error loading doctors. Please try again.</div></div>';
             });
         }
 
