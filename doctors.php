@@ -308,16 +308,21 @@ $result = $conn->query("SELECT * FROM doctors WHERE status = 'approved' ORDER BY
             color: white;
         }
 
-        .description-text {
-            color: #555;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+       .description-text {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    line-clamp: 4;
+    display: box;
+    box-orient: vertical;
+}
 
         /* Doctor Details Section */
         .doctor-details-panel {
