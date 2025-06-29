@@ -1,6 +1,11 @@
 <?php
 include("db.php");
 
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin_login.php");
+    exit;
+}
 // Handle Like Button
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['like_id'])) {
     $like_id = intval($_POST['like_id']);

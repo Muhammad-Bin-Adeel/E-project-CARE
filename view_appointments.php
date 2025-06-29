@@ -2,14 +2,20 @@
 session_start();
 include("db.php");
 
-// Show only APPROVED (Accepted) appointments in Admin Panel
-$sql = "SELECT a.id, a.patient_name, a.email, d.name AS doctor_name, a.specialization, a.appointment_date, a.appointment_time, a.status 
-        FROM appointments a 
-        JOIN doctors d ON a.doctor_id = d.id 
-        WHERE a.status = 'Accepted'
-        ORDER BY a.created_at DESC";
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin_login.php");
+    exit;
+}
 
-// DEBUG: Check if query fails
+// Show all appointments
+$sql = "SELECT a.id, a.patient_name, a.email, d.name AS doctor_name, a.specialization,
+       a.created_at, a.appointment_date, a.appointment_time,
+       a.status, a.approved_date, a.approved_time
+FROM appointments a
+JOIN doctors d ON a.doctor_id = d.id
+ORDER BY a.created_at DESC";
+
 $result = $conn->query($sql) or die("Query failed: " . $conn->error);
 ?>
 <!DOCTYPE html>
@@ -390,6 +396,8 @@ $result = $conn->query($sql) or die("Query failed: " . $conn->error);
         
 <h2>Appointment Requests</h2>
 
+
+
 <table>
     <tr>
         <th>#</th>
@@ -397,34 +405,40 @@ $result = $conn->query($sql) or die("Query failed: " . $conn->error);
         <th>Email</th>
         <th>Doctor</th>
         <th>Specialization</th>
-        <th>Date</th>
-        <th>Time</th>
+        <th>Requested Date</th>
+        <th>Requested Time</th>
+        <th>Appointment Date</th>
+        <th>Appointment Time</th>
         <th>Status</th>
-        <th>Action</th>
+        <th>Approved Date</th>
+        <th>Approved Time</th>
     </tr>
-    <?php if ($result->num_rows > 0): $i = 1; while ($row = $result->fetch_assoc()): ?>
+    <?php
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0): $i = 1; while ($row = $result->fetch_assoc()): ?>
         <tr>
             <td><?= $i++ ?></td>
             <td><?= htmlspecialchars($row['patient_name']) ?></td>
             <td><?= htmlspecialchars($row['email']) ?></td>
             <td><?= htmlspecialchars($row['doctor_name']) ?></td>
             <td><?= htmlspecialchars($row['specialization']) ?></td>
-            <td><?= $row['appointment_date'] ?></td>
-            <td><?= $row['appointment_time'] ?></td>
-            <td class="<?= strtolower($row['status']) ?>">
-                <?= $row['status'] ?>
-            </td>
-            <td>
-                <?php if ($row['status'] == 'Pending'): ?>
-                    <a href="?action=accept&id=<?= $row['id'] ?>" class="btn accept">Accept</a>
-                    <a href="?action=decline&id=<?= $row['id'] ?>" class="btn decline">Decline</a>
-                <?php else: ?>
-                    -
-                <?php endif; ?>
-            </td>
+
+            <!-- Submitted datetime -->
+            <td><?= date('Y-m-d', strtotime($row['created_at'])) ?></td>
+            <td><?= date('h:i A', strtotime($row['created_at'])) ?></td>
+
+            <!-- Appointment datetime -->
+            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+            <td><?= date('h:i A', strtotime($row['appointment_time'])) ?></td>
+
+            <td class="<?= strtolower($row['status']) ?>"><?= $row['status'] ?></td>
+
+            <!-- Approved datetime -->
+            <td><?= $row['approved_date'] ?: '-' ?></td>
+            <td><?= $row['approved_time'] ? date('h:i A', strtotime($row['approved_time'])) : '-' ?></td>
         </tr>
     <?php endwhile; else: ?>
-        <tr><td colspan="9">No appointments found.</td></tr>
+        <tr><td colspan="12">No appointments found.</td></tr>
     <?php endif; ?>
 </table>
 

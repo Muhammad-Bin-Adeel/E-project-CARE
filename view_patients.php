@@ -2,6 +2,12 @@
 include("db.php");
 session_start();
 
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin_login.php");
+    exit;
+}
+
 // Fetch patients
 $result = $conn->query("SELECT * FROM patients");
 ?>

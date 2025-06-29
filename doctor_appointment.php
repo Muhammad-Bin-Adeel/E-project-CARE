@@ -21,8 +21,17 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     $appointment_id = intval($_GET['id']);
     $status = $action === 'accept' ? 'Accepted' : 'Declined';
 
-    $stmtUpdate = $conn->prepare("UPDATE appointments SET status = ? WHERE id = ? AND doctor_id = ?");
-    $stmtUpdate->bind_param("sii", $status, $appointment_id, $doctor_id);
+    if ($status === 'Accepted') {
+        $approved_date = date('Y-m-d');
+        $approved_time = date('H:i:s');
+
+        $stmtUpdate = $conn->prepare("UPDATE appointments SET status = ?, approved_date = ?, approved_time = ? WHERE id = ? AND doctor_id = ?");
+        $stmtUpdate->bind_param("sssii", $status, $approved_date, $approved_time, $appointment_id, $doctor_id);
+    } else {
+        $stmtUpdate = $conn->prepare("UPDATE appointments SET status = ? WHERE id = ? AND doctor_id = ?");
+        $stmtUpdate->bind_param("sii", $status, $appointment_id, $doctor_id);
+    }
+
     $stmtUpdate->execute();
 
     // Redirect to avoid resubmission on refresh

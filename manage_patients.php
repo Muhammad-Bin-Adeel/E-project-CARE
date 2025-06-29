@@ -2,6 +2,12 @@
 session_start();
 include("db.php");
 
+// Redirect if not logged in
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin_login.php");
+    exit;
+}
+
 // Delete logic
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
