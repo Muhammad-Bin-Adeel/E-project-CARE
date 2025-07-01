@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 21, 2025 at 01:25 PM
+-- Generation Time: Jul 01, 2025 at 01:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,22 +38,28 @@ CREATE TABLE `appointments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_notified` tinyint(1) NOT NULL DEFAULT 0,
   `status` enum('Pending','Accepted','Declined') DEFAULT 'Pending',
-  `is_notified_admin` tinyint(1) DEFAULT 0
+  `is_notified_admin` tinyint(1) DEFAULT 0,
+  `approved_date` date DEFAULT NULL,
+  `approved_time` time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`id`, `patient_name`, `email`, `specialization`, `doctor_id`, `appointment_date`, `appointment_time`, `created_at`, `is_notified`, `status`, `is_notified_admin`) VALUES
-(1, 'wq', 'ejazsab50@gmail.com', 'otolaryngology', 15, '0000-00-00', '09:15:00', '2025-05-24 16:57:29', 1, 'Accepted', 1),
-(2, 'ad', 'mhammadadeel11@gmail.com', 'Psychiatry', 16, '0000-00-00', '10:30:00', '2025-05-24 18:02:04', 0, 'Pending', 0),
-(3, 'qw', 'admin@gmail', 'pediatricians', 21, '2025-05-26', '10:00:00', '2025-05-24 22:31:01', 0, 'Declined', 0),
-(4, 'as', 'admin@gmail', 'pediatricians', 21, '2025-05-26', '10:00:00', '2025-05-24 22:33:45', 0, 'Accepted', 0),
-(5, 'qw', 'admin@gmail', 'Immunology', 22, '2025-06-17', '10:15:00', '2025-05-25 13:02:05', 0, 'Accepted', 1),
-(6, 'Student1655498', 'maharmainfarooq@gmail.com', 'pediatricians', 21, '2025-07-14', '10:15:00', '2025-06-19 14:59:08', 0, 'Accepted', 1),
-(7, 'Huzaifa', 'huzaifa@gmial.com', 'Immunology', 22, '2025-06-23', '09:45:00', '2025-06-18 12:32:09', 0, 'Accepted', 0),
-(8, 'Aliyan', 'admin1@gmail.com', 'pediatricians', 21, '2025-07-02', '10:30:00', '2025-06-21 09:37:42', 0, 'Accepted', 1);
+INSERT INTO `appointments` (`id`, `patient_name`, `email`, `specialization`, `doctor_id`, `appointment_date`, `appointment_time`, `created_at`, `is_notified`, `status`, `is_notified_admin`, `approved_date`, `approved_time`) VALUES
+(1, 'wq', 'ejazsab50@gmail.com', 'otolaryngology', 15, '0000-00-00', '09:15:00', '2025-05-24 16:57:29', 1, 'Accepted', 1, NULL, NULL),
+(2, 'ad', 'mhammadadeel11@gmail.com', 'Psychiatry', 16, '0000-00-00', '10:30:00', '2025-05-24 18:02:04', 0, 'Pending', 0, NULL, NULL),
+(3, 'qw', 'admin@gmail', 'pediatricians', 21, '2025-05-26', '10:00:00', '2025-05-24 22:31:01', 0, 'Declined', 0, NULL, NULL),
+(4, 'as', 'admin@gmail', 'pediatricians', 21, '2025-05-26', '10:00:00', '2025-05-24 22:33:45', 0, 'Accepted', 1, NULL, NULL),
+(5, 'qw', 'admin@gmail', 'Immunology', 22, '2025-06-17', '10:15:00', '2025-05-25 13:02:05', 0, 'Accepted', 1, NULL, NULL),
+(6, 'Student1655498', 'maharmainfarooq@gmail.com', 'pediatricians', 21, '2025-07-14', '10:15:00', '2025-06-19 14:59:08', 0, 'Accepted', 1, NULL, NULL),
+(7, 'Huzaifa', 'huzaifa@gmial.com', 'Immunology', 22, '2025-06-23', '09:45:00', '2025-06-18 12:32:09', 0, 'Accepted', 1, NULL, NULL),
+(8, 'Aliyan', 'admin1@gmail.com', 'pediatricians', 21, '2025-07-02', '10:30:00', '2025-06-21 09:37:42', 0, 'Accepted', 1, NULL, NULL),
+(9, 'Ahsan', 'admin1@gmail.com', 'pediatricians', 21, '2025-07-01', '09:15:00', '2025-06-29 09:12:08', 0, 'Accepted', 1, NULL, NULL),
+(10, 'hanzala', 'admin1@gmail.com', 'pediatricians', 21, '2025-07-07', '09:30:00', '2025-06-29 10:06:49', 0, 'Accepted', 0, '2025-06-29', '12:07:36'),
+(11, 'hanzala', 'admin1@gmail.com', 'pediatricians', 21, '2025-07-07', '09:30:00', '2025-06-29 11:11:05', 0, 'Pending', 0, NULL, NULL),
+(12, 'hanzala', 'admin1@gmail.com', 'pediatricians', 21, '2025-07-07', '09:30:00', '2025-06-29 11:11:10', 0, 'Pending', 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -134,7 +140,7 @@ CREATE TABLE `doctors` (
 --
 
 INSERT INTO `doctors` (`image`, `id`, `name`, `hospital_name`, `phone`, `specialization`, `city`, `days`, `timing`, `experience`, `description`, `status`, `created_at`, `location`, `address`, `degree`, `email`, `password`, `is_notified`, `changes_pending`) VALUES
-('uploads/team-2.jpg', 21, 'Muhammad Bin Adeel', 'al-khidmat', '0333111', 'pediatricians', ' karachi', 'Monday,Tuesday,Wednesday', '09:00 AM - 11:00 AM,11:00 AM - 01:00 PM', '9', 'asd', 'approved', '2025-05-24 22:17:14', 'dsf', '14/5, Block 2 Nazimabad, Karachi, Karachi City, Sindh 74600', 'MS', 'admin@gmail', 'admin', 0, 0),
+('uploads/team-2.jpg', 21, 'Muhammad Bin Adeel', 'al-khidmat', '0333111', 'pediatricians', ' karachi', 'Monday,Tuesday', '09:00 AM - 11:00 AM,11:00 AM - 01:00 PM', '9', 'asd', 'approved', '2025-05-24 22:17:14', 'dsf', '14/5, Block 2 Nazimabad, Karachi, Karachi City, Sindh 74600', 'MS', 'admin@gmail', 'admin', 0, 0),
 ('uploads/Dr 2.png', 22, 'ejazsab', 'al-khidmat', '03331114816', 'Immunology', ' karachi', 'Monday,Tuesday,Wednesday', '11:00 AM - 01:00 PM', '2Y', 'DAS', 'approved', '2025-05-25 13:00:56', 'QWS', '14/5, Block 2 Nazimabad, Karachi, Karachi City, Sindh 74600', 'BDS', 'ejazsab50@gmail.com', 'ADMIN', 0, 0);
 
 -- --------------------------------------------------------
@@ -272,7 +278,7 @@ ALTER TABLE `patients`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `city`
