@@ -14,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($email === 'admin' && $password === 'admin123') {
         $_SESSION['role'] = 'admin';
         $_SESSION['email'] = $email;
+        $_SESSION['admin'] = true; // Added this line
         header("Location: admin_dashboard.php");
         exit();
     }
